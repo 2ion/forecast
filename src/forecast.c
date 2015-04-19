@@ -56,13 +56,16 @@ typedef struct {
 
 /* globals */
 
-static const char *options = "hl:c:k:v";
+static const char *options = "hl:c:k:vCH:D:";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
   { "location", required_argument,  NULL, 'l' },
   { "config",   required_argument,  NULL, 'c' },
   { "api-key",  required_argument,  NULL, 'k' },
   { "version",  no_argument,        NULL, 'v' },
+  { "current",  no_argument,        NULL, 'C' },
+  { "hourly",   required_argument,  NULL, 'H' },
+  { "daily",    required_argument,  NULL, 'D' }, 
   { 0,          0,                  0,    0   }
 };
 
@@ -275,26 +278,26 @@ return_error:
 }
 
 void usage(void) {
-  puts(   "Usage:\n"
-          "  forecast [-chlkv] [OPTIONS]\n"
-          "Options:\n"
-          "  -c|--config PATH      Configuration file to use\n"
-          "  -h|--help             Print this message and exit\n"
-          "  -l|--location CHOORD  Query the weather at this location;\n"
-          "                        CHOORD is a string in the format\n"
-          "                        <latitude>:<longitude> where the\n"
-          "                        choordinates are given as floating\n"
-          "                        point numbers\n"
-          "  -k|--key API-KEY      API key to use\n"
-          "  -v|--version          Print program version and exit\n"
-          );
+  puts("Usage:\n"
+       "  forecast [-CHDchlkv] [OPTIONS]\n"
+       "Options:\n"
+       "  -C|--current          Show the current weather condition\n"
+       "  -H|--hourly    N      Show the weather forecast for the next N hours\n"
+       "  -D|--daily     N      Show the weather forecast for the next N days\n"
+       "  -c|--config    PATH   Configuration file to use\n"
+       "  -h|--help             Print this message and exit\n"
+       "  -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format\n"
+       "                        <latitude>:<longitude> where the choordinates are given as floating\n"
+       "                        point numbers\n"
+       "  -k|--key       APIKEY API key to use\n"
+       "  -v|--version          Print program version and exit"
+       );
 }
 
-
 int main(int argc, char **argv) {
-  char *cli_apikey = NULL;
   Config c = { NULL, NULL, { 0.0, 0.0 } };
   Data d = { NULL, 0 };
+  char *cli_apikey = NULL;
   double cli_location[2] = { 0.0, 0.0 };
   int opt;
   int use_cli_location = 0;

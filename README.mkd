@@ -42,14 +42,16 @@ all times.
 
 ```
 Usage:
-  forecast [-chlk] [OPTIONS]
+  forecast [-CHDchlkv] [OPTIONS]
 Options:
-  -c|--config PATH      Configuration file to use
+  -C|--current          Show the current weather condition
+  -H|--hourly    N      Show the weather forecast for the next N hours
+  -D|--daily     N      Show the weather forecast for the next N days
+  -c|--config    PATH   Configuration file to use
   -h|--help             Print this message and exit
-  -l|--location CHOORD  Query the weather at this location;
-                        CHOORD is a string in the format
-                        <latitude>:<longitude> where the
-                        choordinates are given as floating
+  -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format
+                        <latitude>:<longitude> where the choordinates are given as floating
                         point numbers
-  -k|--key API-KEY      API key to use
+  -k|--key       APIKEY API key to use
+  -v|--version          Print program version and exit
 ```
