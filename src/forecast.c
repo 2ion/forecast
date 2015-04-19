@@ -106,10 +106,10 @@ int render_datapoint(struct json_object *o) {
           "   Temperature           | %.*f °C\n"
           "   Apparent temperature  | %.*f °C\n"
           "   Dew point             | %.*f °C\n"
-          "   Precipitation         | %d %\n"
-          "   RH (φ)                | %.*f %\n"
+          "   Precipitation         | %d %%\n"
+          "   RH (φ)                | %.*f %%\n"
           "   Wind speed            | %d kph (%s)\n"
-          "   Cloud cover           | %d %\n"
+          "   Cloud cover           | %d %%\n"
           "   Pressure              | %.*f hPa\n"
           "   Ozone                 | %.*f DU\n",
               render_time(o_time),
