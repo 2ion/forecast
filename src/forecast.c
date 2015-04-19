@@ -28,8 +28,8 @@
   struct json_object *(key);  \
   json_object_object_get_ex((object), #key, &(key));
 
-#define EXTRACT_PREFIXED(object, key) \
-  struct json_object *(NAME(object, key));           \
+#define EXTRACT_PREFIXED(object, key)                               \
+  struct json_object *(NAME(object, key));                          \
   json_object_object_get_ex((object), #key, &(NAME(object, key)));
 
 #define RENDER_BEARING(deg) \
@@ -37,6 +37,8 @@
 ( deg ==  90.0 ? "E" : (deg < 135.0 ? "ESE" : (deg == 135.0 ? "SE" : (deg < 180.0 ? "SSE" : \
 ( deg == 180.0 ? "S" : (deg < 225.0 ? "SSW" : (deg == 225.0 ? "SW" : (deg < 270.0 ? "WSW" : \
 ( deg == 270.0 ? "W" : (deg < 315.0 ? "WNW" : (deg == 315.0 ? "NW" : "NNW"))))))))))))))
+
+/* types */
 
 typedef struct {
   const char *path;
@@ -52,6 +54,8 @@ typedef struct {
   size_t datalen;
 } Data;
 
+/* globals */
+
 static const char *options = "hl:c:k:v";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
@@ -62,17 +66,20 @@ static const struct option options_long[] = {
   { 0,          0,                  0,    0   }
 };
 
-static void usage(void);
-static int load_config(Config *c);
-static int parse_location(const char *s, double *la, double *lo);
-static int request(Config *c, Data *d);
-static size_t request_curl_callback();
-static int render(Data *d);
+/* prototypes */
+
+static char*  render_time(struct json_object*);
 static double render_f2c(double fahrenheit);
 static double render_mph2kph(double mph);
-static char* rendeR_time(struct json_object*);
-static char* render_wind_bearing(double deg);
-static int render_datapoint(struct json_object *d);
+static int    load_config(Config *c);
+static int    parse_location(const char *s, double *la, double *lo);
+static int    render(Data *d);
+static int    render_datapoint(struct json_object *d);
+static int    request(Config *c, Data *d);
+static size_t request_curl_callback(void*, size_t, size_t, void*);
+static void   usage(void);
+
+/* implementations */
 
 double render_mph2kph(double mph) {
   return mph * 1.609344;
