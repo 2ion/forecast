@@ -1,0 +1,5 @@
+bin_PROGRAMS = forecast
+
+forecast_SOURCES = forecast.c
+forecast_CFLAGS = $(LIBJSONC_CFLAGS) $(LIBCONFIG_CFLAGS) $(LIBCURL_CFLAGS)
+forecast_LDFLAGS = $(LIBJSONC_LIBS) $(LIBCONFIG_LIBS) $(LIBCURL_LIBS)
