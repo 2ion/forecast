@@ -85,32 +85,23 @@ char * render_time(struct json_object *timeptr) {
   return ctime(&t);
 }
 
-int render(Data *d) {
-  struct json_object *o = json_tokener_parse(d->data);
+int render_datapoint(struct json_object *o) {
+  assert(o);
 
-  EXTRACT_PREFIXED(o, timezone);
-  EXTRACT_PREFIXED(o, latitude);
-  EXTRACT_PREFIXED(o, longitude);
-  EXTRACT_PREFIXED(o, currently);
+  EXTRACT_PREFIXED(o, time);
+  EXTRACT_PREFIXED(o, temperature);
+  EXTRACT_PREFIXED(o, apparentTemperature);
+  EXTRACT_PREFIXED(o, summary);
+  EXTRACT_PREFIXED(o, dewPoint);
+  EXTRACT_PREFIXED(o, humidity);
+  EXTRACT_PREFIXED(o, precipProbability);
+  EXTRACT_PREFIXED(o, cloudCover);
+  EXTRACT_PREFIXED(o, windSpeed);
+  EXTRACT_PREFIXED(o, pressure);
+  EXTRACT_PREFIXED(o, ozone);
+  EXTRACT_PREFIXED(o, windBearing); // FIXME: might be undefined
 
-  EXTRACT_PREFIXED(o_currently, time);
-  EXTRACT_PREFIXED(o_currently, temperature);
-  EXTRACT_PREFIXED(o_currently, apparentTemperature);
-  EXTRACT_PREFIXED(o_currently, summary);
-  EXTRACT_PREFIXED(o_currently, dewPoint);
-  EXTRACT_PREFIXED(o_currently, humidity);
-  EXTRACT_PREFIXED(o_currently, precipProbability);
-  EXTRACT_PREFIXED(o_currently, cloudCover);
-  EXTRACT_PREFIXED(o_currently, windSpeed);
-  EXTRACT_PREFIXED(o_currently, pressure);
-  EXTRACT_PREFIXED(o_currently, ozone);
-  EXTRACT_PREFIXED(o_currently, windBearing); // FIXME: might be undefined
-
-  printf( "Latitude                 | %.*f\n"
-          "Longitude                | %.*f\n"
-          "Timezone                 | %s\n"
-          "Currently\n"
-          "   Time                  | %s"
+  printf( "   Time                  | %s"
           "   Condition             | %s\n"
           "   Temperature           | %.*f °C\n"
           "   Apparent temperature  | %.*f °C\n"
@@ -121,23 +112,38 @@ int render(Data *d) {
           "   Cloud cover           | %d %\n"
           "   Pressure              | %.*f hPa\n"
           "   Ozone                 | %.*f DU\n",
+              render_time(o_time),
+              json_object_get_string(o_summary),
+          1,  render_f2c(json_object_get_double(o_temperature)),
+          1,  render_f2c(json_object_get_double(o_apparentTemperature)),
+          1,  render_f2c(json_object_get_double(o_dewPoint)),
+              (int) (json_object_get_double(o_precipProbability) * 100.0),
+          1,  json_object_get_double(o_humidity) * 100,
+              (int) render_mph2kph(json_object_get_double(o_windSpeed)),
+              RENDER_BEARING(json_object_get_double(o_windBearing)),
+              (int) (json_object_get_double(o_cloudCover) * 100.0),
+          2,  json_object_get_double(o_pressure),
+          2,  json_object_get_double(o_ozone)
+        );
+}
+
+int render(Data *d) {
+  struct json_object *o = json_tokener_parse(d->data);
+
+  EXTRACT_PREFIXED(o, timezone);
+  EXTRACT_PREFIXED(o, latitude);
+  EXTRACT_PREFIXED(o, longitude);
+  EXTRACT_PREFIXED(o, currently);
+
+  printf( "Latitude                 | %.*f\n"
+          "Longitude                | %.*f\n"
+          "Timezone                 | %s\n"
+          "Currently\n",
           4,  json_object_get_double(o_latitude),
           4,  json_object_get_double(o_longitude),
-              json_object_get_string(o_timezone),
+              json_object_get_string(o_timezone));
 
-              render_time(o_currently_time),
-              json_object_get_string(o_currently_summary),
-          1,  render_f2c(json_object_get_double(o_currently_temperature)),
-          1,  render_f2c(json_object_get_double(o_currently_apparentTemperature)),
-          1,  render_f2c(json_object_get_double(o_currently_dewPoint)),
-              (int) (json_object_get_double(o_currently_precipProbability) * 100.0),
-          1,  json_object_get_double(o_currently_humidity) * 100,
-              (int) render_mph2kph(json_object_get_double(o_currently_windSpeed)),
-              RENDER_BEARING(json_object_get_double(o_currently_windBearing)),
-              (int) (json_object_get_double(o_currently_cloudCover) * 100.0),
-          2,  json_object_get_double(o_currently_pressure),
-          2,  json_object_get_double(o_currently_ozone)
-        );
+  render_datapoint(o_currently);
 
   return 0;
 }
