@@ -18,6 +18,26 @@
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
         (__func__), (__LINE__), __VA_ARGS__)
 
+#define _PASTE(x, y) x ## _ ## y
+
+#define PASTE(x, y) _PASTE(x, y)
+
+#define NAME(prefix, name) PASTE(prefix, name)
+
+#define EXTRACT(object, key)  \
+  struct json_object *(key);  \
+  json_object_object_get_ex((object), #key, &(key));
+
+#define EXTRACT_PREFIXED(object, key) \
+  struct json_object *(NAME(object, key));           \
+  json_object_object_get_ex((object), #key, &(NAME(object, key)));
+
+#define RENDER_BEARING(deg) \
+  deg ==  0.00 ? "N" : (deg <  45.0 ? "NNE" : (deg ==  45.0 ? "NE" : (deg <  90.0 ? "ENE" : \
+( deg ==  90.0 ? "E" : (deg < 135.0 ? "ESE" : (deg == 135.0 ? "SE" : (deg < 180.0 ? "SSE" : \
+( deg == 180.0 ? "S" : (deg < 225.0 ? "SSW" : (deg == 225.0 ? "SW" : (deg < 270.0 ? "WSW" : \
+( deg == 270.0 ? "W" : (deg < 315.0 ? "WNW" : (deg == 315.0 ? "NW" : "NNW"))))))))))))))
+
 typedef struct {
   const char *path;
   const char *apikey;
@@ -32,7 +52,6 @@ typedef struct {
   size_t datalen;
 } Data;
 
-
 static const char *options = "hl:c:k:";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
@@ -46,12 +65,12 @@ static int load_config(Config *c);
 static int parse_location(const char *s, double *la, double *lo);
 static int request(Config *c, Data *d);
 static size_t request_curl_callback();
-
 static int render(Data *d);
 static double render_f2c(double fahrenheit);
 static double render_mph2kph(double mph);
 static char* rendeR_time(struct json_object*);
 static char* render_wind_bearing(double deg);
+static int render_datapoint(struct json_object *d);
 
 double render_mph2kph(double mph) {
   return mph * 1.609344;
@@ -69,23 +88,6 @@ char * render_time(struct json_object *timeptr) {
 int render(Data *d) {
   struct json_object *o = json_tokener_parse(d->data);
 
-#define _PASTE(x, y) x ## _ ## y
-#define PASTE(x, y) _PASTE(x, y)
-#define NAME(prefix, name) PASTE(prefix, name)
-
-#define EXTRACT(object, key)  \
-  struct json_object *(key);  \
-  json_object_object_get_ex((object), #key, &(key));
-#define EXTRACT_PREFIXED(object, key) \
-  struct json_object *(NAME(object, key));           \
-  json_object_object_get_ex((object), #key, &(NAME(object, key)));
-
-#define RENDER_BEARING(deg) \
-  deg ==  0.00 ? "N" : (deg <  45.0 ? "NNE" : (deg ==  45.0 ? "NE" : (deg <  90.0 ? "ENE" : \
-( deg ==  90.0 ? "E" : (deg < 135.0 ? "ESE" : (deg == 135.0 ? "SE" : (deg < 180.0 ? "SSE" : \
-( deg == 180.0 ? "S" : (deg < 225.0 ? "SSW" : (deg == 225.0 ? "SW" : (deg < 270.0 ? "WSW" : \
-( deg == 270.0 ? "W" : (deg < 315.0 ? "WNW" : (deg == 315.0 ? "NW" : "NNW"))))))))))))))
-
   EXTRACT_PREFIXED(o, timezone);
   EXTRACT_PREFIXED(o, latitude);
   EXTRACT_PREFIXED(o, longitude);
@@ -98,7 +100,10 @@ int render(Data *d) {
   EXTRACT_PREFIXED(o_currently, dewPoint);
   EXTRACT_PREFIXED(o_currently, humidity);
   EXTRACT_PREFIXED(o_currently, precipProbability);
+  EXTRACT_PREFIXED(o_currently, cloudCover);
   EXTRACT_PREFIXED(o_currently, windSpeed);
+  EXTRACT_PREFIXED(o_currently, pressure);
+  EXTRACT_PREFIXED(o_currently, ozone);
   EXTRACT_PREFIXED(o_currently, windBearing); // FIXME: might be undefined
 
   printf( "Latitude                 | %.*f\n"
@@ -112,7 +117,10 @@ int render(Data *d) {
           "   Dew point             | %.*f °C\n"
           "   Precipitation         | %d %\n"
           "   RH (φ)                | %.*f %\n"
-          "   Wind speed            | %d kph (%s)\n",
+          "   Wind speed            | %d kph (%s)\n"
+          "   Cloud cover           | %d %\n"
+          "   Pressure              | %.*f hPa\n"
+          "   Ozone                 | %.*f DU\n",
           4,  json_object_get_double(o_latitude),
           4,  json_object_get_double(o_longitude),
               json_object_get_string(o_timezone),
@@ -125,12 +133,11 @@ int render(Data *d) {
               (int) (json_object_get_double(o_currently_precipProbability) * 100.0),
           1,  json_object_get_double(o_currently_humidity) * 100,
               (int) render_mph2kph(json_object_get_double(o_currently_windSpeed)),
-              RENDER_BEARING(json_object_get_double(o_currently_windBearing))
+              RENDER_BEARING(json_object_get_double(o_currently_windBearing)),
+              (int) (json_object_get_double(o_currently_cloudCover) * 100.0),
+          2,  json_object_get_double(o_currently_pressure),
+          2,  json_object_get_double(o_currently_ozone)
         );
-
-#undef EXTRACT
-
-//  printf("Location: %.*f / %.*f", 2, 
 
   return 0;
 }
@@ -201,7 +208,7 @@ int parse_location(const char *s, double *la, double *lo) {
 }
 
 int load_config(Config *c) {
-  assert(c); 
+  assert(c);
 
   config_t cfg;
   const char *apikey;
