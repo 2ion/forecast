@@ -52,12 +52,13 @@ typedef struct {
   size_t datalen;
 } Data;
 
-static const char *options = "hl:c:k:";
+static const char *options = "hl:c:k:v";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
   { "location", required_argument,  NULL, 'l' },
   { "config",   required_argument,  NULL, 'c' },
   { "api-key",  required_argument,  NULL, 'k' },
+  { "version",  no_argument,        NULL, 'v' },
   { 0,          0,                  0,    0   }
 };
 
@@ -191,6 +192,8 @@ int request(Config *c, Data *d) {
   curl_easy_cleanup(curl);
   curl_global_cleanup();
 
+  free(url);
+
   return r == CURLE_OK ? 0 : -1;
 };
 
@@ -265,8 +268,8 @@ return_error:
 }
 
 void usage(void) {
-  printf( "Usage:\n"
-          "  forecast [-chlk] [OPTIONS]\n"
+  puts(   "Usage:\n"
+          "  forecast [-chlkv] [OPTIONS]\n"
           "Options:\n"
           "  -c|--config PATH      Configuration file to use\n"
           "  -h|--help             Print this message and exit\n"
@@ -275,7 +278,9 @@ void usage(void) {
           "                        <latitude>:<longitude> where the\n"
           "                        choordinates are given as floating\n"
           "                        point numbers\n"
-          "  -k|--key API-KEY      API key to use\n");
+          "  -k|--key API-KEY      API key to use\n"
+          "  -v|--version          Print program version and exit\n"
+          );
 }
 
 
@@ -303,6 +308,9 @@ int main(int argc, char **argv) {
       case 'c':
         c.path = optarg;
         break;
+      case 'v':
+        puts(PACKAGE_STRING);
+        return EXIT_SUCCESS;
     }
   }
 
