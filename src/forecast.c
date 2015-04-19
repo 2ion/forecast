@@ -65,7 +65,7 @@ static const struct option options_long[] = {
   { "version",  no_argument,        NULL, 'v' },
   { "current",  no_argument,        NULL, 'C' },
   { "hourly",   required_argument,  NULL, 'H' },
-  { "daily",    required_argument,  NULL, 'D' }, 
+  { "daily",    required_argument,  NULL, 'D' },
   { 0,          0,                  0,    0   }
 };
 
