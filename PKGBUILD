@@ -14,23 +14,23 @@ source=('forecast::git+https://github.com/2ion/forecast.git#branch=master')
 md5sums=('SKIP')
 
 pkgver() {
-	cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${pkgname%-git}"
   printf "%s" "$(git describe --tags | sed 's/-/.r/;s/-/./')"
 }
 
 build() {
-	cd "$srcdir/${pkgname%-git}"
+  cd "$srcdir/${pkgname%-git}"
   autoreconf -f -i -s
-	./configure --prefix=/usr
-	make
+  ./configure --prefix=/usr
+  make
 }
 
 check() {
-	cd "$srcdir/${pkgname%-git}"
-	make -k check
+  cd "$srcdir/${pkgname%-git}"
+  make -k check
 }
 
 package() {
-	cd "$srcdir/${pkgname%-git}"
-	make DESTDIR="$pkgdir/" install
+  cd "$srcdir/${pkgname%-git}"
+  make DESTDIR="$pkgdir/" install
 }
