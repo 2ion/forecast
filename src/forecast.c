@@ -12,6 +12,10 @@
 #include <unistd.h>
 #include "config.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
         (__func__), (__LINE__), __VA_ARGS__)
 
@@ -52,10 +56,10 @@ size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data)
   if(d->data == NULL) {
     d->data = malloc(ptrlen);
     d->datalen = ptrlen;
-    memcpy(&d->data[0], ptr, ptrlen);
+    memcpy(d->data, ptr, ptrlen);
   } else {
-    realloc(d->data, d->datalen + ptrlen);
-    memcpy(&d->data[d->datalen + 1], ptr, ptrlen);
+    d->data = realloc(d->data, d->datalen + ptrlen);
+    memcpy(&d->data[d->datalen], ptr, ptrlen);
     d->datalen += ptrlen;
   }
 
