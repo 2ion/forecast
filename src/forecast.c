@@ -61,6 +61,7 @@ static const struct option options_long[] = {
   { 0,          0,                  0,    0   }
 };
 
+static void usage(void);
 static int load_config(Config *c);
 static int parse_location(const char *s, double *la, double *lo);
 static int request(Config *c, Data *d);
@@ -263,6 +264,21 @@ return_error:
   return -1;
 }
 
+void usage(void) {
+  printf( "Usage:\n"
+          "  forecast [-chlk] [OPTIONS]\n"
+          "Options:\n"
+          "  -c|--config PATH      Configuration file to use\n"
+          "  -h|--help             Print this message and exit\n"
+          "  -l|--location CHOORD  Query the weather at this location;\n"
+          "                        CHOORD is a string in the format\n"
+          "                        <latitude>:<longitude> where the\n"
+          "                        choordinates are given as floating\n"
+          "                        point numbers\n"
+          "  -k|--key API-KEY      API key to use\n");
+}
+
+
 int main(int argc, char **argv) {
   char *cli_apikey = NULL;
   Config c = { NULL, NULL, { 0.0, 0.0 } };
@@ -274,6 +290,7 @@ int main(int argc, char **argv) {
   while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
     switch(opt) {
       case 'h':
+        usage();
         return EXIT_SUCCESS;
       case 'l':
         if(parse_location((const char*)optarg, &cli_location[0], &cli_location[1]) == -1)

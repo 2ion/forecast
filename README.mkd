@@ -1,0 +1,55 @@
+__ This program is not ready yet! __
+
+## forecast
+
+forecast is a query program for the [forecast.io](https://forecast.io)
+API. It provides a command line interface which makes weather data for a
+configurable location available in the terminal.
+
+### API key
+
+In order to use the API, you need to obtain an API key from forecast.io.
+You are able to make 1000 API calls per day free of charge. The
+registration interface is [here](https://developer.forecast.io/).
+
+### Configuration file
+
+forecast uses a configuration file in libconfig format. The file is by
+default located at
+```sh
+$HOME/.forecastrc
+```
+but you may override the location by using the -w flag.
+
+The configuration should contain at least the following settings:
+
+```
+apikey = "<your-api-key>";
+
+location: {
+  latitude = 52.5161;
+  longitude = 13.3770;
+};
+```
+
+You do not need to create this file manually; forecast will write the
+settings you've specified on the command line out to the file if it
+doesn't exist. Normally, command line parameters take precedence over
+the configuration file, and the configuration file remains unchanged at
+all times.
+
+### Synopsis
+
+```
+Usage:
+  forecast [-chlk] [OPTIONS]
+Options:
+  -c|--config PATH      Configuration file to use
+  -h|--help             Print this message and exit
+  -l|--location CHOORD  Query the weather at this location;
+                        CHOORD is a string in the format
+                        <latitude>:<longitude> where the
+                        choordinates are given as floating
+                        point numbers
+  -k|--key API-KEY      API key to use
+```
