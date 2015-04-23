@@ -1,6 +1,11 @@
 #ifndef FORECAST_H
 #define FORECAST_H
 
+#include <errno.h>
+#include <error.h>
+#include <sys/types.h>
+#include <stdbool.h>
+
 #include "config.h"
 
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \

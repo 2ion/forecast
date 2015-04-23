@@ -1,13 +1,10 @@
 #include <assert.h>
 #include <curl/curl.h>
-#include <errno.h>
-#include <error.h>
 #include <getopt.h>
 #include <json-c/json.h>
 #include <json-c/json_object.h>
 #include <libconfig.h>
 #include <math.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
