@@ -6,6 +6,7 @@
 #include <json-c/json.h>
 #include <json-c/json_object.h>
 #include <libconfig.h>
+#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,46 +14,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "config.h"
-
-#define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
-        (__func__), (__LINE__), __VA_ARGS__)
-
-#define _PASTE(x, y) x ## _ ## y
-
-#define PASTE(x, y) _PASTE(x, y)
-
-#define NAME(prefix, name) PASTE(prefix, name)
-
-#define EXTRACT(object, key)  \
-  struct json_object *(key);  \
-  json_object_object_get_ex((object), #key, &(key));
-
-#define EXTRACT_PREFIXED(object, key)                               \
-  struct json_object *(NAME(object, key));                          \
-  json_object_object_get_ex((object), #key, &(NAME(object, key)));
-
-#define RENDER_BEARING(deg) \
-  deg ==  0.00 ? "N" : (deg <  45.0 ? "NNE" : (deg ==  45.0 ? "NE" : (deg <  90.0 ? "ENE" : \
-( deg ==  90.0 ? "E" : (deg < 135.0 ? "ESE" : (deg == 135.0 ? "SE" : (deg < 180.0 ? "SSE" : \
-( deg == 180.0 ? "S" : (deg < 225.0 ? "SSW" : (deg == 225.0 ? "SW" : (deg < 270.0 ? "WSW" : \
-( deg == 270.0 ? "W" : (deg < 315.0 ? "WNW" : (deg == 315.0 ? "NW" : "NNW"))))))))))))))
-
-/* types */
-
-typedef struct {
-  const char *path;
-  const char *apikey;
-  struct {
-    double latitude;
-    double longitude;
-  } location;
-} Config;
-
-typedef struct {
-  char *data;
-  size_t datalen;
-} Data;
+#include "forecast.h"
 
 /* globals */
 
@@ -78,6 +40,7 @@ static int    load_config(Config *c);
 static int    parse_location(const char *s, double *la, double *lo);
 static int    render(Data *d);
 static int    render_datapoint(struct json_object *d);
+static void   render_hourly_datapoints(struct json_object*);
 static int    request(Config *c, Data *d);
 static size_t request_curl_callback(void*, size_t, size_t, void*);
 static void   usage(void);
@@ -97,6 +60,60 @@ char * render_time(struct json_object *timeptr) {
   return ctime(&t);
 }
 
+void render_hourly_datapoints(struct json_object *hourly) {
+  assert(hourly);
+
+  EXTRACT_PREFIXED(hourly, summary);
+  EXTRACT_PREFIXED(hourly, data);
+  struct array_list *al = json_object_get_array(hourly_data);
+
+  puts(   "-------------------------+");
+  printf( "Hourly                     %s\n", json_object_get_string(hourly_summary));
+
+  for(int i = 0; i < array_list_length(al); i++) {
+    struct json_object *o = array_list_get_idx(al, i);
+    render_datapoint(o);
+  }
+}
+
+/* |
+ * |
+ * |   *
+ * |   ** 
+ * |   ** 
+ * +--------------------------------
+ */
+void render_hourly_temperature_curve(double *t, size_t tlen, int fromhour, int height) {
+  const char *cblock = "\x1b[0;0;42m ";
+  const char *creset = "\x1b[0m";
+
+  int tmap[tlen];
+  double h;
+  double min = 0.0;
+  double max = 0.0;
+  double base = 0.0;
+
+  for(int i = 0; i < tlen; i++) {
+    if(t[i] < min)
+      min = t[i];
+    else if(t[i] > max)
+      max = t[i];
+  }
+  base = (min + max) * 0.5;
+
+  h = (max-base)/(double)height;
+
+  printf("max=%f, min=%f, base=%f, h=%f\n", max, min, base, h);
+
+  for(int i = 0; i < tlen; i++) {
+    if(t[i] == base)
+      tmap[i] = 0;
+    else
+      tmap[i] = (int) (t[i] / h);
+    printf("%f -> %d\n", t[i], tmap[i]);
+  }
+}
+
 int render_datapoint(struct json_object *o) {
   assert(o);
 
@@ -113,6 +130,7 @@ int render_datapoint(struct json_object *o) {
   EXTRACT_PREFIXED(o, ozone);
   EXTRACT_PREFIXED(o, windBearing); // FIXME: might be undefined
 
+  puts(   "-------------------------+");
   printf( "   Time                  | %s"
           "   Condition             | %s\n"
           "   Temperature           | %.*f °C\n"
@@ -146,16 +164,20 @@ int render(Data *d) {
   EXTRACT_PREFIXED(o, latitude);
   EXTRACT_PREFIXED(o, longitude);
   EXTRACT_PREFIXED(o, currently);
+  EXTRACT_PREFIXED(o, hourly);
 
   printf( "Latitude                 | %.*f\n"
           "Longitude                | %.*f\n"
           "Timezone                 | %s\n"
+          "-------------------------+\n"
           "Currently\n",
           4,  json_object_get_double(o_latitude),
           4,  json_object_get_double(o_longitude),
               json_object_get_string(o_timezone));
 
   render_datapoint(o_currently);
+
+  render_hourly_datapoints(o_hourly);
 
   return 0;
 }
@@ -321,6 +343,9 @@ int main(int argc, char **argv) {
       case 'v':
         puts(PACKAGE_STRING);
         return EXIT_SUCCESS;
+      case '?':
+        usage();
+        return EXIT_FAILURE;
     }
   }
 
@@ -347,6 +372,12 @@ int main(int argc, char **argv) {
     puts("Failed to request data");
 
   render(&d);
+
+  if(d.data != NULL)
+    free(d.data);
+
+  double t[6] = { 2.0, 1.0, 0.0, 0.5, -1.0, -2.0};
+  render_hourly_temperature_curve(t, 6, 0, 8);
 
   return EXIT_SUCCESS;
 }

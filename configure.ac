@@ -1,7 +1,7 @@
 AC_INIT([forecast], [0.1], [dev@2ion.de])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
-AC_PROG_CC
+AC_PROG_CC_C99 
 
 AC_CONFIG_SRCDIR([src/forecast.c])
 AC_CONFIG_HEADERS([config.h])
@@ -12,6 +12,7 @@ AC_DEFINE([RCNAME], [".forecastrc"], [Configuration file name])
 PKG_CHECK_MODULES([LIBJSONC], [json-c])
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
+PKG_CHECK_MODULES([LIBUNIBILIUM], [unibilium])
 
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */
