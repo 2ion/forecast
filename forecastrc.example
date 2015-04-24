@@ -1,0 +1,26 @@
+/*
+
+  forecastrc example configuration
+
+  Valid color names are: BLACK, RED, GREEN, YELLOW, BLUE,
+  MAGENTA, CYAN, WHITE. Uppercase names are required.
+
+*/
+
+apikey = "";
+
+location: {
+  latitude = 52.5161;
+  longitude = 13.3770;
+};
+
+plot: {
+  height = 10;
+  bar: {
+    width = 4;
+    color = "BLUE";
+  };
+  legend: {
+    color = "WHITE";
+  };
+};
