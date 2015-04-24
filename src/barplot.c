@@ -18,22 +18,9 @@ int terminal_dimen(int *rows, int *cols) {
 int barplot(const PlotCfg *c, double *d, size_t dlen) {
   int dlist[dlen];
 
-  /* bars + bar spacing + corners + \0 */
-
-  size_t topbottom_border_len = dlen * c->bar.width + (dlen - 1) * c->bar.spacing + 2 + 1;
-  char topbottom_border[topbottom_border_len];
-  for(int i = 0; i < topbottom_border_len; i++)
-    if(i == 0 || topbottom_border_len-2)
-      topbottom_border[i] = '+';
-    else if(i == topbottom_border_len-1)
-      topbottom_border[i] = '\0';
-    else
-      topbottom_border[i] = '-';
-
   /* scaling */
 
   double maxabs = 0.0;
-  double fac = 0.0;
 
   for(int i = 0; i < dlen; i++) {
     double m = fabs(d[i]);
@@ -41,9 +28,7 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
       maxabs = m;
   }
 
-  fac = (double) c->height / maxabs;
-  LERROR(0,0, "fac = %f ; maxabs = %f", fac, maxabs);
-
+  const double fac = (double) c->height / maxabs;
   int maxdlist = 0;
 
   for(int i = 0; i < dlen; i++) {
@@ -86,8 +71,8 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
   init_pair(3, COLOR_RED, -1);
 
   int offset = 0;
-  int dx = COLS/2 - (dlen * (c->bar.width + 1) - 1)/2;
-  int dy = LINES/2 - c->height;
+  const int dx = COLS/2 - (dlen * (c->bar.width + 1) - 1)/2;
+  const int dy = LINES/2 - c->height;
 
   /* plot the decoration and legend */
 
@@ -117,28 +102,30 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
           dx-(snprintf(NULL, 0, "-%.*f", 1, ticnames[c->height])+3),
           "-%.*f", 1, ticnames[c->height]);
 
-    } else
+    } else {
+
       mvaddch(y, dx-2, '|');
 
+    }
   }
   attroff(COLOR_PAIR(2));
 
   for(int i = 0; i < dlen; i++) {
     const int d = dlist[i] >= 0 ? 1 : -1;
     const int _offset = offset;
-    for(int j = dx + i + offset; j < dx + i + c->bar.width + _offset; j++, offset++) {
 
+    for(int j = dx + i + offset; j < dx + i + c->bar.width + _offset; j++, offset++) {
     /* plot the zero-line */
     attron(COLOR_PAIR(2));
     mvaddch(dy + c->height, j, '-');
     attroff(COLOR_PAIR(2));
-
     /* plot the bar */
     attron(COLOR_PAIR(1));
     for(int y = dy + c->height - dlist[i]; y != dy + c->height; y += d)
       mvaddch(y, j, ' ');
     attroff(COLOR_PAIR(1));
     }
+
   }
 
   refresh();
