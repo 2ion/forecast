@@ -101,7 +101,7 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_forecast_OBJECTS = forecast-forecast.$(OBJEXT) \
 	forecast-barplot.$(OBJEXT) forecast-configfile.$(OBJEXT) \
-	forecast-network.$(OBJEXT)
+	forecast-network.$(OBJEXT) forecast-render.$(OBJEXT)
 forecast_OBJECTS = $(am_forecast_OBJECTS)
 forecast_LDADD = $(LDADD)
 forecast_LINK = $(CCLD) $(forecast_CFLAGS) $(CFLAGS) \
@@ -261,7 +261,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-forecast_SOURCES = forecast.c barplot.c configfile.c network.c
+forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c
 forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
 									$(LIBCONFIG_CFLAGS) \
 									$(LIBCURL_CFLAGS) \
@@ -363,6 +363,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-configfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-forecast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-network.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-render.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -433,6 +434,20 @@ forecast-network.obj: network.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='network.c' object='forecast-network.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -c -o forecast-network.obj `if test -f 'network.c'; then $(CYGPATH_W) 'network.c'; else $(CYGPATH_W) '$(srcdir)/network.c'; fi`
+
+forecast-render.o: render.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -MT forecast-render.o -MD -MP -MF $(DEPDIR)/forecast-render.Tpo -c -o forecast-render.o `test -f 'render.c' || echo '$(srcdir)/'`render.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/forecast-render.Tpo $(DEPDIR)/forecast-render.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='render.c' object='forecast-render.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -c -o forecast-render.o `test -f 'render.c' || echo '$(srcdir)/'`render.c
+
+forecast-render.obj: render.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -MT forecast-render.obj -MD -MP -MF $(DEPDIR)/forecast-render.Tpo -c -o forecast-render.obj `if test -f 'render.c'; then $(CYGPATH_W) 'render.c'; else $(CYGPATH_W) '$(srcdir)/render.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/forecast-render.Tpo $(DEPDIR)/forecast-render.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='render.c' object='forecast-render.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -c -o forecast-render.obj `if test -f 'render.c'; then $(CYGPATH_W) 'render.c'; else $(CYGPATH_W) '$(srcdir)/render.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique

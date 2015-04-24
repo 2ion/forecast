@@ -1,14 +1,14 @@
 #ifndef BARPLOT_H
 #define BARPLOT_H
 
-#include <stdbool.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <unistd.h>
-#include <math.h>
-#include <stdio.h>
 #include <curses.h>
 #include <locale.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define PLOTCFG_DEFAULT       \
 {                             \

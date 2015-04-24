@@ -73,7 +73,9 @@ int load_config(Config *c) {
     if(strcmp(tmp, "plot-hourly") == 0)
       c->op = OP_PLOT_HOURLY;
     else if(strcmp(tmp, "print") == 0)
-      c->op = OP_PRINT;
+      c->op = OP_PRINT_CURRENTLY;
+    else if(strcmp(tmp, "print-hourly") == 0)
+      c->op = OP_PRINT_HOURLY;
   }
 
   config_destroy(&cfg);

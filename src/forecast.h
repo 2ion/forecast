@@ -48,7 +48,8 @@
 
 enum {
   OP_PLOT_HOURLY,
-  OP_PRINT
+  OP_PRINT_CURRENTLY,
+  OP_PRINT_HOURLY
 };
 
 typedef struct {
@@ -71,7 +72,7 @@ typedef struct {
     .longitude = 0.0,       \
   },                        \
   .plot = PLOTCFG_DEFAULT,  \
-  .op = OP_PRINT            \
+  .op = OP_PRINT_CURRENTLY  \
 }
 
 typedef struct {
