@@ -7,6 +7,7 @@
 #include <stdbool.h>
 
 #include "config.h"
+#include "barplot.h"
 
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
         (__func__), (__LINE__), __VA_ARGS__)
@@ -31,8 +32,16 @@
 ( deg == 180.0 ? "S" : (deg < 225.0 ? "SSW" : (deg == 225.0 ? "SW" : (deg < 270.0 ? "WSW" : \
 ( deg == 270.0 ? "W" : (deg < 315.0 ? "WNW" : (deg == 315.0 ? "NW" : "NNW"))))))))))))))
 
-#define COLOR_BLOCK "\x1b[0;0;42m "
-#define COLOR_RESET "\x1b[0m"
+#define CHECKCOLOR(var, name) if(strcmp(tmp, #name) == 0) (var) = PASTE(COLOR, name);
+#define CHECKCOLORS(var)             \
+    CHECKCOLOR(var, BLACK)           \
+    else CHECKCOLOR(var, RED)        \
+    else CHECKCOLOR(var, GREEN)      \
+    else CHECKCOLOR(var, YELLOW)     \
+    else CHECKCOLOR(var, BLUE)       \
+    else CHECKCOLOR(var, MAGENTA)    \
+    else CHECKCOLOR(var, CYAN)       \
+    else CHECKCOLOR(var, WHITE)
 
 /* types */
 
@@ -43,6 +52,7 @@ typedef struct {
     double latitude;
     double longitude;
   } location;
+  PlotCfg plot;
 } Config;
 
 typedef struct {

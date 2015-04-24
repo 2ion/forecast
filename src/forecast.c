@@ -74,13 +74,6 @@ void render_hourly_datapoints(struct json_object *hourly) {
   }
 }
 
-/* |
- * |
- * |   *
- * |   ** 
- * |   ** 
- * +--------------------------------
- */
 void render_hourly_temperature_curve(double *t, size_t tlen, int fromhour, int height) {
   const char *cblock = "\x1b[0;0;42m ";
   const char *creset = "\x1b[0m";
@@ -252,6 +245,7 @@ int load_config(Config *c) {
 
   config_t cfg;
   const char *apikey;
+  const char *tmp;
 
   if(access(c->path, R_OK) != 0) {
     LERROR(0, errno, "access()");
@@ -288,7 +282,30 @@ int load_config(Config *c) {
     goto return_error;
   }
 
-return_success:
+  if(config_lookup_int(&cfg, "plot.height", &(c->plot.height)) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.height not configured");
+    goto return_error;
+  }
+
+  if(config_lookup_string(&cfg, "plot.bar.color", &tmp) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.bar.color");
+    goto return_error;
+  } else {
+    CHECKCOLORS(c->plot.bar.color)
+  }
+
+  if(config_lookup_int(&cfg, "plot.bar.width", &(c->plot.bar.width)) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.bar.width");
+    goto return_error;
+  }
+
+  if(config_lookup_string(&cfg, "plot.legend.color", &tmp) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.legend.color");
+    goto return_error;
+  } else {
+    CHECKCOLORS(c->plot.legend.color)
+  }
+
   config_destroy(&cfg);
   return 0;
 

@@ -13,26 +13,24 @@
 #define PLOTCFG_DEFAULT       \
 {                             \
   .height = 6,                \
-  .baseline = BASELINE_ZERO,  \
   .bar = {                    \
     .width = 2,               \
-    .show_value = false       \
+    .color = COLOR_GREEN      \
+  },                          \
+  .legend = {                 \
+    .color = COLOR_WHITE      \
   }                           \
 }
 
-enum {
-  BASELINE_MEAN,
-  BASELINE_ZERO
-};
-
 typedef struct {
   int height;
-  int baseline;
   struct {
     int width;
-    int spacing;
-    bool show_value;
+    int color;
   } bar;
+  struct {
+    int color;
+  } legend;
 } PlotCfg;
 
 int barplot(const PlotCfg *c, double *d, size_t dlen);
