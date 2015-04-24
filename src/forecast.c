@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include "forecast.h"
+#include "barplot.h"
 
 /* globals */
 
@@ -373,8 +374,11 @@ int main(int argc, char **argv) {
   if(d.data != NULL)
     free(d.data);
 
-  double t[6] = { 2.0, 1.0, 0.0, 0.5, -1.0, -2.0};
-  render_hourly_temperature_curve(t, 6, 0, 8);
+  PlotCfg pc = PLOTCFG_DEFAULT;
+  pc.height = 20;
+  pc.bar.width = 4;
+  double t[7] = { 7.0, 13.0, 19.7, 20.0, 21.0, 10.0, -30.0};
+  barplot(&pc, t, 7);
 
   return EXIT_SUCCESS;
 }

@@ -588,8 +588,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-LIBUNIBILIUM_LIBS
-LIBUNIBILIUM_CFLAGS
+LIBNCURSESW_LIBS
+LIBNCURSESW_CFLAGS
 LIBCURL_LIBS
 LIBCURL_CFLAGS
 LIBCONFIG_LIBS
@@ -704,8 +704,8 @@ LIBCONFIG_CFLAGS
 LIBCONFIG_LIBS
 LIBCURL_CFLAGS
 LIBCURL_LIBS
-LIBUNIBILIUM_CFLAGS
-LIBUNIBILIUM_LIBS'
+LIBNCURSESW_CFLAGS
+LIBNCURSESW_LIBS'
 
 
 # Initialize some variables set by options.
@@ -1352,10 +1352,10 @@ Some influential environment variables:
               C compiler flags for LIBCURL, overriding pkg-config
   LIBCURL_LIBS
               linker flags for LIBCURL, overriding pkg-config
-  LIBUNIBILIUM_CFLAGS
-              C compiler flags for LIBUNIBILIUM, overriding pkg-config
-  LIBUNIBILIUM_LIBS
-              linker flags for LIBUNIBILIUM, overriding pkg-config
+  LIBNCURSESW_CFLAGS
+              C compiler flags for LIBNCURSESW, overriding pkg-config
+  LIBNCURSESW_LIBS
+              linker flags for LIBNCURSESW, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -4057,19 +4057,19 @@ $as_echo "yes" >&6; }
 fi
 
 pkg_failed=no
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBUNIBILIUM" >&5
-$as_echo_n "checking for LIBUNIBILIUM... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBNCURSESW" >&5
+$as_echo_n "checking for LIBNCURSESW... " >&6; }
 
-if test -n "$LIBUNIBILIUM_CFLAGS"; then
-    pkg_cv_LIBUNIBILIUM_CFLAGS="$LIBUNIBILIUM_CFLAGS"
+if test -n "$LIBNCURSESW_CFLAGS"; then
+    pkg_cv_LIBNCURSESW_CFLAGS="$LIBNCURSESW_CFLAGS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"unibilium\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "unibilium") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ncursesw\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ncursesw") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBUNIBILIUM_CFLAGS=`$PKG_CONFIG --cflags "unibilium" 2>/dev/null`
+  pkg_cv_LIBNCURSESW_CFLAGS=`$PKG_CONFIG --cflags "ncursesw" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4077,16 +4077,16 @@ fi
  else
     pkg_failed=untried
 fi
-if test -n "$LIBUNIBILIUM_LIBS"; then
-    pkg_cv_LIBUNIBILIUM_LIBS="$LIBUNIBILIUM_LIBS"
+if test -n "$LIBNCURSESW_LIBS"; then
+    pkg_cv_LIBNCURSESW_LIBS="$LIBNCURSESW_LIBS"
  elif test -n "$PKG_CONFIG"; then
     if test -n "$PKG_CONFIG" && \
-    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"unibilium\""; } >&5
-  ($PKG_CONFIG --exists --print-errors "unibilium") 2>&5
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"ncursesw\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "ncursesw") 2>&5
   ac_status=$?
   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
   test $ac_status = 0; }; then
-  pkg_cv_LIBUNIBILIUM_LIBS=`$PKG_CONFIG --libs "unibilium" 2>/dev/null`
+  pkg_cv_LIBNCURSESW_LIBS=`$PKG_CONFIG --libs "ncursesw" 2>/dev/null`
 		      test "x$?" != "x0" && pkg_failed=yes
 else
   pkg_failed=yes
@@ -4107,22 +4107,22 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        LIBUNIBILIUM_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "unibilium" 2>&1`
+	        LIBNCURSESW_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "ncursesw" 2>&1`
         else
-	        LIBUNIBILIUM_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "unibilium" 2>&1`
+	        LIBNCURSESW_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "ncursesw" 2>&1`
         fi
 	# Put the nasty error message in config.log where it belongs
-	echo "$LIBUNIBILIUM_PKG_ERRORS" >&5
+	echo "$LIBNCURSESW_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (unibilium) were not met:
+	as_fn_error $? "Package requirements (ncursesw) were not met:
 
-$LIBUNIBILIUM_PKG_ERRORS
+$LIBNCURSESW_PKG_ERRORS
 
 Consider adjusting the PKG_CONFIG_PATH environment variable if you
 installed software in a non-standard prefix.
 
-Alternatively, you may set the environment variables LIBUNIBILIUM_CFLAGS
-and LIBUNIBILIUM_LIBS to avoid the need to call pkg-config.
+Alternatively, you may set the environment variables LIBNCURSESW_CFLAGS
+and LIBNCURSESW_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details." "$LINENO" 5
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -4133,15 +4133,15 @@ as_fn_error $? "The pkg-config script could not be found or is too old.  Make su
 is in your PATH or set the PKG_CONFIG environment variable to the full
 path to pkg-config.
 
-Alternatively, you may set the environment variables LIBUNIBILIUM_CFLAGS
-and LIBUNIBILIUM_LIBS to avoid the need to call pkg-config.
+Alternatively, you may set the environment variables LIBNCURSESW_CFLAGS
+and LIBNCURSESW_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
 To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details" "$LINENO" 5; }
 else
-	LIBUNIBILIUM_CFLAGS=$pkg_cv_LIBUNIBILIUM_CFLAGS
-	LIBUNIBILIUM_LIBS=$pkg_cv_LIBUNIBILIUM_LIBS
+	LIBNCURSESW_CFLAGS=$pkg_cv_LIBNCURSESW_CFLAGS
+	LIBNCURSESW_LIBS=$pkg_cv_LIBNCURSESW_LIBS
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 

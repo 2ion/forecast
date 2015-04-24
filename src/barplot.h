@@ -6,14 +6,16 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <math.h>
+#include <stdio.h>
+#include <curses.h>
+#include <locale.h>
 
 #define PLOTCFG_DEFAULT       \
 {                             \
   .height = 6,                \
   .baseline = BASELINE_ZERO,  \
   .bar = {                    \
-    .width = 1,               \
-    .spacing = 1,             \
+    .width = 2,               \
     .show_value = false       \
   }                           \
 }
