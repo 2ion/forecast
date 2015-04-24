@@ -18,7 +18,7 @@ int terminal_dimen(int *rows, int *cols) {
 int barplot(const PlotCfg *c, double *d, size_t dlen) {
   int dlist[dlen];
 
-  /* scaling */
+  /* scale doubles -> int */
 
   double maxabs = 0.0;
 
@@ -41,18 +41,15 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
       dlist[i] = 0;
     if(dlist[i] > maxdlist)
       maxdlist = dlist[i];
-    LERROR(0,0, "d[%d]: %f => %d", i, d[i], dlist[i]);
   }
 
-
   /* tic labels on y axis */
+  /* FIXME: Maybe use the non-extreme tics in the legend, too? */
 
   double ticnames[c->height + 1];
   ticnames[0] = 0.0;
-  for(int i = 1; i <= c->height; i++) {
+  for(int i = 1; i <= c->height; i++)
     ticnames[i] = (1.0/fac) * (double) i;
-    LERROR(0,0, "ticnames[%d] = %f", i, ticnames[i]);
-  }
 
   /* curses */
 
@@ -78,35 +75,25 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
 
   attron(COLOR_PAIR(2));
   for(int y = dy; y <= dy + 2*c->height; y++) {
-
-    if(y == dy + c->height) {
-
+    if(y == dy + c->height) { /* zero-baseline */
       attron(COLOR_PAIR(3));
       mvaddch(y, dx-2, '+');
       attroff(COLOR_PAIR(3));
       attron(COLOR_PAIR(2));
 
       mvprintw(y, dx-6, "0.0");
-
-    } else if(y == dy) {
-
+    } else if(y == dy) { /* y-axis maximum */
       mvaddch(y, dx-2, '-');
       mvprintw(y,
           dx-(snprintf(NULL, 0, "%.*f", 1, ticnames[c->height])+3),
           "%.*f", 1, ticnames[c->height]);
-
-    } else if(y == dy + 2*c->height) {
-
+    } else if(y == dy + 2*c->height) { /* y-axis minimum */
       mvaddch(y, dx-2, '-');
       mvprintw(y,
           dx-(snprintf(NULL, 0, "-%.*f", 1, ticnames[c->height])+3),
           "-%.*f", 1, ticnames[c->height]);
-
-    } else {
-
+    } else
       mvaddch(y, dx-2, '|');
-
-    }
   }
   attroff(COLOR_PAIR(2));
 
@@ -125,8 +112,9 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
       mvaddch(y, j, ' ');
     attroff(COLOR_PAIR(1));
     }
-
   }
+
+  /* uninit curses */
 
   refresh();
   getch();
