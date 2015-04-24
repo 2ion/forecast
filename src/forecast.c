@@ -11,17 +11,14 @@
 
 /* globals */
 
-static const char *options = "hl:c:k:vCH:D:p:";
+static const char *options = "hl:c:k:vm:";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
   { "location", required_argument,  NULL, 'l' },
   { "config",   required_argument,  NULL, 'c' },
   { "api-key",  required_argument,  NULL, 'k' },
   { "version",  no_argument,        NULL, 'v' },
-  { "current",  no_argument,        NULL, 'C' },
-  { "hourly",   required_argument,  NULL, 'H' },
-  { "daily",    required_argument,  NULL, 'D' },
-  { "plot",     required_argument,  NULL, 'p' },
+  { "mode",     required_argument,  NULL, 'm' },
   { 0,          0,                  0,    0   }
 };
 
@@ -33,6 +30,7 @@ int parse_location(const char *s, double *la, double *lo) {
 
   if((col = strchr(s, ':')) == NULL)
     return -1;
+
   buf = malloc(col - s + 1);
   memcpy(buf, s, col - s + 1);
   buf[col-s] = '\0';
@@ -52,14 +50,12 @@ void usage(void) {
   puts("Usage:\n"
        "  forecast [-CHDchlkv] [OPTIONS]\n"
        "Options:\n"
-       "  -C|--current          Show the current weather condition\n"
-       "  -H|--hourly    N      Show the weather forecast for the next N hours\n"
-       "  -D|--daily     N      Show the weather forecast for the next N days\n"
        "  -c|--config    PATH   Configuration file to use\n"
        "  -h|--help             Print this message and exit\n"
        "  -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format\n"
        "                        <latitude>:<longitude> where the choordinates are given as floating\n"
        "                        point numbers\n"
+       "  -m|--mode      MODE   One of print, print-hourly, plot-hourly. Defaults to 'print'\n"
        "  -k|--key       APIKEY API key to use\n"
        "  -v|--version          Print program version and exit"
        );

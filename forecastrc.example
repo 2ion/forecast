@@ -1,13 +1,7 @@
-/*
-
-  forecastrc example configuration
-
-  Valid color names are: BLACK, RED, GREEN, YELLOW, BLUE,
-  MAGENTA, CYAN, WHITE. Uppercase names are required.
-
-*/
 
 apikey = "";
+
+op = "print";
 
 location: {
   latitude = 52.5161;
