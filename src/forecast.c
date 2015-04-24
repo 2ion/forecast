@@ -3,7 +3,6 @@
 #include <getopt.h>
 #include <json-c/json.h>
 #include <json-c/json_object.h>
-#include <libconfig.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,10 +12,11 @@
 
 #include "forecast.h"
 #include "barplot.h"
+#include "configfile.h"
 
 /* globals */
 
-static const char *options = "hl:c:k:vCH:D:";
+static const char *options = "hl:c:k:vCH:D:p:";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
   { "location", required_argument,  NULL, 'l' },
@@ -26,6 +26,7 @@ static const struct option options_long[] = {
   { "current",  no_argument,        NULL, 'C' },
   { "hourly",   required_argument,  NULL, 'H' },
   { "daily",    required_argument,  NULL, 'D' },
+  { "plot",     required_argument,  NULL, 'p' },
   { 0,          0,                  0,    0   }
 };
 
@@ -34,9 +35,8 @@ static const struct option options_long[] = {
 static char*  render_time(struct json_object*);
 static double render_f2c(double fahrenheit);
 static double render_mph2kph(double mph);
-static int    load_config(Config *c);
 static int    parse_location(const char *s, double *la, double *lo);
-static int    render(Data *d);
+static int    render(const Config *c, Data *d);
 static int    render_datapoint(struct json_object *d);
 static void   render_hourly_datapoints(struct json_object*);
 static int    request(Config *c, Data *d);
@@ -74,35 +74,38 @@ void render_hourly_datapoints(struct json_object *hourly) {
   }
 }
 
-void render_hourly_temperature_curve(double *t, size_t tlen, int fromhour, int height) {
-  const char *cblock = "\x1b[0;0;42m ";
-  const char *creset = "\x1b[0m";
+void render_hourly_datapoints_plot(const PlotCfg *c, struct json_object *hourly) {
+  assert(hourly);
 
-  int tmap[tlen];
-  double h;
-  double min = 0.0;
-  double max = 0.0;
-  double base = 0.0;
+  double buf[48];
+  int i;
+  double *data = &buf[0];
+  size_t datalen = 48;
+  int free_data = false;
 
-  for(int i = 0; i < tlen; i++) {
-    if(t[i] < min)
-      min = t[i];
-    else if(t[i] > max)
-      max = t[i];
-  }
-  base = (min + max) * 0.5;
+  EXTRACT_PREFIXED(hourly, data);
 
-  h = (max-base)/(double)height;
+  struct array_list *al = json_object_get_array(hourly_data);
 
-  printf("max=%f, min=%f, base=%f, h=%f\n", max, min, base, h);
+  for(i = 0; i < array_list_length(al); i++) {
+    struct json_object *o = array_list_get_idx(al, i);
+    EXTRACT_PREFIXED(o, temperature);
+    double v = json_object_get_double(o_temperature);
+    if(i == datalen) {
+      if(free_data == false) {
+        data = malloc(2*datalen);
+        memcpy(data, buf, datalen);
+        datalen *= 2;
+        free_data = true;
+      } else {
+        datalen *= 2;
+        data = realloc(data, datalen);
+      }
+    }
+    data[i] = v;
+  } // for
 
-  for(int i = 0; i < tlen; i++) {
-    if(t[i] == base)
-      tmap[i] = 0;
-    else
-      tmap[i] = (int) (t[i] / h);
-    printf("%f -> %d\n", t[i], tmap[i]);
-  }
+
 }
 
 int render_datapoint(struct json_object *o) {
@@ -148,7 +151,7 @@ int render_datapoint(struct json_object *o) {
         );
 }
 
-int render(Data *d) {
+int render(const Config *c, Data *d) {
   struct json_object *o = json_tokener_parse(d->data);
 
   EXTRACT_PREFIXED(o, timezone);
@@ -240,80 +243,6 @@ int parse_location(const char *s, double *la, double *lo) {
   return 0;
 }
 
-int load_config(Config *c) {
-  assert(c);
-
-  config_t cfg;
-  const char *apikey;
-  const char *tmp;
-
-  if(access(c->path, R_OK) != 0) {
-    LERROR(0, errno, "access()");
-    return -1;
-  }
-
-  config_init(&cfg);
-
-  if(config_read_file(&cfg, c->path) != CONFIG_TRUE) {
-    LERROR(0, 0, "[%s, %d] %s",
-        config_error_file(&cfg),
-        config_error_line(&cfg),
-        config_error_text(&cfg));
-    goto return_error;
-  }
-
-  if(config_lookup_string(&cfg, "apikey", &apikey) != CONFIG_TRUE) {
-    LERROR(0, 0, "No API key found.");
-    goto return_error;
-  }
-
-  if((c->apikey = malloc(strlen(apikey) + 1)) == NULL)
-    LERROR(EXIT_FAILURE, errno, "malloc()");
-
-  memcpy((void*)c->apikey, apikey, strlen(apikey) + 1);
-
-  if(config_lookup_float(&cfg, "location.latitude", &(c->location.latitude)) != CONFIG_TRUE) {
-    LERROR(0, 0, "location.latitude not configured");
-    goto return_error;
-  }
-
-  if(config_lookup_float(&cfg, "location.longitude", &(c->location.longitude)) != CONFIG_TRUE) {
-    LERROR(0, 0, "location.longitude not configured");
-    goto return_error;
-  }
-
-  if(config_lookup_int(&cfg, "plot.height", &(c->plot.height)) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.height not configured");
-    goto return_error;
-  }
-
-  if(config_lookup_string(&cfg, "plot.bar.color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.bar.color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.bar.color)
-  }
-
-  if(config_lookup_int(&cfg, "plot.bar.width", &(c->plot.bar.width)) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.bar.width");
-    goto return_error;
-  }
-
-  if(config_lookup_string(&cfg, "plot.legend.color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.legend.color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.legend.color)
-  }
-
-  config_destroy(&cfg);
-  return 0;
-
-return_error:
-  config_destroy(&cfg);
-  return -1;
-}
-
 void usage(void) {
   puts("Usage:\n"
        "  forecast [-CHDchlkv] [OPTIONS]\n"
@@ -332,8 +261,9 @@ void usage(void) {
 }
 
 int main(int argc, char **argv) {
-  Config c = { NULL, NULL, { 0.0, 0.0 } };
-  Data d = { NULL, 0 };
+  Config c = CONFIG_NULL;
+  Data d = DATA_NULL;
+
   char *cli_apikey = NULL;
   double cli_location[2] = { 0.0, 0.0 };
   int opt;
@@ -361,6 +291,12 @@ int main(int argc, char **argv) {
       case '?':
         usage();
         return EXIT_FAILURE;
+      case 'm':
+        if(strcmp(optarg, "plot-hourly") == 0)
+          c.op = OP_PLOT_HOURLY;
+        else if(strcmp(optarg, "print") == 0)
+          c.op = OP_PRINT;
+        break;
     }
   }
 
@@ -386,7 +322,7 @@ int main(int argc, char **argv) {
   if(request(&c, &d) != 0)
     puts("Failed to request data");
 
-  render(&d);
+  render(&c, &d);
 
   if(d.data != NULL)
     free(d.data);

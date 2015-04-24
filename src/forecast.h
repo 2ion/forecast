@@ -5,6 +5,7 @@
 #include <error.h>
 #include <sys/types.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 #include "config.h"
 #include "barplot.h"
@@ -45,6 +46,11 @@
 
 /* types */
 
+enum {
+  OP_PLOT_HOURLY,
+  OP_PRINT
+};
+
 typedef struct {
   const char *path;
   const char *apikey;
@@ -53,13 +59,30 @@ typedef struct {
     double longitude;
   } location;
   PlotCfg plot;
+  int op;
 } Config;
+
+#define CONFIG_NULL         \
+{                           \
+  .path = NULL,             \
+  .apikey = NULL,           \
+  .location = {             \
+    .latitude = 0.0,        \
+    .longitude = 0.0,       \
+  },                        \
+  .plot = PLOTCFG_DEFAULT,  \
+  .op = OP_PRINT            \
+}
 
 typedef struct {
   char *data;
   size_t datalen;
 } Data;
 
+#define DATA_NULL           \
+{                           \
+  .data = NULL,             \
+  .datalen = 0              \
+}
+
 #endif
-
-
