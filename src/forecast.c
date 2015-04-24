@@ -134,11 +134,5 @@ int main(int argc, char **argv) {
   if(d.data != NULL)
     free(d.data);
 
-  PlotCfg pc = PLOTCFG_DEFAULT;
-  pc.height = 20;
-  pc.bar.width = 4;
-  double t[7] = { 7.0, 13.0, 19.7, 20.0, 21.0, 10.0, -30.0};
-  barplot(&pc, t, 7);
-
   return EXIT_SUCCESS;
 }
