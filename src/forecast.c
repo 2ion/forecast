@@ -11,7 +11,7 @@
 
 /* globals */
 
-static const char *options = "hl:c:k:vm:";
+static const char *options = "hl:c:k:vm:d";
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
   { "location", required_argument,  NULL, 'l' },
@@ -19,6 +19,7 @@ static const struct option options_long[] = {
   { "api-key",  required_argument,  NULL, 'k' },
   { "version",  no_argument,        NULL, 'v' },
   { "mode",     required_argument,  NULL, 'm' },
+  { "dump",     no_argument,        NULL, 'd' },
   { 0,          0,                  0,    0   }
 };
 
@@ -51,6 +52,7 @@ void usage(void) {
        "  forecast [-CHDchlkv] [OPTIONS]\n"
        "Options:\n"
        "  -c|--config    PATH   Configuration file to use\n"
+       "  -d|--dump             Dump the JSON data and a newline to stdout\n"
        "  -h|--help             Print this message and exit\n"
        "  -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format\n"
        "                        <latitude>:<longitude> where the choordinates are given as floating\n"
@@ -70,6 +72,7 @@ int main(int argc, char **argv) {
   int cli_mode = -1;
   int opt;
   int use_cli_location = 0;
+  bool dump_data = false;
 
   while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
     switch(opt) {
@@ -98,6 +101,9 @@ int main(int argc, char **argv) {
           printf("-m: invalid mode %s, selecting default\n", optarg);
           cli_mode = OP_PRINT_CURRENTLY;
         }
+        break;
+      case 'd':
+        dump_data = true;
     }
   }
 
@@ -126,7 +132,11 @@ int main(int argc, char **argv) {
   if(request(&c, &d) != 0)
     puts("Failed to request data");
 
-  render(&c, &d);
+  if(dump_data) {
+    write(STDOUT_FILENO, d.data, d.datalen);
+    putchar('\n');
+  } else
+    render(&c, &d);
 
   if(d.data != NULL)
     free(d.data);
