@@ -19,6 +19,9 @@
   },                          \
   .legend = {                 \
     .color = COLOR_WHITE      \
+  },                          \
+  .hourly = {                 \
+    .succeeding_hours = 10    \
   }                           \
 }
 
@@ -31,6 +34,9 @@ typedef struct {
   struct {
     int color;
   } legend;
+  struct {
+    int succeeding_hours;
+  } hourly;
 } PlotCfg;
 
 int barplot(const PlotCfg *c, double *d, size_t dlen);

@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
 
   char *cli_apikey = NULL;
   double cli_location[2] = { 0.0, 0.0 };
+  int cli_mode = -1;
   int opt;
   int use_cli_location = 0;
 
@@ -93,13 +94,10 @@ int main(int argc, char **argv) {
         usage();
         return EXIT_FAILURE;
       case 'm':
-        if(strcmp(optarg, "plot-hourly") == 0)
-          c.op = OP_PLOT_HOURLY;
-        else if(strcmp(optarg, "print") == 0)
-          c.op = OP_PRINT_CURRENTLY;
-        else if(strcmp(optarg, "print-hourly") == 0)
-          c.op = OP_PRINT_HOURLY;
-        break;
+        if((cli_mode = match_mode_arg((const char*)optarg)) == -1) {
+          printf("-m: invalid mode %s, selecting default\n", optarg);
+          cli_mode = OP_PRINT_CURRENTLY;
+        }
     }
   }
 
@@ -116,6 +114,9 @@ int main(int argc, char **argv) {
     free((void*)c.apikey);
     c.apikey = cli_apikey;
   }
+
+  if(cli_mode != -1)
+    c.op = cli_mode;
 
   if(use_cli_location == 1) {
     c.location.latitude = cli_location[0];

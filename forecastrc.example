@@ -17,4 +17,7 @@ plot: {
   legend: {
     color = "WHITE";
   };
+  hourly: {
+    succeeding_hours = 18;
+  }
 };

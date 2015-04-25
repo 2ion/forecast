@@ -70,12 +70,14 @@ int load_config(Config *c) {
     LERROR(0, 0, "op");
     goto return_error;
   } else {
-    if(strcmp(tmp, "plot-hourly") == 0)
-      c->op = OP_PLOT_HOURLY;
-    else if(strcmp(tmp, "print") == 0)
-      c->op = OP_PRINT_CURRENTLY;
-    else if(strcmp(tmp, "print-hourly") == 0)
-      c->op = OP_PRINT_HOURLY;
+    c->op = match_mode_arg(tmp);
+    if(c->op == -1)
+      goto return_error;
+  }
+
+  if(config_lookup_int(&cfg, "plot.hourly.succeeding_hours", &(c->plot.hourly.succeeding_hours)) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.hourly.succeeding_hours");
+    goto return_error;
   }
 
   config_destroy(&cfg);
@@ -84,5 +86,16 @@ int load_config(Config *c) {
 return_error:
   config_destroy(&cfg);
   return -1;
+}
+
+int match_mode_arg(const char *str) {
+  if(strcmp(str, "plot-hourly") == 0)
+    return OP_PLOT_HOURLY;
+  else if(strcmp(str, "print") == 0)
+    return OP_PRINT_CURRENTLY;
+  else if(strcmp(str, "print-hourly") == 0)
+    return OP_PRINT_HOURLY;
+  else
+    return -1;
 }
 

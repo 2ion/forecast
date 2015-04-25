@@ -42,7 +42,7 @@ void render_hourly_datapoints_plot(const PlotCfg *c, struct json_object *hourly)
 
   struct array_list *al = json_object_get_array(hourly_data);
 
-  for(i = 0; i < array_list_length(al); i++) {
+  for(i = 0; i < array_list_length(al) && i < c->hourly.succeeding_hours + 1; i++) {
     struct json_object *o = array_list_get_idx(al, i);
     EXTRACT_PREFIXED(o, temperature);
     double v = json_object_get_double(o_temperature);
@@ -57,10 +57,9 @@ void render_hourly_datapoints_plot(const PlotCfg *c, struct json_object *hourly)
         data = realloc(data, datalen);
       }
     }
-    data[i] = v;
+    data[i] = render_f2c(v);
   } // for
-
-
+  barplot(c, data, i);
 }
 
 int render_datapoint(struct json_object *o) {
@@ -123,7 +122,7 @@ int render(const Config *c, Data *d) {
           "Currently\n",                            \
           4,  json_object_get_double(o_latitude),   \
           4,  json_object_get_double(o_longitude),  \
-              json_object_get_string(o_timezone));  
+              json_object_get_string(o_timezone));
   switch(c->op) {
     case OP_PRINT_CURRENTLY:
       PRINT_HEADER;

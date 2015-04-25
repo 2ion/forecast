@@ -83,12 +83,12 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
 
       mvprintw(y, dx-6, "0.0");
     } else if(y == dy) { /* y-axis maximum */
-      mvaddch(y, dx-2, '-');
+      mvaddch(y, dx-2, '|');
       mvprintw(y,
           dx-(snprintf(NULL, 0, "%.*f", 1, ticnames[c->height])+3),
           "%.*f", 1, ticnames[c->height]);
     } else if(y == dy + 2*c->height) { /* y-axis minimum */
-      mvaddch(y, dx-2, '-');
+      mvaddch(y, dx-2, '|');
       mvprintw(y,
           dx-(snprintf(NULL, 0, "-%.*f", 1, ticnames[c->height])+3),
           "-%.*f", 1, ticnames[c->height]);
@@ -100,11 +100,13 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
   for(int i = 0; i < dlen; i++) {
     const int d = dlist[i] >= 0 ? 1 : -1;
     const int _offset = offset;
+    char barlabel[5];
+    snprintf(barlabel, 5, " %02d ", i);
 
     for(int j = dx + i + offset; j < dx + i + c->bar.width + _offset; j++, offset++) {
     /* plot the zero-line */
     attron(COLOR_PAIR(2));
-    mvaddch(dy + c->height, j, '-');
+    mvaddch(dy + c->height, j, barlabel[j-dx-i-_offset]);
     attroff(COLOR_PAIR(2));
     /* plot the bar */
     attron(COLOR_PAIR(1));
