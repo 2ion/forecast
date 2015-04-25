@@ -6,6 +6,14 @@ forecast is a query program for the [forecast.io](https://forecast.io)
 API. It provides a command line interface which makes weather data for a
 configurable location available in the terminal.
 
+Capabilities include:
+
+* Plotting tables with current, hourly and daily weather conditions
+* Rendering barplots of temperature and precepitation curves for hourly
+  and daily weather forecasts, sunrise and sunset times for daily
+  weather forecasts and many more things
+* Dumping of the original JSON weather data
+
 ### API key
 
 In order to use the API, you need to obtain an API key from forecast.io.
