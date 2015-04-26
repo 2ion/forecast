@@ -19,20 +19,21 @@ enum {
   PLOT_COLOR_BAR_OVERLAY    = 4
 };
 
-#define PLOTCFG_DEFAULT         \
-{                               \
-  .height = 6,                  \
-  .bar = {                      \
-    .width = 2,                 \
-    .color = COLOR_BLACK,       \
-    .overlay_color = COLOR_RED  \
-  },                            \
-  .legend = {                   \
-    .color = COLOR_WHITE        \
-  },                            \
-  .hourly = {                   \
-    .succeeding_hours = 10      \
-  }                             \
+#define PLOTCFG_DEFAULT               \
+{                                     \
+  .height = 6,                        \
+  .bar = {                            \
+    .width = 2,                       \
+    .color = COLOR_BLACK,             \
+    .overlay_color = COLOR_RED        \
+  },                                  \
+  .legend = {                         \
+    .color = COLOR_WHITE,             \
+    .texthighlight_color = COLOR_RED  \
+  },                                  \
+  .hourly = {                         \
+    .succeeding_hours = 10            \
+  }                                   \
 }
 
 typedef struct {
@@ -44,6 +45,7 @@ typedef struct {
   } bar;
   struct {
     int color;
+    int texthighlight_color;
   } legend;
   struct {
     int succeeding_hours;
