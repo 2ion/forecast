@@ -7,20 +7,29 @@ static void barplot_scale(const double*, size_t, int, int*, double*, double*);
 
 void start_curses(const PlotCfg *pc) {
   setlocale(LC_ALL, "");
+
+  /* if this call fails, the program will terminate */
   WINDOW *w = initscr();
+
+  /* screen and echo setup */
   cbreak();
   noecho();
   nonl();
   intrflush(stdscr, FALSE);
   keypad(stdscr, TRUE);
+
+  /* hide cursor */
   curs_set(0);
+
+  /* use colors and, if possible, terminal default colors */
   start_color();
   use_default_colors();
 
-  init_pair(PLOT_COLOR_BAR,           -1,               pc->bar.color);
-  init_pair(PLOT_COLOR_LEGEND,        pc->legend.color, -1);
-  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, COLOR_RED,        -1);
-  init_pair(PLOT_COLOR_BAR_OVERLAY,   -1,               pc->bar.overlay_color);
+  /* colors defined in the config file */
+  init_pair(PLOT_COLOR_BAR,           -1,                             pc->bar.color);
+  init_pair(PLOT_COLOR_LEGEND,        pc->legend.color,               -1);
+  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, pc->legend.texthighlight_color, -1);
+  init_pair(PLOT_COLOR_BAR_OVERLAY,   -1,                             pc->bar.overlay_color);
 }
 
 void end_curses(void) {
@@ -173,17 +182,14 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, siz
   const int dy = LINES/2 - pc->height;
 
   attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-
   for(int y = dy; y <= dy + 2*pc->height; y++) {
     if(y == dy + pc->height) { /* zero-baseline */
-
       attron(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
       mvaddch(y, dx-2, '+');
       attroff(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
       attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
       mvprintw(y, dx-6, "0.0");
-
     } else if(y == dy) { /* y-axis maximum */
       mvaddch(y, dx-2, '|');
       mvprintw(y,
@@ -197,7 +203,6 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, siz
     } else
       mvaddch(y, dx-2, '|');
   }
-
   attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
   int offset = 0;
@@ -208,13 +213,10 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, siz
     snprintf(barlabel, 5, " %02d ", i);
 
     for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
-
       /* plot the zero-line */
 
       attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-
       mvaddch(dy + pc->height, j, barlabel[j-dx-i-_offset]);
-
       attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
       /* plot the bar */
@@ -224,10 +226,8 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, siz
         const int barcoloridx = k == j ? PLOT_COLOR_BAR : PLOT_COLOR_BAR_OVERLAY;
 
         attron(COLOR_PAIR(barcoloridx));
-
         for(int y = dy + pc->height - ds[k]; y != dy + pc->height; y += d)
           mvaddch(y, j, ' ');
-
         attroff(COLOR_PAIR(barcoloridx));
       } // for k
     } // for j
