@@ -54,6 +54,13 @@ int load_config(Config *c) {
     CHECKCOLORS(c->plot.bar.color)
   }
 
+  if(config_lookup_string(&cfg, "plot.bar.overlay_color", &tmp) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.bar.overlay_color");
+    goto return_error;
+  } else {
+    CHECKCOLORS(c->plot.bar.overlay_color)
+  }
+
   if(config_lookup_int(&cfg, "plot.bar.width", &(c->plot.bar.width)) != CONFIG_TRUE) {
     LERROR(0, 0, "plot.bar.width");
     goto return_error;

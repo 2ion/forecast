@@ -1,6 +1,34 @@
 #include "forecast.h"
 #include "barplot.h"
 
+static void start_curses(const PlotCfg*);
+static void end_curses(void);
+static void barplot_scale(const double*, size_t, int, int*, double*, double*);
+
+void start_curses(const PlotCfg *pc) {
+  setlocale(LC_ALL, "");
+  WINDOW *w = initscr();
+  cbreak();
+  noecho();
+  nonl();
+  intrflush(stdscr, FALSE);
+  keypad(stdscr, TRUE);
+  curs_set(0);
+  start_color();
+  use_default_colors();
+
+  init_pair(PLOT_COLOR_BAR,           -1,               pc->bar.color);
+  init_pair(PLOT_COLOR_LEGEND,        pc->legend.color, -1);
+  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, COLOR_RED,        -1);
+  init_pair(PLOT_COLOR_BAR_OVERLAY,   -1,               pc->bar.overlay_color);
+}
+
+void end_curses(void) {
+  refresh();
+  getch();
+  endwin();
+}
+
 int terminal_dimen(int *rows, int *cols) {
   struct winsize w;
 
@@ -15,7 +43,27 @@ int terminal_dimen(int *rows, int *cols) {
   return 0;
 }
 
-int barplot(const PlotCfg *c, double *d, size_t dlen) {
+void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, double *scalefac, double *max) {
+  for(int i = 0; i < dlen; i++) {
+    double m = fabs(d[i]);
+    if(m > *max)
+      *max = m;
+  }
+
+  *scalefac = (double) scaleheight / (*max);
+
+  for(int i = 0; i < dlen; i++) {
+    double m = d[i] * (*scalefac);
+    if(m < 0.0)
+      scaled[i] = (int) ceil(m);
+    else if(m > 0.0)
+      scaled[i] = (int) floor(m);
+    else
+      scaled[i] = 0;
+  }
+}
+
+void barplot(const PlotCfg *c, const double *d, size_t dlen) {
   int dlist[dlen];
 
   /* scale doubles -> int */
@@ -53,21 +101,8 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
 
   /* curses */
 
-  setlocale(LC_ALL, "");
-  WINDOW *w = initscr();
-  cbreak();
-  noecho();
-  nonl();
-  intrflush(stdscr, FALSE);
-  keypad(stdscr, TRUE);
-  curs_set(0);
-  start_color();
-  use_default_colors();
-  init_pair(1, -1, COLOR_BLUE);
-  init_pair(2, COLOR_WHITE, -1);
-  init_pair(3, COLOR_RED, -1);
+  start_curses(c);
 
-  int offset = 0;
   const int dx = COLS/2 - (dlen * (c->bar.width + 1) - 1)/2;
   const int dy = LINES/2 - c->height;
 
@@ -97,6 +132,7 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
   }
   attroff(COLOR_PAIR(2));
 
+  int offset = 0;
   for(int i = 0; i < dlen; i++) {
     const int d = dlist[i] >= 0 ? 1 : -1;
     const int _offset = offset;
@@ -116,11 +152,86 @@ int barplot(const PlotCfg *c, double *d, size_t dlen) {
     }
   }
 
-  /* uninit curses */
+  /* display, and uninit curses */
 
-  refresh();
-  getch();
-  endwin();
+  end_curses();
+}
 
-  return 0;
+void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, size_t dlen) {
+  double  d[2*dlen];
+  int     ds[2*dlen];
+  double  sfac;
+  double  dmax;
+
+  memcpy(&d[0], d1, dlen);
+  memcpy(&d[dlen], d2, dlen);
+  barplot_scale(d, dlen, pc->height, &ds[0], &sfac, &dmax);
+
+  start_curses(pc);
+
+  const int dx = COLS/2 - (dlen * (pc->bar.width + 1) - 1)/2;
+  const int dy = LINES/2 - pc->height;
+
+  attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
+
+  for(int y = dy; y <= dy + 2*pc->height; y++) {
+    if(y == dy + pc->height) { /* zero-baseline */
+
+      attron(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
+      mvaddch(y, dx-2, '+');
+      attroff(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
+      attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
+
+      mvprintw(y, dx-6, "0.0");
+
+    } else if(y == dy) { /* y-axis maximum */
+      mvaddch(y, dx-2, '|');
+      mvprintw(y,
+          dx-(snprintf(NULL, 0, "%.*f", 1, dmax)+3),
+          "%.*f", 1, dmax);
+    } else if(y == dy + 2*pc->height) { /* y-axis minimum */
+      mvaddch(y, dx-2, '|');
+      mvprintw(y,
+          dx-(snprintf(NULL, 0, "-%.*f", 1, dmax)+3),
+          "-%.*f", 1, dmax);
+    } else
+      mvaddch(y, dx-2, '|');
+  }
+
+  attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+
+  int offset = 0;
+  for(int i = 0; i < dlen; i++) {
+    const int _offset = offset;
+    char barlabel[5];
+
+    snprintf(barlabel, 5, " %02d ", i);
+
+    for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
+
+      /* plot the zero-line */
+
+      attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
+
+      mvaddch(dy + pc->height, j, barlabel[j-dx-i-_offset]);
+
+      attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+
+      /* plot the bar */
+
+      for(int k = j; k <= j + dlen; k += dlen) {
+        const int d = ds[k] >= 0 ? 1 : -1;
+        const int barcoloridx = k == j ? PLOT_COLOR_BAR : PLOT_COLOR_BAR_OVERLAY;
+
+        attron(COLOR_PAIR(barcoloridx));
+
+        for(int y = dy + pc->height - ds[k]; y != dy + pc->height; y += d)
+          mvaddch(y, j, ' ');
+
+        attroff(COLOR_PAIR(barcoloridx));
+      } // for k
+    } // for j
+  } // for i
+
+  end_curses();
 }
