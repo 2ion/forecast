@@ -53,7 +53,7 @@ typedef struct {
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
-void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, size_t dlen);
+void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, const char **labels, size_t dlen);
 int terminal_dimen(int *rows, int *cols);
 
 #endif

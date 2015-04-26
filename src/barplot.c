@@ -166,7 +166,7 @@ void barplot(const PlotCfg *c, const double *d, size_t dlen) {
   end_curses();
 }
 
-void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, size_t dlen) {
+void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, const char **labels, size_t dlen) {
   double  d[2*dlen];
   int     ds[2*dlen];
   double  sfac;
@@ -208,9 +208,7 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, siz
   int offset = 0;
   for(int i = 0; i < dlen; i++) {
     const int _offset = offset;
-    char barlabel[5];
-
-    snprintf(barlabel, 5, " %02d ", i);
+    const char *barlabel = labels[i];
 
     for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
       /* plot the zero-line */

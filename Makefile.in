@@ -327,6 +327,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = src
 man1_MANS = forecast.1
+EXTRA_DIST = forecastrc.example README.mkd
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
