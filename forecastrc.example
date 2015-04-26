@@ -12,10 +12,13 @@ plot: {
   height = 10;
   bar: {
     width = 4;
-    color = "BLUE";
+    color = "BLACK";
+    overlay_color = "RED";
   };
   legend: {
     color = "WHITE";
+    labels = "RED";
+    texthighlight_color = "RED";
   };
   hourly: {
     succeeding_hours = 18;

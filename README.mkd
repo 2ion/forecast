@@ -29,22 +29,38 @@ $HOME/.forecastrc
 ```
 but you may override the location by using the -w flag.
 
-The configuration should contain at least the following settings:
+The configuration must contain at least the following settings:
 
-```
-apikey = "<your-api-key>";
+```config
+apikey = "";
+
+op = "print";
 
 location: {
   latitude = 52.5161;
   longitude = 13.3770;
 };
+
+plot: {
+  height = 10;
+  bar: {
+    width = 4;
+    color = "BLACK";
+    overlay_color = "RED";
+  };
+  legend: {
+    color = "WHITE";
+    labels = "RED";
+    texthighlight_color = "RED";
+  };
+  hourly: {
+    succeeding_hours = 18;
+  }
+};
 ```
 
-You do not need to create this file manually; forecast will write the
-settings you've specified on the command line out to the file if it
-doesn't exist. Normally, command line parameters take precedence over
-the configuration file, and the configuration file remains unchanged at
-all times.
+If available, command line parameters take precedence over the config
+file settings.
 
 ### Synopsis
 
@@ -52,14 +68,13 @@ all times.
 Usage:
   forecast [-CHDchlkv] [OPTIONS]
 Options:
-  -C|--current          Show the current weather condition
-  -H|--hourly    N      Show the weather forecast for the next N hours
-  -D|--daily     N      Show the weather forecast for the next N days
   -c|--config    PATH   Configuration file to use
+  -d|--dump             Dump the JSON data and a newline to stdout
   -h|--help             Print this message and exit
   -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format
                         <latitude>:<longitude> where the choordinates are given as floating
                         point numbers
+  -m|--mode      MODE   One of print, print-hourly, plot-hourly. Defaults to 'print'
   -k|--key       APIKEY API key to use
   -v|--version          Print program version and exit
 ```
