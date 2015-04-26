@@ -33,6 +33,9 @@ enum {
   },                                  \
   .hourly = {                         \
     .succeeding_hours = 10            \
+  },                                  \
+  .daily = {                          \
+    .label_format = NULL              \
   }                                   \
 }
 
@@ -50,6 +53,9 @@ typedef struct {
   struct {
     int succeeding_hours;
   } hourly;
+  struct {
+    char *label_format;
+  } daily;
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);

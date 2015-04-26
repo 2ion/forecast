@@ -18,6 +18,7 @@ void *array_concat(const void *a, size_t an,
 }
 
 void start_curses(const PlotCfg *pc) {
+
   setlocale(LC_ALL, "");
 
   /* if this call fails, the program will terminate */

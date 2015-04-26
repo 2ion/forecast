@@ -65,7 +65,7 @@ void render_hourly_datapoints_plot(const PlotCfg *c, struct json_object *hourly)
 void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily) {
   double tempMin[7];
   double tempMax[7];
-  char labels[7][5];
+  char labels[7][pc->bar.width+1];
   char *plbl[7];
 
   EXTRACT_PREFIXED(daily, data);
@@ -83,7 +83,9 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
 
     time_t unixtime = json_object_get_int(o_time);
     struct tm *time = gmtime(&unixtime);
-    snprintf(labels[i], 5, " %02d ", time->tm_mday);
+    //snprintf(labels[i], 5, " %02d ", time->tm_mday);
+    strftime(labels[i], pc->bar.width+1, pc->daily.label_format!=NULL?pc->daily.label_format:"%d", time);
+    labels[i][pc->bar.width] = '\0';
     plbl[i] = &labels[i][0];
   }
 

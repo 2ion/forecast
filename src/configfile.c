@@ -32,6 +32,11 @@ int load_config(Config *c) {
 
   memcpy((void*)c->apikey, apikey, strlen(apikey) + 1);
 
+  if(config_lookup_string(&cfg, "plot.daily.label_format", &tmp) == CONFIG_TRUE) {
+    c->plot.daily.label_format = malloc(strlen(tmp)+1);
+    memcpy(c->plot.daily.label_format, tmp, strlen(tmp) + 1);
+  }
+
   if(config_lookup_float(&cfg, "location.latitude", &(c->location.latitude)) != CONFIG_TRUE) {
     LERROR(0, 0, "location.latitude not configured");
     goto return_error;

@@ -64,6 +64,7 @@ void usage(void) {
 }
 
 int main(int argc, char **argv) {
+
   Config c = CONFIG_NULL;
   Data d = DATA_NULL;
 
@@ -140,6 +141,9 @@ int main(int argc, char **argv) {
 
   if(d.data != NULL)
     free(d.data);
+
+  if(c.plot.daily.label_format != NULL)
+    free(c.plot.daily.label_format);
 
   return EXIT_SUCCESS;
 }
