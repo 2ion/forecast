@@ -44,9 +44,9 @@ location: {
 plot: {
   height = 10;
   bar: {
-    width = 4;
-    color = "BLACK";
-    overlay_color = "RED";
+    width = 5;
+    color = "RED";
+    overlay_color = "BLACK";
   };
   legend: {
     color = "WHITE";
@@ -55,7 +55,10 @@ plot: {
   };
   hourly: {
     succeeding_hours = 18;
-  }
+  };
+  daily: {
+    label_format = "%d%b";
+  };
 };
 ```
 
