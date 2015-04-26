@@ -158,18 +158,17 @@ void barplot(const PlotCfg *c, const double *d, size_t dlen) {
     const int d = dlist[i] >= 0 ? 1 : -1;
     const int _offset = offset;
     char barlabel[5];
+
     snprintf(barlabel, 5, " %02d ", i);
+    attron(COLOR_PAIR(2));
+    mvprintw(dy + c->height, dx + i + offset, barlabel);
+    attroff(COLOR_PAIR(2));
 
     for(int j = dx + i + offset; j < dx + i + c->bar.width + _offset; j++, offset++) {
-    /* plot the zero-line */
-    attron(COLOR_PAIR(2));
-    mvaddch(dy + c->height, j, barlabel[j-dx-i-_offset]);
-    attroff(COLOR_PAIR(2));
-    /* plot the bar */
-    attron(COLOR_PAIR(1));
-    for(int y = dy + c->height - dlist[i]; y != dy + c->height; y += d)
-      mvaddch(y, j, ' ');
-    attroff(COLOR_PAIR(1));
+      attron(COLOR_PAIR(1));
+      for(int y = dy + c->height - dlist[i]; y != dy + c->height; y += d)
+        mvaddch(y, j, ' ');
+      attroff(COLOR_PAIR(1));
     }
   }
 
