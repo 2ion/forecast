@@ -93,6 +93,7 @@ int main(int argc, char **argv) {
         break;
       case 'v':
         puts(PACKAGE_STRING);
+        puts("Compiled on: " __DATE__ " " __TIME__);
         return EXIT_SUCCESS;
       case '?':
         usage();

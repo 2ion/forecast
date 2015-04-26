@@ -224,7 +224,7 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
     const char *barlabel = labels[i];
 
     attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-    mvprintw(dy + pc->height, dx + i + offset, labels[i]);
+    mvprintw(dy + pc->height, dx + i + offset, "%s", labels[i]);
     attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
     for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
