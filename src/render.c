@@ -62,6 +62,34 @@ void render_hourly_datapoints_plot(const PlotCfg *c, struct json_object *hourly)
   barplot(c, data, i);
 }
 
+void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily) {
+  double tempMin[7];
+  double tempMax[7];
+  char labels[7][5];
+  char *plbl[7];
+
+  EXTRACT_PREFIXED(daily, data);
+  struct array_list *al = json_object_get_array(daily_data);
+
+  for(int i = 0; i < 7; i++) {
+    struct json_object *o = array_list_get_idx(al, i);
+
+    EXTRACT_PREFIXED(o, temperatureMin)
+    EXTRACT_PREFIXED(o, temperatureMax)
+    EXTRACT_PREFIXED(o, time);
+
+    tempMin[i] = render_f2c(json_object_get_double(o_temperatureMin));
+    tempMax[i] = render_f2c(json_object_get_double(o_temperatureMax));
+
+    time_t unixtime = json_object_get_int(o_time);
+    struct tm *time = gmtime(&unixtime);
+    snprintf(labels[i], 5, " %02d ", time->tm_mday);
+    plbl[i] = &labels[i][0];
+  }
+
+  barplot_overlaid(pc, tempMax, tempMin, plbl, 7);
+}
+
 int render_datapoint(struct json_object *o) {
   assert(o);
 
@@ -113,6 +141,7 @@ int render(const Config *c, Data *d) {
   EXTRACT_PREFIXED(o, longitude);
   EXTRACT_PREFIXED(o, currently);
   EXTRACT_PREFIXED(o, hourly);
+  EXTRACT_PREFIXED(o, daily);
 
 #define PRINT_HEADER                                \
   printf( "Latitude                 | %.*f\n"       \
@@ -134,6 +163,9 @@ int render(const Config *c, Data *d) {
       break;
     case OP_PLOT_HOURLY:
       render_hourly_datapoints_plot(&c->plot, o_hourly);
+      break;
+    case OP_PLOT_DAILY:
+      render_daily_temperature_plot(&c->plot, o_daily);
       break;
   }
 #undef PRINT_HEADER

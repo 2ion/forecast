@@ -109,7 +109,8 @@ int match_mode_arg(const char *str) {
     return OP_PRINT_CURRENTLY;
   else if(strcmp(str, "print-hourly") == 0)
     return OP_PRINT_HOURLY;
+  else if(strcmp(str, "plot-daily") == 0)
+    return OP_PLOT_DAILY;
   else
     return -1;
 }
-

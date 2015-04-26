@@ -5,6 +5,18 @@ static void start_curses(const PlotCfg*);
 static void end_curses(void);
 static void barplot_scale(const double*, size_t, int, int*, double*, double*);
 
+#define ARRAY_CONCAT(TYPE, A, An, B, Bn) \
+  (TYPE *)array_concat((const void *)(A), (An), (const void *)(B), (Bn), sizeof(TYPE));
+ 
+void *array_concat(const void *a, size_t an,
+                   const void *b, size_t bn, size_t s)
+{
+  char *p = malloc(s * (an + bn));
+  memcpy(p, a, an*s);
+  memcpy(p + an*s, b, bn*s);
+  return p;
+}
+
 void start_curses(const PlotCfg *pc) {
   setlocale(LC_ALL, "");
 
@@ -166,15 +178,16 @@ void barplot(const PlotCfg *c, const double *d, size_t dlen) {
   end_curses();
 }
 
-void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, const char **labels, size_t dlen) {
+void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, char **labels, size_t dlen) {
   double  d[2*dlen];
   int     ds[2*dlen];
   double  sfac;
   double  dmax;
 
-  memcpy(&d[0], d1, dlen);
-  memcpy(&d[dlen], d2, dlen);
-  barplot_scale(d, dlen, pc->height, &ds[0], &sfac, &dmax);
+  memcpy(&d, d1, dlen * sizeof(double));
+  memcpy(&d[dlen], d2, dlen * sizeof(double));
+
+  barplot_scale(d, 2*dlen, pc->height, &ds[0], &sfac, &dmax);
 
   start_curses(pc);
 
@@ -210,25 +223,23 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, con
     const int _offset = offset;
     const char *barlabel = labels[i];
 
+    attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
+    mvprintw(dy + pc->height, dx + i + offset, labels[i]);
+    attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+
     for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
-      /* plot the zero-line */
-
-      attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-      mvaddch(dy + pc->height, j, barlabel[j-dx-i-_offset]);
-      attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
-
-      /* plot the bar */
-
-      for(int k = j; k <= j + dlen; k += dlen) {
-        const int d = ds[k] >= 0 ? 1 : -1;
-        const int barcoloridx = k == j ? PLOT_COLOR_BAR : PLOT_COLOR_BAR_OVERLAY;
+      for(int k = 0; k < 2; k++) {
+        const int idx = i + k * dlen;
+        const int d = ds[idx] >= 0 ? 1 : -1;
+        const int barcoloridx = (k == 0) ? PLOT_COLOR_BAR : PLOT_COLOR_BAR_OVERLAY;
 
         attron(COLOR_PAIR(barcoloridx));
-        for(int y = dy + pc->height - ds[k]; y != dy + pc->height; y += d)
+        for(int y = dy + pc->height - ds[idx]; y != dy + pc->height; y += d)
           mvaddch(y, j, ' ');
         attroff(COLOR_PAIR(barcoloridx));
       } // for k
     } // for j
+
   } // for i
 
   end_curses();
