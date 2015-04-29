@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "barplot.h"
+#include "cachefile.h"
 #include "configfile.h"
 #include "forecast.h"
 #include "network.h"

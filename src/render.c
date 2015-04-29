@@ -29,37 +29,35 @@ void render_hourly_datapoints(struct json_object *hourly) {
   }
 }
 
-void render_hourly_datapoints_plot(const PlotCfg *c, struct json_object *hourly) {
+void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly) {
   assert(hourly);
 
-  double buf[48];
+  double data[48];
+  char labels[48][pc->bar.width+1];
+  char *plabels[48];
   int i;
-  double *data = &buf[0];
-  size_t datalen = 48;
-  int free_data = false;
 
   EXTRACT_PREFIXED(hourly, data);
 
   struct array_list *al = json_object_get_array(hourly_data);
 
-  for(i = 0; i < array_list_length(al) && i < c->hourly.succeeding_hours + 1; i++) {
+  for(i = 0; i < array_list_length(al) && i < pc->hourly.succeeding_hours + 1; i++) {
     struct json_object *o = array_list_get_idx(al, i);
+
     EXTRACT_PREFIXED(o, temperature);
+    EXTRACT_PREFIXED(o, time);
+
     double v = json_object_get_double(o_temperature);
-    if(i == datalen) {
-      if(free_data == false) {
-        data = malloc(2*datalen);
-        memcpy(data, buf, datalen);
-        datalen *= 2;
-        free_data = true;
-      } else {
-        datalen *= 2;
-        data = realloc(data, datalen);
-      }
-    }
     data[i] = render_f2c(v);
+
+    time_t unixtime = json_object_get_int(o_time);
+    struct tm *time = gmtime(&unixtime);
+    strftime(labels[i], pc->bar.width+1, pc->hourly.label_format?:"%H", time);
+    labels[i][pc->bar.width] = '\0';
+    plabels[i] = &labels[i][0];
   } // for
-  barplot(c, data, i);
+
+  barplot2(pc, data, plabels, i);
 }
 
 void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily) {
@@ -84,7 +82,7 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
     time_t unixtime = json_object_get_int(o_time);
     struct tm *time = gmtime(&unixtime);
     //snprintf(labels[i], 5, " %02d ", time->tm_mday);
-    strftime(labels[i], pc->bar.width+1, pc->daily.label_format!=NULL?pc->daily.label_format:"%d", time);
+    strftime(labels[i], pc->bar.width+1, pc->daily.label_format?:"%d", time);
     labels[i][pc->bar.width] = '\0';
     plbl[i] = &labels[i][0];
   }

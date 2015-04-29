@@ -32,7 +32,8 @@ enum {
     .texthighlight_color = COLOR_RED  \
   },                                  \
   .hourly = {                         \
-    .succeeding_hours = 10            \
+    .succeeding_hours = 10,           \
+    .label_format = NULL              \
   },                                  \
   .daily = {                          \
     .label_format = NULL              \
@@ -52,6 +53,7 @@ typedef struct {
   } legend;
   struct {
     int succeeding_hours;
+    char *label_format;
   } hourly;
   struct {
     char *label_format;
@@ -59,6 +61,7 @@ typedef struct {
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
+void barplot2(const PlotCfg *c, const double *d, char **labels, size_t dlen);
 void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, char **labels, size_t dlen);
 int terminal_dimen(int *rows, int *cols);
 
