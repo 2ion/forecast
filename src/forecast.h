@@ -42,9 +42,10 @@
   struct json_object *(key);  \
   json_object_object_get_ex((object), #key, &(key));
 
-#define EXTRACT_PREFIXED(object, key)                               \
-  struct json_object *(NAME(object, key)) = NULL;                   \
-  json_object_object_get_ex((object), #key, &(NAME(object, key)));
+#define EXTRACT_PREFIXED(object, key)                                                         \
+  struct json_object *(NAME(object, key)) = NULL;                                             \
+  if(json_object_object_get_ex((object), #key, &(NAME(object, key))) != TRUE)                 \
+    LERROR(EXIT_FAILURE, 0, "json_object_object_get_ex() failed: %s", #key);
 
 #define RENDER_BEARING(deg) \
   deg ==  0.00 ? "N" : (deg <  45.0 ? "NNE" : (deg ==  45.0 ? "NE" : (deg <  90.0 ? "ENE" : \
