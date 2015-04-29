@@ -144,8 +144,7 @@ int main(int argc, char **argv) {
   if(d.data != NULL)
     free(d.data);
 
-  if(c.plot.daily.label_format != NULL)
-    free(c.plot.daily.label_format);
+  free_config(&c);
 
   return EXIT_SUCCESS;
 }

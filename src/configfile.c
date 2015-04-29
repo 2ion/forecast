@@ -112,6 +112,15 @@ return_error:
   return -1;
 }
 
+void free_config(Config *c) {
+#define FREE_KEY(key) \
+  if((key) != NULL) free(key)
+  FREE_KEY(c->plot.daily.label_format);
+  FREE_KEY(c->plot.hourly.label_format);
+  FREE_KEY((void*)c->apikey);
+#undef FREE_KEY
+}
+
 int match_mode_arg(const char *str) {
   if(strcmp(str, "plot-hourly") == 0)
     return OP_PLOT_HOURLY;
