@@ -122,3 +122,7 @@ Options:
   -k|--key       APIKEY API key to use
   -v|--version          Print program version and exit
 ```
+
+## License
+
+GNU GPL v3+
