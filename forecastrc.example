@@ -21,7 +21,8 @@ plot: {
     texthighlight_color = "RED";
   };
   hourly: {
-    succeeding_hours = 18;
+    succeeding_hours = 30;
+    label_format = "%H:%M";
   };
   daily: {
     label_format = "%d%b";
