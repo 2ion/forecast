@@ -1,30 +1,67 @@
 
+# forecast.io API key
+
 apikey = "";
 
+# Default mode for forecast when invoked without any command line
+# options. Must be one of print, print-hourly, plot-hourly, plot-daily.
+
 op = "print";
+
+# Location coordinates as doubles
 
 location: {
   latitude = 52.5161;
   longitude = 13.3770;
 };
 
+# Plot appearance
+
 plot: {
+
+  # The plot's y axis will extend to +/- this value in terminal lines
   height = 10;
+
   bar: {
+
+    # Bar width in columns
     width = 5;
+
+    # Primary bar color
+    # One of: WHITE, BLACK, RED, GREEN, CYAN, BLUE, MAGENTA, YELLOW
+    # Name must be uppercase
     color = "RED";
+
+    # Secondary bar color in overlay plots (currently only plot-daily)
     overlay_color = "BLACK";
+
   };
+
   legend: {
+
+    # Color used for labels
     color = "WHITE";
-    labels = "RED";
+
+    # Color used for highlight/color accents in text
     texthighlight_color = "RED";
+
   };
+
   hourly: {
+
+    # plot-hourly: Consecutive hours to plot
     succeeding_hours = 30;
+
+    # Bar labels, see strftime(3) for possible formats
     label_format = "%H:%M";
+
   };
+
   daily: {
+
+    # Bar labels, see strftime(3) for possible formats
     label_format = "%d%b";
+
   };
+
 };

@@ -1,6 +1,4 @@
-__ This program is not ready yet! __
-
-## forecast
+# forecast
 
 forecast is a query program for the [forecast.io](https://forecast.io)
 API. It provides a command line interface which makes weather data for a
@@ -14,63 +12,105 @@ Capabilities include:
   weather forecasts and many more things
 * Dumping of the original JSON weather data
 
-### API key
+## API key
 
 In order to use the API, you need to obtain an API key from forecast.io.
 You are able to make 1000 API calls per day free of charge. The
 registration interface is [here](https://developer.forecast.io/).
 
-### Configuration file
+## Configuration file
 
 forecast uses a configuration file in libconfig format. The file is by
 default located at
 ```sh
 $HOME/.forecastrc
 ```
-but you may override the location by using the -w flag.
+but you may override the location by using the -c flag.
 
 The configuration must contain at least the following settings:
 
-```config
+```
+# forecast.io API key
+
 apikey = "";
 
+# Default mode for forecast when invoked without any command line
+# options. Must be one of print, print-hourly, plot-hourly, plot-daily.
+
 op = "print";
+
+# Location coordinates as doubles
 
 location: {
   latitude = 52.5161;
   longitude = 13.3770;
 };
 
+# Plot appearance
+
 plot: {
+
+  # The plot's y axis will extend to +/- this value in terminal lines
   height = 10;
+
   bar: {
+
+    # Bar width in columns
     width = 5;
+
+    # Primary bar color
+    # One of: WHITE, BLACK, RED, GREEN, CYAN, BLUE, MAGENTA, YELLOW
+    # Name must be uppercase
     color = "RED";
+
+    # Secondary bar color in overlay plots (currently only plot-daily)
     overlay_color = "BLACK";
+
   };
+
   legend: {
+
+    # Color used for labels
     color = "WHITE";
-    labels = "RED";
+
+    # Color used for highlight/color accents in text
     texthighlight_color = "RED";
+
   };
+
   hourly: {
+
+    # plot-hourly: Consecutive hours to plot
     succeeding_hours = 30;
+
+    # Bar labels, see strftime(3) for possible formats
     label_format = "%H:%M";
+
   };
+
   daily: {
+
+    # Bar labels, see strftime(3) for possible formats
     label_format = "%d%b";
+
   };
+
 };
 ```
+
+The best way to create the config file is to copy and edit the provided
+forecastrc.example.
 
 If available, command line parameters take precedence over the config
 file settings.
 
-### Synopsis
+As for the meaning of the keys, read the comments in forecastrc.example.
+
+## Synopsis
 
 ```
 Usage:
-  forecast [-CHDchlkv] [OPTIONS]
+  forecast [-cdhlmkv] [OPTIONS]
 Options:
   -c|--config    PATH   Configuration file to use
   -d|--dump             Dump the JSON data and a newline to stdout
@@ -78,7 +118,7 @@ Options:
   -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format
                         <latitude>:<longitude> where the choordinates are given as floating
                         point numbers
-  -m|--mode      MODE   One of print, print-hourly, plot-hourly. Defaults to 'print'
+  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily. Defaults to 'print'
   -k|--key       APIKEY API key to use
   -v|--version          Print program version and exit
 ```

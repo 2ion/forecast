@@ -50,7 +50,7 @@ int parse_location(const char *s, double *la, double *lo) {
 
 void usage(void) {
   puts("Usage:\n"
-       "  forecast [-CHDchlkv] [OPTIONS]\n"
+       "  forecast [-cdhlmkv] [OPTIONS]\n"
        "Options:\n"
        "  -c|--config    PATH   Configuration file to use\n"
        "  -d|--dump             Dump the JSON data and a newline to stdout\n"
@@ -58,7 +58,7 @@ void usage(void) {
        "  -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format\n"
        "                        <latitude>:<longitude> where the choordinates are given as floating\n"
        "                        point numbers\n"
-       "  -m|--mode      MODE   One of print, print-hourly, plot-hourly. Defaults to 'print'\n"
+       "  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily. Defaults to 'print'\n"
        "  -k|--key       APIKEY API key to use\n"
        "  -v|--version          Print program version and exit"
        );
