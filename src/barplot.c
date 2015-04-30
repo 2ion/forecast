@@ -89,6 +89,7 @@ void start_curses(const PlotCfg *pc) {
   init_pair(PLOT_COLOR_LEGEND,        pc->legend.color,               -1);
   init_pair(PLOT_COLOR_TEXTHIGHLIGHT, pc->legend.texthighlight_color, -1);
   init_pair(PLOT_COLOR_BAR_OVERLAY,   -1,                             pc->bar.overlay_color);
+  init_pair(PLOT_COLOR_PRECIP,        -1,                             pc->precipitation.bar_color);
 }
 
 void end_curses(void) {
@@ -226,7 +227,7 @@ void barplot(const PlotCfg *c, const double *d, size_t dlen) {
   end_curses();
 }
 
-void barplot2(const PlotCfg *pc, const double *d, char **labels, size_t dlen) {
+void barplot2(const PlotCfg *pc, const double *d, char **labels, size_t dlen, int bar_color) {
   int ds[dlen];
   double sfac, dmax, dmin;
 
@@ -249,10 +250,10 @@ void barplot2(const PlotCfg *pc, const double *d, char **labels, size_t dlen) {
     attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
     for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
-      attron(COLOR_PAIR(1));
+      attron(COLOR_PAIR(bar_color));
       for(int y = dy + pc->height - ds[i]; y != dy + pc->height; y += delta)
         mvaddch(y, j, ' ');
-      attroff(COLOR_PAIR(1));
+      attroff(COLOR_PAIR(bar_color));
     }
   }
 

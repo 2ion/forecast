@@ -108,6 +108,13 @@ int load_config(Config *c) {
     CHECKCOLORS(c->plot.legend.color)
   }
 
+  if(config_lookup_string(&cfg, "plot.precipitation.bar_color", &tmp) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.precipitation.bar_color");
+    goto return_error;
+  } else {
+    CHECKCOLORS(c->plot.precipitation.bar_color)
+  }
+
   if(config_lookup_string(&cfg, "op", &tmp) != CONFIG_TRUE) {
     LERROR(0, 0, "op");
     goto return_error;
@@ -148,6 +155,10 @@ int match_mode_arg(const char *str) {
     return OP_PRINT_HOURLY;
   else if(strcmp(str, "plot-daily") == 0)
     return OP_PLOT_DAILY;
+  else if(strcmp(str, "plot-precip-daily") == 0)
+    return OP_PLOT_PRECIPITATION_DAILY;
+  else if(strcmp(str, "plot-precip-hourly") == 0)
+    return OP_PLOT_PRECIPITATION_HOURLY;
   else
     return -1;
 }

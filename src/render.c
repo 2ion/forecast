@@ -75,7 +75,67 @@ void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly
     plabels[i] = &labels[i][0];
   } // for
 
-  barplot2(pc, data, plabels, i);
+  barplot2(pc, data, plabels, i, pc->bar.color);
+}
+
+// FIXME: This function delivers messed-up data, investigate
+void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) {
+  EXTRACT_PREFIXED(o, data);
+
+  struct array_list *al = json_object_get_array(o_data);
+
+  double d[48];
+  char labels[48][pc->bar.width+1];
+  char *plabels[48];
+
+  for(int i = 0; i < 48 && pc->hourly.succeeding_hours + 1; i++) {
+    struct json_object *oo = array_list_get_idx(al, i);
+
+    EXTRACT_PREFIXED(oo, precipProbability);
+    EXTRACT_PREFIXED(oo, time);
+
+    d[i] = json_object_get_double(oo_precipProbability) * 100;
+
+    time_t unixtime = json_object_get_int(oo_time);
+    struct tm *time = gmtime(&unixtime);
+    strftime(labels[i], pc->bar.width+1, pc->hourly.label_format?:"%d", time);
+    labels[i][pc->bar.width] = '\0';
+    plabels[i] = &labels[i][0];
+  }
+
+  barplot2(pc, d, plabels, 48, PLOT_COLOR_PRECIP);
+
+  return;
+}
+
+void render_precipitation_plot_daily(const PlotCfg *pc, struct json_object *o) {
+  EXTRACT_PREFIXED(o, data);
+
+  struct array_list *al = json_object_get_array(o_data);
+  int allen = array_list_length(al);
+
+  double d[allen];
+  char labels[allen][pc->bar.width+1];
+  char *plabels[allen];
+
+  for(int i = 0; i < allen; i++) {
+    struct json_object *oo = array_list_get_idx(al, i);
+
+    EXTRACT_PREFIXED(oo, precipProbability);
+    EXTRACT_PREFIXED(oo, time);
+
+    d[i] = json_object_get_double(oo_precipProbability) * 100;
+
+    time_t unixtime = json_object_get_int(oo_time);
+    struct tm *time = gmtime(&unixtime);
+    strftime(labels[i], pc->bar.width+1, pc->daily.label_format?:"%d", time);
+    labels[i][pc->bar.width] = '\0';
+    plabels[i] = &labels[i][0];
+  }
+
+  barplot2(pc, d, plabels, allen, PLOT_COLOR_PRECIP);
+
+  return;
 }
 
 void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily) {
@@ -99,7 +159,7 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
 
     time_t unixtime = json_object_get_int(o_time);
     struct tm *time = gmtime(&unixtime);
-    //snprintf(labels[i], 5, " %02d ", time->tm_mday);
+
     strftime(labels[i], pc->bar.width+1, pc->daily.label_format?:"%d", time);
     labels[i][pc->bar.width] = '\0';
     plbl[i] = &labels[i][0];
@@ -184,6 +244,12 @@ int render(const Config *c, Data *d) {
       break;
     case OP_PLOT_DAILY:
       render_daily_temperature_plot(&c->plot, o_daily);
+      break;
+    case OP_PLOT_PRECIPITATION_DAILY:
+      render_precipitation_plot_daily(&c->plot, o_daily);
+      break;
+    case OP_PLOT_PRECIPITATION_HOURLY:
+      render_precipitation_plot_hourly(&c->plot, o_hourly);
       break;
   }
 #undef PRINT_HEADER

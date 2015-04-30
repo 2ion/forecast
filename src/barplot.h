@@ -34,7 +34,8 @@ enum {
   PLOT_COLOR_BAR            = 1,
   PLOT_COLOR_LEGEND         = 2,
   PLOT_COLOR_TEXTHIGHLIGHT  = 3,
-  PLOT_COLOR_BAR_OVERLAY    = 4
+  PLOT_COLOR_BAR_OVERLAY    = 4,
+  PLOT_COLOR_PRECIP         = 5
 };
 
 #define PLOTCFG_DEFAULT               \
@@ -56,8 +57,9 @@ enum {
   .daily = {                          \
     .label_format = NULL              \
   },                                  \
-  .precepitation = {                  \
-    .label_format = NULL              \
+  .precipitation = {                  \
+    .label_format = NULL,             \
+    .bar_color = COLOR_BLUE           \
   }                                   \
 }
 
@@ -81,11 +83,12 @@ typedef struct {
   } daily;
   struct {
     char *label_format;
-  } precepitation;
+    int bar_color;
+  } precipitation;
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
-void barplot2(const PlotCfg *c, const double *d, char **labels, size_t dlen);
+void barplot2(const PlotCfg *c, const double *d, char **labels, size_t dlen, int color);
 void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, char **labels, size_t dlen);
 int terminal_dimen(int *rows, int *cols);
 
