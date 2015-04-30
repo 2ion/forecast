@@ -31,23 +31,29 @@ The configuration must contain at least the following settings:
 
 ```
 # forecast.io API key
-
 apikey = "";
 
 # Default mode for forecast when invoked without any command line
-# options. Must be one of print, print-hourly, plot-hourly, plot-daily.
-
+# options. Must be one of print, print-hourly, plot-hourly, plot-daily,
+# plot-precip-daily, plot-precip-hourly
 op = "print";
 
-# Location coordinates as doubles
+# When the last requested data set is >= $max_cache_age seconds old,
+# request new data. This will significantly speed up subsequent
+# invocations. Set to 0 in order to always bypass the cache.
+max_cache_age = 1200;
 
+# File to save cache data to; should be in a location your user has write
+# access to.
+cache_file = "/tmp/forecast.cache";
+
+# Location coordinates as doubles
 location: {
   latitude = 52.5161;
   longitude = 13.3770;
 };
 
 # Plot appearance
-
 plot: {
 
   # The plot's y axis will extend to +/- this value in terminal lines
@@ -95,6 +101,11 @@ plot: {
 
   };
 
+  precipitation: {
+    # Bar color used in plot-precip-daily, plot-precip-hourly
+    bar_color = "BLUE";
+  };
+
 };
 ```
 
@@ -110,7 +121,7 @@ As for the meaning of the keys, read the comments in forecastrc.example.
 
 ```
 Usage:
-  forecast [-cdhlmkv] [OPTIONS]
+  forecast [c:dhl:m:rv] [OPTIONS]
 Options:
   -c|--config    PATH   Configuration file to use
   -d|--dump             Dump the JSON data and a newline to stdout
@@ -119,7 +130,7 @@ Options:
                         <latitude>:<longitude> where the choordinates are given as floating
                         point numbers
   -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily. Defaults to 'print'
-  -k|--key       APIKEY API key to use
+  -r|--request          By pass the cache if a cache file exists
   -v|--version          Print program version and exit
 ```
 
