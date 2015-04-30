@@ -277,29 +277,7 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
   const int dx = COLS/2 - (dlen * (pc->bar.width + 1) - 1)/2;
   const int dy = LINES/2 - pc->height;
 
-  attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-  for(int y = dy; y <= dy + 2*pc->height; y++) {
-    if(y == dy + pc->height) { /* zero-baseline */
-      attron(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
-      mvaddch(y, dx-2, '+');
-      attroff(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
-      attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-
-      mvprintw(y, dx-6, "0.0");
-    } else if(y == dy) { /* y-axis maximum */
-      mvaddch(y, dx-2, '|');
-      mvprintw(y,
-          dx-(snprintf(NULL, 0, "%.*f", 1, dmax)+3),
-          "%.*f", 1, dmax);
-    } else if(y == dy + 2*pc->height) { /* y-axis minimum */
-      mvaddch(y, dx-2, '|');
-      mvprintw(y,
-          dx-(snprintf(NULL, 0, "-%.*f", 1, dmax)+3),
-          "-%.*f", 1, dmax);
-    } else
-      mvaddch(y, dx-2, '|');
-  }
-  attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+  barplot_legend(dx, dy, pc->height, dmax, dmin);
 
   int offset = 0;
   for(int i = 0; i < dlen; i++) {
