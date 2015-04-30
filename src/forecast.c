@@ -31,12 +31,12 @@
 
 /* globals */
 
-static const char *options = "hl:c:k:vm:d";
+#define CLI_OPTIONS "c:dhl:m:v"
+static const char *options = CLI_OPTIONS;
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
   { "location", required_argument,  NULL, 'l' },
   { "config",   required_argument,  NULL, 'c' },
-  { "api-key",  required_argument,  NULL, 'k' },
   { "version",  no_argument,        NULL, 'v' },
   { "mode",     required_argument,  NULL, 'm' },
   { "dump",     no_argument,        NULL, 'd' },
@@ -69,7 +69,7 @@ int parse_location(const char *s, double *la, double *lo) {
 
 void usage(void) {
   puts("Usage:\n"
-       "  forecast [-cdhlmkv] [OPTIONS]\n"
+       "  forecast [" CLI_OPTIONS "] [OPTIONS]\n"
        "Options:\n"
        "  -c|--config    PATH   Configuration file to use\n"
        "  -d|--dump             Dump the JSON data and a newline to stdout\n"
@@ -78,7 +78,6 @@ void usage(void) {
        "                        <latitude>:<longitude> where the choordinates are given as floating\n"
        "                        point numbers\n"
        "  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily. Defaults to 'print'\n"
-       "  -k|--key       APIKEY API key to use\n"
        "  -v|--version          Print program version and exit"
        );
 }
@@ -88,7 +87,6 @@ int main(int argc, char **argv) {
   Config c = CONFIG_NULL;
   Data d = DATA_NULL;
 
-  char *cli_apikey = NULL;
   double cli_location[2] = { 0.0, 0.0 };
   int cli_mode = -1;
   int opt;
@@ -105,9 +103,6 @@ int main(int argc, char **argv) {
         if(parse_location((const char*)optarg, &cli_location[0], &cli_location[1]) == -1)
           printf("-l: malformed option argument\n");
         use_cli_location = 1;
-        break;
-      case 'k':
-        cli_apikey = optarg;
         break;
       case 'c':
         c.path = optarg;
@@ -139,11 +134,6 @@ int main(int argc, char **argv) {
 
   if(load_config(&c) != 0)
     puts("Failed to load configuration");
-
-  if(cli_apikey) {
-    free((void*)c.apikey);
-    c.apikey = cli_apikey;
-  }
 
   if(strlen(c.apikey) == 0)
     LERROR(EXIT_FAILURE, 0, "API key must not be empty.");
