@@ -78,7 +78,6 @@ void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly
   barplot2(pc, data, plabels, i, pc->bar.color);
 }
 
-// FIXME: This function delivers messed-up data, investigate
 void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) {
   EXTRACT_PREFIXED(o, data);
 
@@ -87,8 +86,9 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
   double d[48];
   char labels[48][pc->bar.width+1];
   char *plabels[48];
+  int i;
 
-  for(int i = 0; i < 48 && pc->hourly.succeeding_hours + 1; i++) {
+  for(i = 0; i < pc->hourly.succeeding_hours + 1 && i < 48 ; i++) {
     struct json_object *oo = array_list_get_idx(al, i);
 
     EXTRACT_PREFIXED(oo, precipProbability);
@@ -101,9 +101,10 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
     strftime(labels[i], pc->bar.width+1, pc->hourly.label_format?:"%d", time);
     labels[i][pc->bar.width] = '\0';
     plabels[i] = &labels[i][0];
+    LERROR(0, 0, "Data point: %f (%s)", d[i], labels[i]);
   }
 
-  barplot2(pc, d, plabels, 48, PLOT_COLOR_PRECIP);
+  barplot2(pc, d, plabels, i, PLOT_COLOR_PRECIP);
 
   return;
 }
