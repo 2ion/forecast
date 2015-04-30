@@ -35,5 +35,20 @@ int load_cache(const Config *c, Data *d) {
 }
 
 int save_cache(const Config *c, const Data *d) {
-  return 0;
+  int fd;
+  int ret = 0;
+
+  if((fd = open(c->cache_file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
+    return -1;
+
+  ret = write(fd, (const void*) d->data, d->datalen);
+
+  if(ret == -1 || ret < d->datalen) {
+    LERROR(0, errno, "write()");
+    ret = -1;
+  }
+
+  close(fd);
+
+  return ret;
 }
