@@ -44,11 +44,14 @@ int load_config(Config *c) {
     LERROR(0, 0, "No API key found.");
     goto return_error;
   }
-
   if((c->apikey = malloc(strlen(apikey) + 1)) == NULL)
     LERROR(EXIT_FAILURE, errno, "malloc()");
-
   memcpy((void*)c->apikey, apikey, strlen(apikey) + 1);
+
+  if(config_lookup_string(&cfg, "cache_file", &tmp) == CONFIG_TRUE) {
+    c->cache_file = malloc(strlen(tmp)+1);
+    memcpy(c->cache_file, tmp, strlen(tmp) + 1);
+  }
 
   if(config_lookup_string(&cfg, "plot.daily.label_format", &tmp) == CONFIG_TRUE) {
     c->plot.daily.label_format = malloc(strlen(tmp)+1);
@@ -101,6 +104,11 @@ int load_config(Config *c) {
     goto return_error;
   }
 
+  if(config_lookup_int(&cfg, "max_cache_age", &(c->max_cache_age)) != CONFIG_TRUE) {
+    LERROR(0, 0, "max_cache_age missin");
+    goto return_error;
+  }
+
   if(config_lookup_string(&cfg, "plot.legend.color", &tmp) != CONFIG_TRUE) {
     LERROR(0, 0, "plot.legend.color");
     goto return_error;
@@ -143,6 +151,7 @@ void free_config(Config *c) {
   FREE_KEY(c->plot.daily.label_format);
   FREE_KEY(c->plot.hourly.label_format);
   FREE_KEY((void*)c->apikey);
+  FREE_KEY((void*)c->cache_file);
 #undef FREE_KEY
 }
 

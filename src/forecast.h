@@ -78,18 +78,22 @@ enum {
 typedef struct {
   const char *path;
   const char *apikey;
+  char *cache_file;
   struct {
     double latitude;
     double longitude;
   } location;
   PlotCfg plot;
   int op;
+  int max_cache_age;
 } Config;
 
 #define CONFIG_NULL         \
 {                           \
   .path = NULL,             \
   .apikey = NULL,           \
+  .cache_file = NULL,       \
+  .max_cache_age = 0,       \
   .location = {             \
     .latitude = 0.0,        \
     .longitude = 0.0,       \
