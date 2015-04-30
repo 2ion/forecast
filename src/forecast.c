@@ -145,16 +145,10 @@ int main(int argc, char **argv) {
     c.apikey = cli_apikey;
   }
 
-  if(strlen(c.apikey) == 0) {
-    free_config(&c);
-    FREE_IF(free_c_path, c.path);
+  if(strlen(c.apikey) == 0)
     LERROR(EXIT_FAILURE, 0, "API key must not be empty.");
-  }
-  if(string_isalnum(c.apikey) == -1) {
-    free_config(&c);
-    FREE_IF(free_c_path, c.path);
+  if(string_isalnum(c.apikey) == -1)
     LERROR(EXIT_FAILURE, 0, "API key is not a hexstring.", c.apikey);
-  }
 
   if(cli_mode != -1)
     c.op = cli_mode;
