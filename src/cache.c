@@ -14,7 +14,7 @@ int load_cache(const Config *c, Data *d) {
   if(stat(c->cache_file, &s) != 0)
     return -1;
   gettimeofday(&t, NULL);
-  if((t.tv_sec - s.st_mtim.tv_sec) <= c->max_cache_age)
+  if((t.tv_sec - s.st_mtim.tv_sec) >= c->max_cache_age)
     return -1;
 
   if((cf = fopen(c->cache_file, "rb")) == NULL) {

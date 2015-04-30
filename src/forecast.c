@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "barplot.h"
+#include "cache.h"
 #include "configfile.h"
 #include "forecast.h"
 #include "network.h"
@@ -31,7 +32,7 @@
 
 /* globals */
 
-#define CLI_OPTIONS "c:dhl:m:v"
+#define CLI_OPTIONS "c:dhl:m:rv"
 static const char *options = CLI_OPTIONS;
 static const struct option options_long[] = {
   { "help",     no_argument,        NULL, 'h' },
@@ -40,6 +41,7 @@ static const struct option options_long[] = {
   { "version",  no_argument,        NULL, 'v' },
   { "mode",     required_argument,  NULL, 'm' },
   { "dump",     no_argument,        NULL, 'd' },
+  { "request",  no_argument,        NULL, 'r' },
   { 0,          0,                  0,    0   }
 };
 
@@ -78,6 +80,7 @@ void usage(void) {
        "                        <latitude>:<longitude> where the choordinates are given as floating\n"
        "                        point numbers\n"
        "  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily. Defaults to 'print'\n"
+       "  -r|--request          By pass the cache if a cache file exists\n"
        "  -v|--version          Print program version and exit"
        );
 }
@@ -93,6 +96,7 @@ int main(int argc, char **argv) {
   int use_cli_location = 0;
   bool dump_data = false;
   bool free_c_path = false;
+  bool bypass_cache = false;
 
   while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
     switch(opt) {
@@ -122,6 +126,10 @@ int main(int argc, char **argv) {
         break;
       case 'd':
         dump_data = true;
+        break;
+      case 'r':
+        bypass_cache = true;
+        break;
     }
   }
 
@@ -148,8 +156,12 @@ int main(int argc, char **argv) {
     c.location.longitude = cli_location[1];
   }
 
-  if(request(&c, &d) != 0)
-    puts("Failed to request data");
+  if(bypass_cache == true || load_cache(&c, &d) == -1) {
+    if(request(&c, &d) != 0)
+      puts("Failed to request data");
+    else
+      save_cache(&c, &d);
+  }
 
   if(dump_data) {
     write(STDOUT_FILENO, d.data, d.datalen);
@@ -157,8 +169,9 @@ int main(int argc, char **argv) {
   } else
     render(&c, &d);
 
-  if(d.data != NULL)
+  if(d.data != NULL) {
     free(d.data);
+  }
 
   FREE_IF(free_c_path, c.path);
   free_config(&c);
