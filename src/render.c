@@ -101,7 +101,6 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
     strftime(labels[i], pc->bar.width+1, pc->hourly.label_format?:"%d", time);
     labels[i][pc->bar.width] = '\0';
     plabels[i] = &labels[i][0];
-    LERROR(0, 0, "Data point: %f (%s)", d[i], labels[i]);
   }
 
   barplot2(pc, d, plabels, i, PLOT_COLOR_PRECIP);
