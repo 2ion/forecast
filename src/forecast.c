@@ -27,6 +27,8 @@
 #include "network.h"
 #include "render.h"
 
+#define FREE_IF(flag, var) if(flag == true) free((void*)(var))
+
 /* globals */
 
 static const char *options = "hl:c:k:vm:d";
@@ -92,6 +94,7 @@ int main(int argc, char **argv) {
   int opt;
   int use_cli_location = 0;
   bool dump_data = false;
+  bool free_c_path = false;
 
   while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
     switch(opt) {
@@ -131,6 +134,7 @@ int main(int argc, char **argv) {
     int len = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
     c.path = malloc(len);
     snprintf((char*)c.path, len, "%s/%s", getenv("HOME"), RCNAME);
+    free_c_path = true;
   }
 
   if(load_config(&c) != 0)
@@ -139,6 +143,17 @@ int main(int argc, char **argv) {
   if(cli_apikey) {
     free((void*)c.apikey);
     c.apikey = cli_apikey;
+  }
+
+  if(strlen(c.apikey) == 0) {
+    free_config(&c);
+    FREE_IF(free_c_path, c.path);
+    LERROR(EXIT_FAILURE, 0, "API key must not be empty.");
+  }
+  if(string_isalnum(c.apikey) == -1) {
+    free_config(&c);
+    FREE_IF(free_c_path, c.path);
+    LERROR(EXIT_FAILURE, 0, "API key is not a hexstring.", c.apikey);
   }
 
   if(cli_mode != -1)
@@ -161,6 +176,7 @@ int main(int argc, char **argv) {
   if(d.data != NULL)
     free(d.data);
 
+  FREE_IF(free_c_path, c.path);
   free_config(&c);
 
   return EXIT_SUCCESS;
