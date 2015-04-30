@@ -129,7 +129,8 @@ Options:
   -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format
                         <latitude>:<longitude> where the choordinates are given as floating
                         point numbers
-  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily. Defaults to 'print'
+  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,
+                        plot-precip-hourly. Defaults to 'print'
   -r|--request          By pass the cache if a cache file exists
   -v|--version          Print program version and exit
 ```
