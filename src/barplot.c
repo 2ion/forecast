@@ -21,8 +21,8 @@
 
 static void start_curses(const PlotCfg*);
 static void end_curses(void);
-static void barplot_scale(const double*, size_t, int, int*, double*, double*);
-static void barplot_legend(int dx, int dy, int height, double dmax);
+static void barplot_scale(const double*, size_t, int, int*, double*, double*, double*);
+static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
 
 #define ARRAY_CONCAT(TYPE, A, An, B, Bn) \
   (TYPE *)array_concat((const void *)(A), (An), (const void *)(B), (Bn), sizeof(TYPE));
@@ -36,9 +36,11 @@ void *array_concat(const void *a, size_t an,
   return p;
 }
 
-void barplot_legend(int dx, int dy, int height, double dmax) {
+void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
+  const int rfac = dmin < 0.0 ? 2 : 1;
+
   attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-  for(int y = dy; y <= dy + 2*height; y++) {
+  for(int y = dy; y <= dy + rfac*height; y++) {
     if(y == dy + height) { /* zero-baseline */
       attron(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
       mvaddch(y, dx-2, '+');
@@ -109,11 +111,13 @@ int terminal_dimen(int *rows, int *cols) {
   return 0;
 }
 
-void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, double *scalefac, double *max) {
+void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, double *scalefac, double *max, double *min) {
   for(int i = 0; i < dlen; i++) {
     double m = fabs(d[i]);
     if(m > *max)
       *max = m;
+    else if(m < *min)
+      *min = m;
   }
 
   *scalefac = (double) scaleheight / (*max);
@@ -224,16 +228,16 @@ void barplot(const PlotCfg *c, const double *d, size_t dlen) {
 
 void barplot2(const PlotCfg *pc, const double *d, char **labels, size_t dlen) {
   int ds[dlen];
-  double sfac, dmax;
+  double sfac, dmax, dmin;
 
-  barplot_scale(d, dlen, pc->height, &ds[0], &sfac, &dmax);
+  barplot_scale(d, dlen, pc->height, &ds[0], &sfac, &dmax, &dmin);
 
   start_curses(pc);
 
   const int dx = COLS/2 - (dlen * (pc->bar.width + 1) - 1)/2;
   const int dy = LINES/2 - pc->height;
 
-  barplot_legend(dx, dy, pc->height, dmax);
+  barplot_legend(dx, dy, pc->height, dmax, dmin);
 
   int offset = 0;
   for(int i = 0; i < dlen; i++) {
@@ -260,11 +264,12 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
   int     ds[2*dlen];
   double  sfac;
   double  dmax;
+  double  dmin;
 
   memcpy(&d, d1, dlen * sizeof(double));
   memcpy(&d[dlen], d2, dlen * sizeof(double));
 
-  barplot_scale(d, 2*dlen, pc->height, &ds[0], &sfac, &dmax);
+  barplot_scale(d, 2*dlen, pc->height, &ds[0], &sfac, &dmax, &dmin);
 
   start_curses(pc);
 

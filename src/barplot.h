@@ -55,6 +55,9 @@ enum {
   },                                  \
   .daily = {                          \
     .label_format = NULL              \
+  },                                  \
+  .precepitation = {                  \
+    .label_format = NULL              \
   }                                   \
 }
 
@@ -76,6 +79,9 @@ typedef struct {
   struct {
     char *label_format;
   } daily;
+  struct {
+    char *label_format;
+  } precepitation;
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
