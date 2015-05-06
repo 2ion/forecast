@@ -148,6 +148,7 @@ return_error:
 void free_config(Config *c) {
 #define FREE_KEY(key) \
   if((key) != NULL) free(key)
+  FREE_KEY(c->path);
   FREE_KEY(c->plot.daily.label_format);
   FREE_KEY(c->plot.hourly.label_format);
   FREE_KEY((void*)c->apikey);
@@ -177,4 +178,14 @@ int string_isalnum(const char *s) {
     if(isalnum(s[i]) == 0)
       return -1;
   return 0;
+}
+
+void set_config_path(Config *c) {
+  int plen;
+
+  plen = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
+  if((c->path = malloc(plen)) == NULL)
+    LERROR(EXIT_FAILURE, errno, "malloc() failed");
+
+  snprintf((char*)c->path, plen, "%s/%s", getenv("HOME"), RCNAME);
 }

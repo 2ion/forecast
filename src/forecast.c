@@ -90,14 +90,13 @@ int main(int argc, char **argv) {
 
   Config c = CONFIG_NULL;
   Data d = DATA_NULL;
-
-  double cli_location[2] = { 0.0, 0.0 };
-  int cli_mode = -1;
   int opt;
-  int use_cli_location = 0;
   bool dump_data = false;
-  bool free_c_path = false;
   bool bypass_cache = false;
+
+  set_config_path(&c);
+  if(load_config(&c) != 0)
+    LERROR(EXIT_FAILURE, 0, "Failed to load the configuration file");
 
   while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
     switch(opt) {
@@ -105,9 +104,8 @@ int main(int argc, char **argv) {
         usage();
         return EXIT_SUCCESS;
       case 'l':
-        if(parse_location((const char*)optarg, &cli_location[0], &cli_location[1]) == -1)
-          printf("-l: malformed option argument\n");
-        use_cli_location = 1;
+        if(parse_location((const char*)optarg, &c.location.latitude, &c.location.longitude) == -1)
+          puts("-l: malformed option argument");
         break;
       case 'c':
         c.path = optarg;
@@ -120,9 +118,9 @@ int main(int argc, char **argv) {
         usage();
         return EXIT_FAILURE;
       case 'm':
-        if((cli_mode = match_mode_arg((const char*)optarg)) == -1) {
-          printf("-m: invalid mode %s, selecting default\n", optarg);
-          cli_mode = OP_PRINT_CURRENTLY;
+        if((c.op = match_mode_arg((const char*)optarg)) == -1) {
+          puts("-m: invalid mode, selecting default");
+          c.op = OP_PRINT_CURRENTLY;
         }
         break;
       case 'd':
@@ -134,28 +132,11 @@ int main(int argc, char **argv) {
     }
   }
 
-  if(c.path == NULL) {
-    int len = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
-    c.path = malloc(len);
-    snprintf((char*)c.path, len, "%s/%s", getenv("HOME"), RCNAME);
-    free_c_path = true;
-  }
-
-  if(load_config(&c) != 0)
-    puts("Failed to load configuration");
-
   if(strlen(c.apikey) == 0)
     LERROR(EXIT_FAILURE, 0, "API key must not be empty.");
+
   if(string_isalnum(c.apikey) == -1)
     LERROR(EXIT_FAILURE, 0, "API key is not a hexstring.", c.apikey);
-
-  if(cli_mode != -1)
-    c.op = cli_mode;
-
-  if(use_cli_location == 1) {
-    c.location.latitude = cli_location[0];
-    c.location.longitude = cli_location[1];
-  }
 
   if(bypass_cache == true || load_cache(&c, &d) == -1) {
     if(request(&c, &d) != 0)
@@ -170,11 +151,9 @@ int main(int argc, char **argv) {
   } else
     render(&c, &d);
 
-  if(d.data != NULL) {
+  if(d.data != NULL)
     free(d.data);
-  }
 
-  FREE_IF(free_c_path, c.path);
   free_config(&c);
 
   return EXIT_SUCCESS;

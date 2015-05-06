@@ -76,7 +76,7 @@ enum {
 };
 
 typedef struct {
-  const char *path;
+  char *path;
   const char *apikey;
   char *cache_file;
   struct {

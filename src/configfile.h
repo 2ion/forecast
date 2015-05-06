@@ -26,6 +26,7 @@
 
 #include "forecast.h"
 
+void set_config_path(Config *c);
 int load_config(Config *c);
 void free_config(Config *c);
 int match_mode_arg(const char *str);
