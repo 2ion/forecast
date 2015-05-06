@@ -304,3 +304,17 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
 
   end_curses();
 }
+
+
+/* first pair must be: (background_min, background_max) for daylight plot */
+void barplot_horizontal_partitions(const PlotCfg *pc, double min, double max, const double **pairs, char **labels, size_t len) {
+  int ds[2][len];
+  double sfac, dmax, dmin;
+  int rows, cols;
+
+  terminal_dimen(&rows, &cols);
+
+  barplot_scale(&pairs[0][0], 2*len, cols*0.75, &ds[0][0], &sfac, &dmax, &dmin);
+
+  return;
+}

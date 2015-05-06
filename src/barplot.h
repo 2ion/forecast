@@ -90,6 +90,7 @@ typedef struct {
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
 void barplot2(const PlotCfg *c, const double *d, char **labels, size_t dlen, int color);
 void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, char **labels, size_t dlen);
+void barplot_horizontal_partitions(const PlotCfg *c, double min, double max, const double **pairs, char **labels, size_t len);
 int terminal_dimen(int *rows, int *cols);
 
 #endif
