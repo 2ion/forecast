@@ -4,8 +4,7 @@
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ *  the Free Software Foundation, either version 3 of the License, or *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,14 +22,15 @@
 
 #include <errno.h>
 #include <error.h>
-#include <stdbool.h>
-#include <stdlib.h>
 
 #include "barplot.h"
 #include "config.h"
 
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
         (__func__), (__LINE__), __VA_ARGS__)
+#define GUARD_MALLOC(v) \
+  if((v) == NULL)       \
+    LERROR(EXIT_FAILURE, errno, "malloc() failed");
 
 /* types */
 

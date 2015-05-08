@@ -20,6 +20,7 @@
 #define NETWORK_H
 
 #include <curl/curl.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "forecast.h"

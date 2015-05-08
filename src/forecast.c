@@ -17,6 +17,7 @@
  */
 
 #include <getopt.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,6 +56,8 @@ int parse_location(const char *s, double *la, double *lo) {
     return -1;
 
   buf = malloc(col - s + 1);
+  GUARD_MALLOC(buf);
+
   memcpy(buf, s, col - s + 1);
   buf[col-s] = '\0';
   *la = strtod(buf, NULL);

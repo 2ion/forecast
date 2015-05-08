@@ -28,6 +28,7 @@ int load_cache(const Config *c, Data *d) {
   fseek(cf, 0, SEEK_SET);
 
   d->data = malloc(cflen + 1);
+  GUARD_MALLOC(d->data);
   fread(d->data, cflen, 1, cf);
   fclose(cf);
 

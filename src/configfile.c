@@ -44,22 +44,25 @@ int load_config(Config *c) {
     LERROR(0, 0, "No API key found.");
     goto return_error;
   }
-  if((c->apikey = malloc(strlen(apikey) + 1)) == NULL)
-    LERROR(EXIT_FAILURE, errno, "malloc()");
+  c->apikey = malloc(strlen(apikey) + 1);
+  GUARD_MALLOC(c->apikey);
   memcpy((void*)c->apikey, apikey, strlen(apikey) + 1);
 
   if(config_lookup_string(&cfg, "cache_file", &tmp) == CONFIG_TRUE) {
     c->cache_file = malloc(strlen(tmp)+1);
+    GUARD_MALLOC(c->cache_file);
     memcpy(c->cache_file, tmp, strlen(tmp) + 1);
   }
 
   if(config_lookup_string(&cfg, "plot.daily.label_format", &tmp) == CONFIG_TRUE) {
     c->plot.daily.label_format = malloc(strlen(tmp)+1);
+    GUARD_MALLOC(c->plot.daily.label_format);
     memcpy(c->plot.daily.label_format, tmp, strlen(tmp) + 1);
   }
 
   if(config_lookup_string(&cfg, "plot.hourly.label_format", &tmp) == CONFIG_TRUE) {
     c->plot.hourly.label_format = malloc(strlen(tmp)+1);
+    GUARD_MALLOC(c->plot.hourly.label_format);
     memcpy(c->plot.hourly.label_format, tmp, strlen(tmp) + 1);
   }
 
@@ -184,8 +187,8 @@ void set_config_path(Config *c) {
   int plen;
 
   plen = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
-  if((c->path = malloc(plen)) == NULL)
-    LERROR(EXIT_FAILURE, errno, "malloc() failed");
+  c->path = malloc(plen);
+  GUARD_MALLOC(c->path);
 
   snprintf((char*)c->path, plen, "%s/%s", getenv("HOME"), RCNAME);
 }
