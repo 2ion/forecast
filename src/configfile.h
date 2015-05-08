@@ -25,6 +25,18 @@
 #include <string.h>
 
 #include "forecast.h"
+#include "render.h"
+
+#define CHECKCOLOR(var, name) if(strcmp(tmp, #name) == 0) (var) = PASTE(COLOR, name);
+#define CHECKCOLORS(var)             \
+    CHECKCOLOR(var, BLACK)           \
+    else CHECKCOLOR(var, RED)        \
+    else CHECKCOLOR(var, GREEN)      \
+    else CHECKCOLOR(var, YELLOW)     \
+    else CHECKCOLOR(var, BLUE)       \
+    else CHECKCOLOR(var, MAGENTA)    \
+    else CHECKCOLOR(var, CYAN)       \
+    else CHECKCOLOR(var, WHITE)
 
 void set_config_path(Config *c);
 int load_config(Config *c);

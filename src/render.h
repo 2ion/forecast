@@ -27,6 +27,27 @@
 
 #include "forecast.h"
 
+#define RENDER_BEARING(deg) \
+  deg ==  0.00 ? "N" : (deg <  45.0 ? "NNE" : (deg ==  45.0 ? "NE" : (deg <  90.0 ? "ENE" : \
+( deg ==  90.0 ? "E" : (deg < 135.0 ? "ESE" : (deg == 135.0 ? "SE" : (deg < 180.0 ? "SSE" : \
+( deg == 180.0 ? "S" : (deg < 225.0 ? "SSW" : (deg == 225.0 ? "SW" : (deg < 270.0 ? "WSW" : \
+( deg == 270.0 ? "W" : (deg < 315.0 ? "WNW" : (deg == 315.0 ? "NW" : "NNW"))))))))))))))
+
+#define _PASTE(x, y) x ## _ ## y
+
+#define PASTE(x, y) _PASTE(x, y)
+
+#define NAME(prefix, name) PASTE(prefix, name)
+
+#define EXTRACT(object, key)  \
+  struct json_object *(key);  \
+  json_object_object_get_ex((object), #key, &(key));
+
+#define EXTRACT_PREFIXED(object, key)                                                         \
+  struct json_object *(NAME(object, key)) = NULL;                                             \
+  if(json_object_object_get_ex((object), #key, &(NAME(object, key))) != TRUE)                 \
+    LERROR(EXIT_FAILURE, 0, "json_object_object_get_ex() failed: %s", #key);
+
 char*   render_time(struct json_object*);
 double  render_f2c(double fahrenheit);
 double  render_mph2kph(double mph);
