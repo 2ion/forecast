@@ -24,18 +24,6 @@ static void end_curses(void);
 static void barplot_scale(const double*, size_t, int, int*, double*, double*, double*);
 static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
 
-#define ARRAY_CONCAT(TYPE, A, An, B, Bn) \
-  (TYPE *)array_concat((const void *)(A), (An), (const void *)(B), (Bn), sizeof(TYPE));
- 
-void *array_concat(const void *a, size_t an,
-                   const void *b, size_t bn, size_t s)
-{
-  char *p = malloc(s * (an + bn));
-  memcpy(p, a, an*s);
-  memcpy(p + an*s, b, bn*s);
-  return p;
-}
-
 void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
   const int rfac = dmin < 0.0 ? 2 : 1;
 
