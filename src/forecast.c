@@ -109,6 +109,7 @@ int main(int argc, char **argv) {
       case 'l':
         if(parse_location((const char*)optarg, &c.location.latitude, &c.location.longitude) == -1)
           puts("-l: malformed option argument");
+        bypass_cache = true;
         break;
       case 'c':
         c.path = optarg;
