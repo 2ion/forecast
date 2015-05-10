@@ -52,6 +52,7 @@ void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
 }
 
 void start_curses(const PlotCfg *pc) {
+  int default_color;
 
   setlocale(LC_ALL, "");
 
@@ -70,14 +71,14 @@ void start_curses(const PlotCfg *pc) {
 
   /* use colors and, if possible, terminal default colors */
   start_color();
-  use_default_colors();
+  default_color = use_default_colors() == OK ? -1 : 0;
 
   /* colors defined in the config file */
-  init_pair(PLOT_COLOR_BAR,           -1,                             pc->bar.color);
-  init_pair(PLOT_COLOR_LEGEND,        pc->legend.color,               -1);
-  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, pc->legend.texthighlight_color, -1);
-  init_pair(PLOT_COLOR_BAR_OVERLAY,   -1,                             pc->bar.overlay_color);
-  init_pair(PLOT_COLOR_PRECIP,        -1,                             pc->precipitation.bar_color);
+  init_pair(PLOT_COLOR_BAR,           default_color,                  pc->bar.color);
+  init_pair(PLOT_COLOR_LEGEND,        pc->legend.color,               default_color);
+  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, pc->legend.texthighlight_color, default_color);
+  init_pair(PLOT_COLOR_BAR_OVERLAY,   default_color,                  pc->bar.overlay_color);
+  init_pair(PLOT_COLOR_PRECIP,        default_color,                  pc->precipitation.bar_color);
 }
 
 void end_curses(void) {

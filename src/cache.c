@@ -32,7 +32,6 @@ int load_cache(const Config *c, Data *d) {
     return -1;
   }
 
-  /* Read data */
   fseek(cf, 0, SEEK_END);
   cflen = ftell(cf);
   fseek(cf, 0, SEEK_SET);
