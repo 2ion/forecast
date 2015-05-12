@@ -149,6 +149,9 @@ Daily overlay forecast plot (-m plot-daily), with the label format
 
 ![plot-daily](https://raw.githubusercontent.com/2ion/forecast/gh-pages/plot-daily-example.png)
 
+![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex3.png)
+![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex4.png)
+
 ## License
 
 GNU GPL v3+
