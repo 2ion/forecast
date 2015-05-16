@@ -48,38 +48,51 @@ int load_config(Config *c) {
   GUARD_MALLOC(c->apikey);
   memcpy((void*)c->apikey, apikey, strlen(apikey) + 1);
 
-  if(config_lookup_string(&cfg, "cache_file", &tmp) == CONFIG_TRUE) {
-    c->cache_file = malloc(strlen(tmp)+1);
-    GUARD_MALLOC(c->cache_file);
-    memcpy(c->cache_file, tmp, strlen(tmp) + 1);
+#define LOOKUP_LERROR(key) LERROR(0, 0, "[" #key "] not configured");
+#define LOOKUP_GENERIC(func, key)                   \
+  if(func(&cfg, #key, &(c->key)) != CONFIG_TRUE) {  \
+    LOOKUP_LERROR(key)                              \
+    goto return_error;                              \
+  }
+#define LOOKUP_INT(key) LOOKUP_GENERIC(config_lookup_int, key)
+#define LOOKUP_FLOAT(key) LOOKUP_GENERIC(config_lookup_float, key)
+#define LOOKUP_STRING(key)                                    \
+  if(config_lookup_string(&cfg, #key, &tmp) == CONFIG_TRUE) { \
+    c->key = malloc(strlen(tmp)+1);                           \
+    GUARD_MALLOC(c->key);                                     \
+    memcpy(c->key, tmp, strlen(tmp)+1);                       \
+  } else {                                                    \
+    LOOKUP_LERROR(key)                                        \
+    goto return_error;                                        \
   }
 
-  if(config_lookup_string(&cfg, "plot.daily.label_format", &tmp) == CONFIG_TRUE) {
-    c->plot.daily.label_format = malloc(strlen(tmp)+1);
-    GUARD_MALLOC(c->plot.daily.label_format);
-    memcpy(c->plot.daily.label_format, tmp, strlen(tmp) + 1);
-  }
+  /* General */
 
-  if(config_lookup_string(&cfg, "plot.hourly.label_format", &tmp) == CONFIG_TRUE) {
-    c->plot.hourly.label_format = malloc(strlen(tmp)+1);
-    GUARD_MALLOC(c->plot.hourly.label_format);
-    memcpy(c->plot.hourly.label_format, tmp, strlen(tmp) + 1);
-  }
+  LOOKUP_INT(max_cache_age)
+  LOOKUP_FLOAT(location.longitude)
+  LOOKUP_FLOAT(location.latitude)
 
-  if(config_lookup_float(&cfg, "location.latitude", &(c->location.latitude)) != CONFIG_TRUE) {
-    LERROR(0, 0, "location.latitude not configured");
+  if(config_lookup_string(&cfg, "op", &tmp) != CONFIG_TRUE) {
+    LOOKUP_LERROR(op);
     goto return_error;
+  } else {
+    c->op = match_mode_arg(tmp);
+    if(c->op == -1)
+      goto return_error;
   }
 
-  if(config_lookup_float(&cfg, "location.longitude", &(c->location.longitude)) != CONFIG_TRUE) {
-    LERROR(0, 0, "location.longitude not configured");
-    goto return_error;
-  }
+  LOOKUP_STRING(cache_file)
 
-  if(config_lookup_int(&cfg, "plot.height", &(c->plot.height)) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.height not configured");
-    goto return_error;
-  }
+  /* Plot */
+
+  LOOKUP_INT(plot.height)
+  LOOKUP_INT(plot.bar.width)
+  LOOKUP_INT(plot.hourly.succeeding_hours)
+  LOOKUP_INT(plot.daylight.width_max)
+  LOOKUP_FLOAT(plot.daylight.width_frac)
+
+  LOOKUP_STRING(plot.daily.label_format)
+  LOOKUP_STRING(plot.hourly.label_format)
 
   if(config_lookup_string(&cfg, "plot.bar.color", &tmp) != CONFIG_TRUE) {
     LERROR(0, 0, "plot.bar.color");
@@ -102,16 +115,6 @@ int load_config(Config *c) {
     CHECKCOLORS(c->plot.legend.texthighlight_color)
   }
 
-  if(config_lookup_int(&cfg, "plot.bar.width", &(c->plot.bar.width)) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.bar.width");
-    goto return_error;
-  }
-
-  if(config_lookup_int(&cfg, "max_cache_age", &(c->max_cache_age)) != CONFIG_TRUE) {
-    LERROR(0, 0, "max_cache_age missin");
-    goto return_error;
-  }
-
   if(config_lookup_string(&cfg, "plot.legend.color", &tmp) != CONFIG_TRUE) {
     LERROR(0, 0, "plot.legend.color");
     goto return_error;
@@ -126,19 +129,10 @@ int load_config(Config *c) {
     CHECKCOLORS(c->plot.precipitation.bar_color)
   }
 
-  if(config_lookup_string(&cfg, "op", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "op");
-    goto return_error;
-  } else {
-    c->op = match_mode_arg(tmp);
-    if(c->op == -1)
-      goto return_error;
-  }
-
-  if(config_lookup_int(&cfg, "plot.hourly.succeeding_hours", &(c->plot.hourly.succeeding_hours)) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.hourly.succeeding_hours");
-    goto return_error;
-  }
+#undef LOOKUP_INT
+#undef LOOKUP_FLOAT
+#undef LOOKUP_STRING
+#undef LOOKUP_GENERIC
 
   config_destroy(&cfg);
   return 0;

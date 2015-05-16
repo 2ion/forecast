@@ -60,6 +60,10 @@ enum {
   .precipitation = {                  \
     .label_format = NULL,             \
     .bar_color = COLOR_BLUE           \
+  },                                  \
+  .daylight = {                       \
+    .width_frac = 0.75,               \
+    .width_max = 72                   \
   }                                   \
 }
 
@@ -85,12 +89,16 @@ typedef struct {
     char *label_format;
     int bar_color;
   } precipitation;
+  struct {
+    double width_frac;
+    int width_max;
+  } daylight;
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
 void barplot2(const PlotCfg *c, const double *d, char **labels, size_t dlen, int color);
 void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, char **labels, size_t dlen);
-void barplot_horizontal_partitions(const PlotCfg *c, double min, double max, const double **pairs, char **labels, size_t len);
+void barplot_daylight(const PlotCfg *c, const int **times, size_t dlen);
 int terminal_dimen(int *rows, int *cols);
 
 #endif
