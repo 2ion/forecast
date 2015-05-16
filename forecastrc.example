@@ -75,4 +75,14 @@ plot: {
     bar_color = "BLUE";
   };
 
+  daylight: {
+    # This is a horizontal plot - fraction of the terminal width to
+    # occupy
+    width_frac = 0.80;
+
+    # Maximum number of columns to occupy. This is useful for keeping
+    # the plot readable on very large terminal windows 
+    width_max = 72;
+  };
+
 };
