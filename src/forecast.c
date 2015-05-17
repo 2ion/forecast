@@ -64,6 +64,7 @@ int parse_location(const char *s, double *la, double *lo) {
   e = (char*) s;
   while(*e++);
   buf = realloc(buf, e - col);
+  GUARD_MALLOC(buf);
   memcpy(buf, col + 1, e - col);
   buf[e-col-1] = '\0';
   *lo = strtod(buf, NULL);
