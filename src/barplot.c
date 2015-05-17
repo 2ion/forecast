@@ -23,6 +23,11 @@ static void start_curses(const PlotCfg*);
 static void end_curses(void);
 static void barplot_scale(const double*, size_t, int, int*, double*, double*, double*);
 static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
+static double frac_of_day_mins(const struct tm *t);
+
+double frac_of_day_mins(const struct tm *t) {
+  return (t->tm_hour*60 + t->tm_min) /(24.0*1440.0);
+}
 
 void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
   const int rfac = dmin < 0.0 ? 2 : 1;
@@ -296,7 +301,8 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
 }
 
 void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t days) {
-  int rows, cols;
+  int rows, cols, barwidth;
+  double scalefac, min, max;
   /* If we were to do things correctly, we would need to loop over the
    * date formats of the current locale and determine their maximum
    * length */
@@ -307,6 +313,10 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
   int alabel_max = 0;
   int blabel_max = 0;
 
+  double data[2*days+2]; /* +2 for 0h-24h extremes */
+  int di = 0;
+  int data_scaled[2*days+2];
+
   for(int i = 0; i < days; i++) {
     for(int j = 0; j < 3; j++) {
       int k = 3 * i + j;
@@ -315,7 +325,7 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
       char *lptr, *fmt;
       int *comp;
 
-      switch(k % 3) {
+      switch(j) {
         case 0:
           lptr = &date_label[k][0];
           fmt = pc->daylight.date_label_format;
@@ -325,11 +335,13 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
           lptr = &atime_label[k][0];
           fmt = pc->daylight.time_label_format;
           comp = &alabel_max;
+          data[di++] = frac_of_day_mins((const struct tm*)uxt);
           break;
         case 2:
           lptr = &btime_label[k][0];
           fmt = pc->daylight.time_label_format;
           comp = &blabel_max;
+          data[di++] = frac_of_day_mins((const struct tm*)uxt);
           break;
       }
 
@@ -338,6 +350,18 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
         *comp = strlen(lptr);
     }
   }
+
+  terminal_dimen(&rows, &cols);
+  barwidth = pc->daylight.width_frac * rows > pc->daylight.width_max ?
+    pc->daylight.width_max : pc->daylight.width_frac * rows;
+
+  /* Scale over [0.0, 24.0]*60 */
+  data[di++] = 0.0;
+  data[di++] = 1440.0;
+  barplot_scale((const double*)&data[0], 2*days+2, barwidth, &data_scaled[0], &scalefac, &max, &min);
+
+  const int dx = 0.5 * (COLS - barwidth);
+  const int dy = 0.5 * (LINES - days);
 
   return;
 }
