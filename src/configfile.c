@@ -93,6 +93,8 @@ int load_config(Config *c) {
 
   LOOKUP_STRING(plot.daily.label_format)
   LOOKUP_STRING(plot.hourly.label_format)
+  LOOKUP_STRING(plot.daylight.date_label_format);
+  LOOKUP_STRING(plot.daylight.time_label_format);
 
   if(config_lookup_string(&cfg, "plot.bar.color", &tmp) != CONFIG_TRUE) {
     LERROR(0, 0, "plot.bar.color");

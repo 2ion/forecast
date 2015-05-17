@@ -294,11 +294,49 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
   end_curses();
 }
 
-
-void barplot_horizontal_partitions(const PlotCfg *pc, const int **times, size_t days) {
+void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t days) {
   int rows, cols;
+  /* If we were to do things correctly, we would need to loop over the
+   * date formats of the current locale and determine their maximum
+   * length */
+  char date_label[days][255];
+  char atime_label[days][255];
+  char btime_label[days][255];
+  int dlabel_max = 0;
+  int alabel_max = 0;
+  int blabel_max = 0;
 
-  terminal_dimen(&rows, &cols);
+  for(int i = 0; i < days; i++) {
+    for(int j = 0; j < 3; j++) {
+      int k = 3 * i + j;
+      time_t t = times[k];
+      struct tm *uxt = gmtime(&t);
+      char *lptr, *fmt;
+      int *comp;
+
+      switch(k % 3) {
+        case 0:
+          lptr = &date_label[k][0];
+          fmt = pc->daylight.date_label_format;
+          comp = &dlabel_max;
+          break;
+        case 1:
+          lptr = &atime_label[k][0];
+          fmt = pc->daylight.time_label_format;
+          comp = &alabel_max;
+          break;
+        case 2:
+          lptr = &btime_label[k][0];
+          fmt = pc->daylight.time_label_format;
+          comp = &blabel_max;
+          break;
+      }
+
+      strftime(lptr, 255, (const char*)fmt, (const struct tm*)&uxt); 
+      if(strlen(lptr) > *comp)
+        *comp = strlen(lptr);
+    }
+  }
 
   return;
 }

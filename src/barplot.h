@@ -28,6 +28,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 
 enum {
@@ -63,7 +64,9 @@ enum {
   },                                  \
   .daylight = {                       \
     .width_frac = 0.75,               \
-    .width_max = 72                   \
+    .width_max = 72,                  \
+    .date_label_format = NULL,        \
+    .time_label_format = NULL         \
   }                                   \
 }
 
@@ -92,13 +95,15 @@ typedef struct {
   struct {
     double width_frac;
     int width_max;
+    char *date_label_format;
+    char *time_label_format;
   } daylight;
 } PlotCfg;
 
 void barplot(const PlotCfg *c, const double *d, size_t dlen);
 void barplot2(const PlotCfg *c, const double *d, char **labels, size_t dlen, int color);
 void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, char **labels, size_t dlen);
-void barplot_daylight(const PlotCfg *c, const int **times, size_t dlen);
+void barplot_daylight(const PlotCfg *c, const int *times, size_t dlen);
 int terminal_dimen(int *rows, int *cols);
 
 #endif
