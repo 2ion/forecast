@@ -117,6 +117,7 @@ int main(int argc, char **argv) {
       case 'v':
         puts(PACKAGE_STRING);
         puts("Compiled on: " __DATE__ " " __TIME__);
+        printf("Configuration file: %s\n", c.path);
         return EXIT_SUCCESS;
       case '?':
         usage();

@@ -26,7 +26,7 @@ int load_config(Config *c) {
   const char *tmp;
 
   if(access(c->path, R_OK) != 0) {
-    LERROR(0, errno, "access()");
+    LERROR(0, errno, "%s", c->path);
     return -1;
   }
 
@@ -190,9 +190,17 @@ int string_isalnum(const char *s) {
 void set_config_path(Config *c) {
   int plen;
 
-  plen = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
-  c->path = malloc(plen);
-  GUARD_MALLOC(c->path);
+  if(getenv("FORECAST_CONFIG_PATH") == NULL) {
+    plen = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
+    c->path = malloc(plen);
+    GUARD_MALLOC(c->path);
+    snprintf((char*)c->path, plen, "%s/%s", getenv("HOME"), RCNAME);
+  } else {
+    char *p = getenv("FORECAST_CONFIG_PATH");
+    plen = strlen(p)+1;
+    c->path = malloc(plen);
+    GUARD_MALLOC(c->path);
+    memcpy(c->path, p, plen);
+  }
 
-  snprintf((char*)c->path, plen, "%s/%s", getenv("HOME"), RCNAME);
 }
