@@ -79,6 +79,7 @@ void start_curses(const PlotCfg *pc) {
   init_pair(PLOT_COLOR_TEXTHIGHLIGHT, pc->legend.texthighlight_color, default_color);
   init_pair(PLOT_COLOR_BAR_OVERLAY,   default_color,                  pc->bar.overlay_color);
   init_pair(PLOT_COLOR_PRECIP,        default_color,                  pc->precipitation.bar_color);
+  init_pair(PLOT_COLOR_DAYLIGHT,      pc->daylight.color,             default_color);
 }
 
 void end_curses(void) {
@@ -332,7 +333,7 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
           break;
       }
 
-      strftime(lptr, 255, (const char*)fmt, (const struct tm*)&uxt); 
+      strftime(lptr, 255, (const char*)fmt, (const struct tm*)&uxt);
       if(strlen(lptr) > *comp)
         *comp = strlen(lptr);
     }

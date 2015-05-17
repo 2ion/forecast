@@ -131,6 +131,14 @@ int load_config(Config *c) {
     CHECKCOLORS(c->plot.precipitation.bar_color)
   }
 
+  if(config_lookup_string(&cfg, "plot.daylight.color", &tmp) != CONFIG_TRUE) {
+    LERROR(0, 0, "plot.daylight.color");
+    goto return_error;
+  } else {
+    CHECKCOLORS(c->plot.daylight.color)
+  }
+
+
 #undef LOOKUP_INT
 #undef LOOKUP_FLOAT
 #undef LOOKUP_STRING

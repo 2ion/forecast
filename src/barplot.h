@@ -36,7 +36,8 @@ enum {
   PLOT_COLOR_LEGEND         = 2,
   PLOT_COLOR_TEXTHIGHLIGHT  = 3,
   PLOT_COLOR_BAR_OVERLAY    = 4,
-  PLOT_COLOR_PRECIP         = 5
+  PLOT_COLOR_PRECIP         = 5,
+  PLOT_COLOR_DAYLIGHT       = 6
 };
 
 #define PLOTCFG_DEFAULT               \
@@ -66,7 +67,8 @@ enum {
     .width_frac = 0.75,               \
     .width_max = 72,                  \
     .date_label_format = NULL,        \
-    .time_label_format = NULL         \
+    .time_label_format = NULL,        \
+    .color = COLOR_YELLOW             \
   }                                   \
 }
 
@@ -97,6 +99,7 @@ typedef struct {
     int width_max;
     char *date_label_format;
     char *time_label_format;
+    int color;
   } daylight;
 } PlotCfg;
 
