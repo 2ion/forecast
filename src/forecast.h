@@ -30,7 +30,7 @@
         (__func__), (__LINE__), __VA_ARGS__)
 #define GUARD_MALLOC(v) \
   if((v) == NULL)       \
-    LERROR(EXIT_FAILURE, errno, "malloc() failed");
+    LERROR(EXIT_FAILURE, errno, "malloc(%s) returned NULL", #v);
 
 /* types */
 
