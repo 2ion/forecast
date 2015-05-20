@@ -65,12 +65,22 @@ int load_config(Config *c) {
     LOOKUP_LERROR(key)                                        \
     goto return_error;                                        \
   }
+#define LOOKUP_COLOR(key)                                     \
+  if(config_lookup_string(&cfg, #key, &tmp) == CONFIG_TRUE) { \
+    CHECKCOLORS(c->key)                                       \
+  } else {                                                    \
+    LOOKUP_LERROR(key)                                        \
+    goto return_error;                                        \
+  }
 
   /* General */
 
-  LOOKUP_INT(max_cache_age)
-  LOOKUP_FLOAT(location.longitude)
-  LOOKUP_FLOAT(location.latitude)
+  LOOKUP_FLOAT(location.latitude);
+  LOOKUP_FLOAT(location.longitude);
+
+  LOOKUP_INT(max_cache_age);
+
+  LOOKUP_STRING(cache_file);
 
   if(config_lookup_string(&cfg, "op", &tmp) != CONFIG_TRUE) {
     LOOKUP_LERROR(op);
@@ -81,68 +91,33 @@ int load_config(Config *c) {
       goto return_error;
   }
 
-  LOOKUP_STRING(cache_file)
-
   /* Plot */
 
-  LOOKUP_INT(plot.height)
-  LOOKUP_INT(plot.bar.width)
-  LOOKUP_INT(plot.hourly.succeeding_hours)
-  LOOKUP_INT(plot.daylight.width_max)
-  LOOKUP_FLOAT(plot.daylight.width_frac)
+  LOOKUP_COLOR(plot.bar.color);
+  LOOKUP_COLOR(plot.bar.overlay_color);
+  LOOKUP_COLOR(plot.daylight.color);
+  LOOKUP_COLOR(plot.legend.color);
+  LOOKUP_COLOR(plot.legend.texthighlight_color);
+  LOOKUP_COLOR(plot.precipitation.bar_color);
 
-  LOOKUP_STRING(plot.daily.label_format)
-  LOOKUP_STRING(plot.hourly.label_format)
+  LOOKUP_FLOAT(plot.daylight.width_frac);
+
+  LOOKUP_INT(plot.bar.width);
+  LOOKUP_INT(plot.daylight.width_max);
+  LOOKUP_INT(plot.height);
+  LOOKUP_INT(plot.hourly.succeeding_hours);
+
+  LOOKUP_STRING(plot.daily.label_format);
   LOOKUP_STRING(plot.daylight.date_label_format);
   LOOKUP_STRING(plot.daylight.time_label_format);
+  LOOKUP_STRING(plot.hourly.label_format);
 
-  if(config_lookup_string(&cfg, "plot.bar.color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.bar.color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.bar.color)
-  }
-
-  if(config_lookup_string(&cfg, "plot.bar.overlay_color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.bar.overlay_color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.bar.overlay_color)
-  }
-
-  if(config_lookup_string(&cfg, "plot.legend.texthighlight_color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.legend.texthighlight_color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.legend.texthighlight_color)
-  }
-
-  if(config_lookup_string(&cfg, "plot.legend.color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.legend.color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.legend.color)
-  }
-
-  if(config_lookup_string(&cfg, "plot.precipitation.bar_color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.precipitation.bar_color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.precipitation.bar_color)
-  }
-
-  if(config_lookup_string(&cfg, "plot.daylight.color", &tmp) != CONFIG_TRUE) {
-    LERROR(0, 0, "plot.daylight.color");
-    goto return_error;
-  } else {
-    CHECKCOLORS(c->plot.daylight.color)
-  }
-
-
+#undef LOOKUP_COLOR
 #undef LOOKUP_INT
 #undef LOOKUP_FLOAT
 #undef LOOKUP_STRING
 #undef LOOKUP_GENERIC
+#undef LOOKUP_LERROR
 
   config_destroy(&cfg);
   return 0;
