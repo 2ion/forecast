@@ -176,6 +176,8 @@ int match_mode_arg(const char *str) {
     return OP_PLOT_PRECIPITATION_DAILY;
   else if(strcmp(str, "plot-precip-hourly") == 0)
     return OP_PLOT_PRECIPITATION_HOURLY;
+  else if(strcmp(str, "plot-daylight") == 0)
+    return OP_PLOT_DAYLIGHT;
   else
     return -1;
 }

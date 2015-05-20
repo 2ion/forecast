@@ -59,10 +59,10 @@ void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
 void start_curses(const PlotCfg *pc) {
   int default_color;
 
-  setlocale(LC_ALL, "");
+/*  setlocale(LC_ALL, ""); */
 
   /* if this call fails, the program will terminate */
-  WINDOW *w = initscr();
+  initscr();
 
   /* screen and echo setup */
   cbreak();
@@ -300,8 +300,8 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
   end_curses();
 }
 
-void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t days) {
-  int rows, cols, barwidth;
+void barplot_daylight(const PlotCfg *pc, const int *times, size_t days) {
+  int barwidth;
   double scalefac, min, max;
   /* If we were to do things correctly, we would need to loop over the
    * date formats of the current locale and determine their maximum
@@ -317,7 +317,7 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
   int di = 0;
   int data_scaled[2*days+2];
 
-  for(int i = 0; i < days; i++) {
+  for(int i = 0; i < days; i++)
     for(int j = 0; j < 3; j++) {
       int k = 3 * i + j;
       time_t t = times[k];
@@ -344,24 +344,43 @@ void barplot_horizontal_partitions(const PlotCfg *pc, const int *times, size_t d
           data[di++] = frac_of_day_mins((const struct tm*)uxt);
           break;
       }
-
       strftime(lptr, 255, (const char*)fmt, (const struct tm*)&uxt);
       if(strlen(lptr) > *comp)
         *comp = strlen(lptr);
     }
-  }
 
-  terminal_dimen(&rows, &cols);
-  barwidth = pc->daylight.width_frac * rows > pc->daylight.width_max ?
-    pc->daylight.width_max : pc->daylight.width_frac * rows;
+//  terminal_dimen(&rows, &cols);
 
   /* Scale over [0.0, 24.0]*60 */
   data[di++] = 0.0;
   data[di++] = 1440.0;
   barplot_scale((const double*)&data[0], 2*days+2, barwidth, &data_scaled[0], &scalefac, &max, &min);
 
+  start_curses(pc);
+
   const int dx = 0.5 * (COLS - barwidth);
   const int dy = 0.5 * (LINES - days);
+  barwidth = pc->daylight.width_frac * LINES > pc->daylight.width_max ?
+    pc->daylight.width_max : pc->daylight.width_frac * LINES;
+
+  LERROR(0, 0, "barwidth=%d", barwidth);
+
+  for(int y = 0; y < days; y++) {
+    /* plot background */
+    for(int x = dx; x < dx + barwidth; x++)
+      LERROR(0, 0, "y = %d, x = %d",dy +y, x);
+//      mvaddch(dy + y, x, ' ');
+    /* plot daylight */
+    /*
+    attron(COLOR_PAIR(PLOT_COLOR_DAYLIGHT));
+    for(int x = dx + data_scaled[y]; x < dx + data_scaled[2*y]; x++)
+      mvaddch(dy + y, x, ' ');
+    attroff(COLOR_PAIR(PLOT_COLOR_DAYLIGHT));
+    */
+  }
+
+  //end_curses();
+  
 
   return;
 }

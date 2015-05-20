@@ -168,6 +168,26 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
   barplot_overlaid(pc, tempMax, tempMin, plbl, 7);
 }
 
+void render_daylight(const PlotCfg *pc, struct json_object *daily) {
+  EXTRACT_PREFIXED(daily, data);
+  struct array_list *al = json_object_get_array(daily_data);
+  int allen = array_list_length(al);
+  int times[3*allen];
+  int j = 0;
+
+  for(int i = 0; i < allen; i++) {
+    struct json_object *o  = array_list_get_idx(al, i);
+    EXTRACT_PREFIXED(o, time);
+    EXTRACT_PREFIXED(o, sunriseTime);
+    EXTRACT_PREFIXED(o, sunsetTime);
+    times[j++] = json_object_get_int(o_time);
+    times[j++] = json_object_get_int(o_sunriseTime);
+    times[j++] = json_object_get_int(o_sunsetTime);
+  }
+
+  barplot_daylight(pc, (const int*) &times[0], allen);
+}
+
 int render_datapoint(struct json_object *o) {
   assert(o);
 
@@ -250,6 +270,9 @@ int render(const Config *c, Data *d) {
       break;
     case OP_PLOT_PRECIPITATION_HOURLY:
       render_precipitation_plot_hourly(&c->plot, o_hourly);
+      break;
+    case OP_PLOT_DAYLIGHT:
+      render_daylight(&c->plot, o_daily);
       break;
   }
 #undef PRINT_HEADER

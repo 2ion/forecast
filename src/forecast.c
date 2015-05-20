@@ -84,7 +84,7 @@ void usage(void) {
        "                        <latitude>:<longitude> where the choordinates are given as floating\n"
        "                        point numbers\n"
        "  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,\n"
-       "                        plot-precip-hourly. Defaults to 'print'\n"
+       "                        plot-precip-hourly, plot-daylight. Defaults to 'print'\n"
        "  -r|--request          By pass the cache if a cache file exists\n"
        "  -v|--version          Print program version and exit"
        );

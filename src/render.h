@@ -58,5 +58,6 @@ void    render_hourly_datapoints_plot(const PlotCfg*, struct json_object*);
 void    render_daily_temperature_plot(const PlotCfg*, struct json_object*);
 void    render_precipitation_plot_daily(const PlotCfg *, struct json_object*);
 void    render_precipitation_plot_hourly(const PlotCfg *, struct json_object*);
+void    render_daylight(const PlotCfg*, struct json_object*);
 
 #endif
