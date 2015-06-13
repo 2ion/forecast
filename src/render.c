@@ -126,7 +126,7 @@ void render_precipitation_plot_daily(const PlotCfg *pc, struct json_object *o) {
 
     d[i] = json_object_get_double(oo_precipProbability) * 100;
 
-    time_t unixtime = json_object_get_int(oo_time);
+    time_t unixtime = json_object_get_int(oo_time) - 86400;
     struct tm *time = gmtime(&unixtime);
     strftime(labels[i], pc->bar.width+1, pc->daily.label_format?:"%d", time);
     labels[i][pc->bar.width] = '\0';
@@ -157,7 +157,7 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
     tempMin[i] = render_f2c(json_object_get_double(o_temperatureMin));
     tempMax[i] = render_f2c(json_object_get_double(o_temperatureMax));
 
-    time_t unixtime = json_object_get_int(o_time);
+    time_t unixtime = json_object_get_int(o_time) - 86400;
     struct tm *time = gmtime(&unixtime);
 
     strftime(labels[i], pc->bar.width+1, pc->daily.label_format?:"%d", time);
