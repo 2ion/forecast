@@ -143,10 +143,10 @@ plotting mode, the plot will be shown until you press a key.
 
 Daily overlay forecast plot (-m plot-daily), with the label format
 "%d%b", showing the min/max temperatures on each day:
-![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex3.png)
+![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex4.png)
 
 Hourly forecast plot (-m plot-hourly), with the label format "%H:%M":
-![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex4.png)
+![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex3.png)
 
 ## License
 
