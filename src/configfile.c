@@ -77,12 +77,19 @@ int load_config(Config *c) {
 
   /* General */
 
+  /* location is now a map
   LOOKUP_FLOAT(location.latitude);
   LOOKUP_FLOAT(location.longitude);
+  */
 
   LOOKUP_INT(max_cache_age);
 
   LOOKUP_STRING(cache_file);
+  /* Check if cache_file contains a %s escape */
+  if(strstr(c->cache_file, "%s") == NULL) {
+    puts("[cache_file] must include a '%s' escape sequence");
+    goto return_error;
+  }
 
   if(config_lookup_string(&cfg, "op", &tmp) != CONFIG_TRUE) {
     LOOKUP_LERROR(op);

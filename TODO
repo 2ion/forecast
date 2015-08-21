@@ -2,3 +2,4 @@ Plotter: render hours as legend
 Plotter: configurable colors for bar labels
 Plotter: adapt bar width automatically to terminal width (--fit)
 Cache: By-location cache to accommodate the -L flag
+Segfault in the daylight plotter: Fault of LERROR()?????

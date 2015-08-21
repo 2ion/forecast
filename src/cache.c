@@ -1,17 +1,35 @@
 #include "cache.h"
+#include "hash.h"
 
-static int check_cache_file(const Config*);
+static int check_cache_file(const char*);
+static char* get_cache_file_path(const Config*, const char *location);
 
-int check_cache_file(const Config *c) {
+char* get_cache_file_path(const Config *c, const char *loc) {
+  char md5buf[33];
+  char *buf;
+  int buflen;
+
+  if(md5str(loc, md5buf, sizeof(md5buf)) != 0)
+    return NULL;
+
+  buflen = snprintf(NULL, 0, c->cache_file, md5buf);
+  buf = malloc(buflen);
+  GUARD_MALLOC(buf);
+  snprintf(buf, buflen, c->cache_file, md5buf);
+
+  return buf;
+}
+
+int check_cache_file(conts char *path) {
   struct stat s;
   struct timeval tv;
 
   /* Check cache file accssibility */
-  if(access(c->cache_file, F_OK | R_OK) != 0)
+  if(access(path, F_OK | R_OK) != 0)
     return -1;
 
   /* Check cache file age */
-  if(stat(c->cache_file, &s) != 0)
+  if(stat(path, &s) != 0)
     return -1;
   gettimeofday(&tv, NULL);
   if((tv.tv_sec - s.st_mtim.tv_sec) >= c->max_cache_age)
@@ -20,14 +38,17 @@ int check_cache_file(const Config *c) {
   return 0;
 }
 
-int load_cache(const Config *c, Data *d) {
+int load_cache(const Config *c, Data *d, const char *loc) {
   FILE *cf;
   long cflen;
 
-  if(check_cache_file(c) != 0)
+  const char *cache_file = get_cache_file_path(c, loc);
+  if(!cache_file) return -1;
+
+  if(check_cache_file(cache_file) != 0)
     return  -1;
 
-  if((cf = fopen(c->cache_file, "rb")) == NULL) {
+  if((cf = fopen(cache_file, "rb")) == NULL) {
     LERROR(0, errno, "fopen()");
     return -1;
   }
@@ -42,14 +63,18 @@ int load_cache(const Config *c, Data *d) {
   fread(d->data, cflen, 1, cf);
   fclose(cf);
 
+  free(cache_file);
   return 0;
 }
 
-int save_cache(const Config *c, const Data *d) {
+int save_cache(const Config *c, const Data *d, const char *loc) {
   int fd;
   int ret = 0;
 
-  if((fd = open(c->cache_file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
+  const char *cache_file = get_cache_file_path(c, loc);
+  if(!cache_file) return -1;
+
+  if((fd = open(cache_file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
     return -1;
 
   ret = write(fd, (const void*) d->data, d->datalen);
@@ -61,5 +86,6 @@ int save_cache(const Config *c, const Data *d) {
 
   close(fd);
 
+  free(cache_file);
   return ret;
 }

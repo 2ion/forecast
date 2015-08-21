@@ -12,7 +12,8 @@ AC_DEFINE([RCNAME], [".forecastrc"], [Configuration file name])
 PKG_CHECK_MODULES([LIBJSONC], [json-c])
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
-PKG_CHECK_MODULES([LIBNCURSESW], ncursesw)
+PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
+PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
 
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */

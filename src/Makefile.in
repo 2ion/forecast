@@ -102,7 +102,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_forecast_OBJECTS = forecast-forecast.$(OBJEXT) \
 	forecast-barplot.$(OBJEXT) forecast-configfile.$(OBJEXT) \
 	forecast-network.$(OBJEXT) forecast-render.$(OBJEXT) \
-	forecast-cache.$(OBJEXT)
+	forecast-cache.$(OBJEXT) forecast-hash.$(OBJEXT)
 forecast_OBJECTS = $(am_forecast_OBJECTS)
 forecast_LDADD = $(LDADD)
 forecast_LINK = $(CCLD) $(forecast_CFLAGS) $(CFLAGS) \
@@ -193,6 +193,8 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBCONFIG_CFLAGS = @LIBCONFIG_CFLAGS@
 LIBCONFIG_LIBS = @LIBCONFIG_LIBS@
+LIBCRYPTO_CFLAGS = @LIBCRYPTO_CFLAGS@
+LIBCRYPTO_LIBS = @LIBCRYPTO_LIBS@
 LIBCURL_CFLAGS = @LIBCURL_CFLAGS@
 LIBCURL_LIBS = @LIBCURL_LIBS@
 LIBJSONC_CFLAGS = @LIBJSONC_CFLAGS@
@@ -262,17 +264,19 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c
+forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c hash.c
 forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
 									$(LIBCONFIG_CFLAGS) \
 									$(LIBCURL_CFLAGS) \
-									$(LIBNCURSESW_CFLAGS)
+									$(LIBNCURSESW_CFLAGS) \
+									$(LIBCRYPTO_CFLAGS)
 
 forecast_LDFLAGS = -lm \
 									 $(LIBJSONC_LIBS) \
 									 $(LIBCONFIG_LIBS) \
 									 $(LIBCURL_LIBS) \
-									 $(LIBNCURSESW_LIBS)
+									 $(LIBNCURSESW_LIBS) \
+									 $(LIBCRYPTO_LIBS)
 
 all: all-am
 
@@ -364,6 +368,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-cache.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-configfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-forecast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-hash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-network.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/forecast-render.Po@am__quote@
 
@@ -464,6 +469,20 @@ forecast-cache.obj: cache.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='cache.c' object='forecast-cache.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -c -o forecast-cache.obj `if test -f 'cache.c'; then $(CYGPATH_W) 'cache.c'; else $(CYGPATH_W) '$(srcdir)/cache.c'; fi`
+
+forecast-hash.o: hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -MT forecast-hash.o -MD -MP -MF $(DEPDIR)/forecast-hash.Tpo -c -o forecast-hash.o `test -f 'hash.c' || echo '$(srcdir)/'`hash.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/forecast-hash.Tpo $(DEPDIR)/forecast-hash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='hash.c' object='forecast-hash.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -c -o forecast-hash.o `test -f 'hash.c' || echo '$(srcdir)/'`hash.c
+
+forecast-hash.obj: hash.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -MT forecast-hash.obj -MD -MP -MF $(DEPDIR)/forecast-hash.Tpo -c -o forecast-hash.obj `if test -f 'hash.c'; then $(CYGPATH_W) 'hash.c'; else $(CYGPATH_W) '$(srcdir)/hash.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/forecast-hash.Tpo $(DEPDIR)/forecast-hash.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='hash.c' object='forecast-hash.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(forecast_CFLAGS) $(CFLAGS) -c -o forecast-hash.obj `if test -f 'hash.c'; then $(CYGPATH_W) 'hash.c'; else $(CYGPATH_W) '$(srcdir)/hash.c'; fi`
 
 ID: $(am__tagged_files)
 	$(am__define_uniq_tagged_files); mkid -fID $$unique
