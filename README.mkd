@@ -53,6 +53,18 @@ location: {
   longitude = 13.3770;
 };
 
+# Pre-defined locations which can be referenced by name using the
+# -L/--location-by-name optionsoptions. The coordinates of the default
+# location setting will be replaced with the ones defined in the array.
+# WARNING: The cache handling routine does not yet accommodate this
+# setting well; the cache will be refreshed whenever the named
+# location's coordniates defer from the default location. This will get
+# fixed ASAP.
+location_map: {
+  Berlin: [ 52.5161,  13.3770 ];
+  Tokyo:  [ 35.7000, 139.7667 ];
+};
+
 # Plot appearance
 plot: {
 
@@ -104,6 +116,16 @@ plot: {
   precipitation: {
     # Bar color used in plot-precip-daily, plot-precip-hourly
     bar_color = "BLUE";
+  };
+
+  daylight: {
+    # This is a horizontal plot - fraction of the terminal width to
+    # occupy
+    width_frac = 0.80;
+
+    # Maximum number of columns to occupy. This is useful for keeping
+    # the plot readable on very large terminal windows 
+    width_max = 72;
   };
 
 };

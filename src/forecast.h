@@ -45,16 +45,22 @@ enum {
 };
 
 typedef struct {
+  char *name;
+  double latitude;
+  double longitude;
+} Location;
+
+typedef struct {
   char *path;
   const char *apikey;
   char *cache_file;
-  struct {
-    double latitude;
-    double longitude;
-  } location;
+  Location location;
+  Location *location_map;
+  size_t location_map_len;
   PlotCfg plot;
   int op;
   int max_cache_age;
+  bool bypass_cache;
 } Config;
 
 #define CONFIG_NULL         \
@@ -66,9 +72,13 @@ typedef struct {
   .location = {             \
     .latitude = 0.0,        \
     .longitude = 0.0,       \
+    .name = NULL            \
   },                        \
+  .location_map = NULL,     \
+  .location_map_len = 0,    \
   .plot = PLOTCFG_DEFAULT,  \
-  .op = OP_PRINT_CURRENTLY  \
+  .op = OP_PRINT_CURRENTLY, \
+  .bypass_cache = false     \
 }
 
 typedef struct {

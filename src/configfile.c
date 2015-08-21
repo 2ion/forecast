@@ -18,6 +18,8 @@
 
 #include "configfile.h"
 
+static void load_location_map(config_t *cfg, Config *c);
+
 int load_config(Config *c) {
   assert(c);
 
@@ -91,6 +93,9 @@ int load_config(Config *c) {
       goto return_error;
   }
 
+  /* Pre-defined location mappings */
+  load_location_map(&cfg, c);
+
   /* Plot */
 
   LOOKUP_COLOR(plot.bar.color);
@@ -125,6 +130,38 @@ int load_config(Config *c) {
 return_error:
   config_destroy(&cfg);
   return -1;
+}
+
+void load_location_map(config_t *cfg, Config *c) {
+  assert(cfg);
+  assert(c);
+  const config_setting_t *map;
+
+  map = config_lookup(cfg, "location_map");
+  if(map == NULL) return;
+  if(config_setting_is_group(map) != CONFIG_TRUE)
+    return;
+
+  for(int i = 0; i < config_setting_length(map); i++) {
+    const config_setting_t *array = config_setting_get_elem(map, (unsigned)i);
+    const char *n = config_setting_name(array);
+    if(config_setting_length(array) < 2) continue;
+    double lat = config_setting_get_float_elem(array, 0);
+    double longi = config_setting_get_float_elem(array, 1);
+    if(c->location_map_len == 0) {
+      c->location_map_len = 1;
+      c->location_map = malloc(sizeof(Location));
+    } else {
+      c->location_map_len += 1;
+      c->location_map = realloc(c->location_map, c->location_map_len*sizeof(Location));
+    }
+    GUARD_MALLOC(c->location_map);
+    c->location_map[i].latitude = lat;
+    c->location_map[i].longitude = longi;
+    c->location_map[i].name = malloc(strlen(n)+1);
+    GUARD_MALLOC(c->location_map[i].name);
+    memcpy(c->location_map[i].name, n, strlen(n)+1);
+  }
 }
 
 void free_config(Config *c) {
