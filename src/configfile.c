@@ -152,9 +152,9 @@ void load_location_map(config_t *cfg, Config *c) {
   for(int i = 0; i < config_setting_length(map); i++) {
     const config_setting_t *array = config_setting_get_elem(map, (unsigned)i);
     const char *n = config_setting_name(array);
-    if(config_setting_length(array) < 2) continue;
-    double lat = config_setting_get_float_elem(array, 0);
-    double longi = config_setting_get_float_elem(array, 1);
+    if(config_setting_length(array) < 2) continue; /* accept only arrays of length 2 */
+    double la = config_setting_get_float_elem(array, 0);
+    double lo = config_setting_get_float_elem(array, 1);
     if(c->location_map_len == 0) {
       c->location_map_len = 1;
       c->location_map = malloc(sizeof(Location));
@@ -163,8 +163,8 @@ void load_location_map(config_t *cfg, Config *c) {
       c->location_map = realloc(c->location_map, c->location_map_len*sizeof(Location));
     }
     GUARD_MALLOC(c->location_map);
-    c->location_map[i].latitude = lat;
-    c->location_map[i].longitude = longi;
+    c->location_map[i].latitude = la;
+    c->location_map[i].longitude = lo;
     c->location_map[i].name = malloc(strlen(n)+1);
     GUARD_MALLOC(c->location_map[i].name);
     memcpy(c->location_map[i].name, n, strlen(n)+1);
