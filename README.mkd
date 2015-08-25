@@ -23,6 +23,18 @@ Capabilities include:
 
 The build system uses GNU autoconf and automake.
 
+## Build
+
+After installing all dependencies, this will configure and build the
+program:
+
+```sh
+./autogen.sh
+./configure --prefix=/your/prefix
+make
+make install
+```
+
 ## Synopsis
 
 ```
