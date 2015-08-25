@@ -44,10 +44,14 @@ op = "print";
 max_cache_age = 1200;
 
 # File to save cache data to; should be in a location your user has write
-# access to.
-cache_file = "/tmp/forecast.cache";
+# access to. The path is used as a template and must contain the %s
+# character sequence EXACTLY once, as the string is used as an input to
+# snprintf(3). %s will be replaced with a MD5 hash of the location in
+# order to be able to manage cachefiles for multiple locations.
+cache_file = "/tmp/forecast.%s.cache";
 
-# Location coordinates as doubles
+# Location coordinates as doubles. These will be used as the default
+# when no named location mapping was specified on the command line.
 location: {
   latitude = 52.5161;
   longitude = 13.3770;
