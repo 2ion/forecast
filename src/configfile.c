@@ -58,6 +58,7 @@ int load_config(Config *c) {
   }
 #define LOOKUP_INT(key) LOOKUP_GENERIC(config_lookup_int, key)
 #define LOOKUP_FLOAT(key) LOOKUP_GENERIC(config_lookup_float, key)
+#define LOOKUP_BOOL(key) LOOKUP_GENERIC(config_lookup_bool, key)
 #define LOOKUP_STRING(key)                                    \
   if(config_lookup_string(&cfg, #key, &tmp) == CONFIG_TRUE) { \
     c->key = malloc(strlen(tmp)+1);                           \
@@ -76,6 +77,8 @@ int load_config(Config *c) {
   }
 
   /* General */
+
+  LOOKUP_BOOL(extend_hourly);
 
   /* Locations */
   LOOKUP_FLOAT(location.latitude);

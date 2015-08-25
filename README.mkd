@@ -23,6 +23,30 @@ Capabilities include:
 
 The build system uses GNU autoconf and automake.
 
+## Synopsis
+
+```
+Usage:
+  forecast [c:dehL:l:m:rv] [OPTIONS]
+Options:
+  -c|--config            PATH   Configuration file to use
+  -d|--dump                     Dump the JSON data and a newline to stdout
+  -e|--extend-hourly            Request data for one week instead of two days
+                                for hourly forecasts.
+  -h|--help                     Print this message and exit
+  -L|--location-by-name  NAME   Select a location predefined in the configuration file
+  -l|--location          CHOORD Query the weather at this location; CHOORD is a string in the format
+                                <latitude>:<longitude> where the choordinates are given as floating
+                                point numbers
+  -m|--mode              MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,
+                                plot-precip-hourly, plot-daylight. Defaults to 'print'
+  -r|--request                  By pass the cache if a cache file exists
+  -v|--version                  Print program version and exit
+```
+
+When using --location, the cache will be bypassed in any case. In
+plotting mode, the plot will be shown until you press a key.
+
 ## API key
 
 In order to use the API, you need to obtain an API key from forecast.io.
@@ -53,6 +77,12 @@ op = "print";
 # request new data. This will significantly speed up subsequent
 # invocations. Set to 0 in order to always bypass the cache.
 max_cache_age = 1200;
+
+# If set to true, request data for 7 days instead of 2 (the default)
+# when querying hourly weather data, allowing
+# plot.hourly.succeeding_hours to be set to up to 168 hours instead of
+# just 48. This approximately doubles the request size.
+extend_hourly = false;
 
 # File to save cache data to; should be in a location your user has write
 # access to. The path is used as a template and must contain the %s
@@ -153,27 +183,6 @@ If available, command line parameters take precedence over the config
 file settings.
 
 As for the meaning of the keys, read the comments in forecastrc.example.
-
-## Synopsis
-
-```
-Usage:
-  forecast [c:dhl:m:rv] [OPTIONS]
-Options:
-  -c|--config    PATH   Configuration file to use
-  -d|--dump             Dump the JSON data and a newline to stdout
-  -h|--help             Print this message and exit
-  -l|--location  CHOORD Query the weather at this location; CHOORD is a string in the format
-                        <latitude>:<longitude> where the choordinates are given as floating
-                        point numbers
-  -m|--mode      MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,
-                        plot-precip-hourly. Defaults to 'print'
-  -r|--request          Bypass the cache if a cache file exists
-  -v|--version          Print program version and exit
-```
-
-When using --location, the cache will be bypassed in any case. In
-plotting mode, the plot will be shown until you press a key.
 
 ## Example plots
 

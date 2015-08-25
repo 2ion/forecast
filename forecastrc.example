@@ -12,6 +12,12 @@ op = "print";
 # invocations. Set to 0 in order to always bypass the cache.
 max_cache_age = 1200;
 
+# If set to true, request data for 7 days instead of 2 (the default)
+# when querying hourly weather data, allowing
+# plot.hourly.succeeding_hours to be set to up to 168 hours instead of
+# just 48. This approximately doubles the request size.
+extend_hourly = false;
+
 # File to save cache data to; should be in a location your user has write
 # access to. The path is used as a template and must contain the %s
 # character sequence EXACTLY once, as the string is used as an input to

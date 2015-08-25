@@ -34,7 +34,7 @@
 
 /* globals */
 
-#define CLI_OPTIONS "c:dhL:l:m:rv"
+#define CLI_OPTIONS "c:dehL:l:m:rv"
 static const char *options = CLI_OPTIONS;
 static const struct option options_long[] = {
   { "help",             no_argument,        NULL, 'h' },
@@ -45,6 +45,7 @@ static const struct option options_long[] = {
   { "mode",             required_argument,  NULL, 'm' },
   { "dump",             no_argument,        NULL, 'd' },
   { "request",          no_argument,        NULL, 'r' },
+  { "extend-hourly",    no_argument,        NULL, 'e' },
   { 0,                  0,                  0,    0   }
 };
 
@@ -106,6 +107,8 @@ void usage(void) {
        "Options:\n"
        "  -c|--config            PATH   Configuration file to use\n"
        "  -d|--dump                     Dump the JSON data and a newline to stdout\n"
+       "  -e|--extend-hourly            Request data for one week instead of two days\n"
+       "                                for hourly forecasts.\n" 
        "  -h|--help                     Print this message and exit\n"
        "  -L|--location-by-name  NAME   Select a location predefined in the configuration file\n"
        "  -l|--location          CHOORD Query the weather at this location; CHOORD is a string in the format\n"
@@ -164,6 +167,11 @@ int main(int argc, char **argv) {
         break;
       case 'r':
         c.bypass_cache = true;
+        break;
+      case 'e':
+        if(!c.extend_hourly) /* when overriding the config file */
+          c.bypass_cache = true;
+        c.extend_hourly = true;
         break;
     }
   }

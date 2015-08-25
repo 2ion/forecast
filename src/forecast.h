@@ -62,6 +62,7 @@ typedef struct {
   int op;
   int max_cache_age;
   bool bypass_cache;
+  int extend_hourly; /* 'int' because if 'bool', libconfig complains (I'm just too lazy) */
 } Config;
 
 #define CONFIG_NULL         \
@@ -79,7 +80,8 @@ typedef struct {
   .location_map_len = 0,    \
   .plot = PLOTCFG_DEFAULT,  \
   .op = OP_PRINT_CURRENTLY, \
-  .bypass_cache = false     \
+  .bypass_cache = false,    \
+  .extend_hourly = false    \
 }
 
 typedef struct {

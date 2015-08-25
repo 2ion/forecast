@@ -43,12 +43,19 @@ int request(Config *c, Data *d) {
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
-  urllen = snprintf(NULL, 0, "https://api.forecast.io/forecast/%s/%f,%f",
-      c->apikey, c->location.latitude, c->location.longitude) + 1;
-  url = malloc(urllen);
-  GUARD_MALLOC(url);
-  snprintf(url, urllen, "https://api.forecast.io/forecast/%s/%f,%f",
-      c->apikey, c->location.latitude, c->location.longitude);
+  if(c->extend_hourly) {
+    urllen = snprintf(NULL, 0, "https://api.forecast.io/forecast/%s/%f,%f?extend=hourly",
+        c->apikey, c->location.latitude, c->location.longitude) + 1;
+    url = malloc(urllen); GUARD_MALLOC(url);
+    snprintf(url, urllen, "https://api.forecast.io/forecast/%s/%f,%f?extend=hourly",
+        c->apikey, c->location.latitude, c->location.longitude);
+  } else {
+    urllen = snprintf(NULL, 0, "https://api.forecast.io/forecast/%s/%f,%f",
+        c->apikey, c->location.latitude, c->location.longitude) + 1;
+    url = malloc(urllen); GUARD_MALLOC(url);
+    snprintf(url, urllen, "https://api.forecast.io/forecast/%s/%f,%f",
+        c->apikey, c->location.latitude, c->location.longitude);
+  }
 
   CURL *curl = curl_easy_init();
   curl_easy_setopt(curl, CURLOPT_URL, url);
