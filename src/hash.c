@@ -1,4 +1,4 @@
-#include <hash.h>
+#include "hash.h"
 
 /* buf must be of length 33 */
 int md5str(const char *str, char *buf, size_t buflen) {
