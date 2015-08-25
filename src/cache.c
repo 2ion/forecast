@@ -10,10 +10,10 @@ char* get_cache_file_path(const Config *c) {
   int buflen;
 
   /* hash the location's string representation */
-  buflen = snprintf(NULL, 0, "%f%f", c->location.latitude,
+  buflen = snprintf(NULL, 0, "%f:%f", c->location.latitude,
       c->location.longitude);
-  buf = malloc(buflen);
-  snprintf(NULL, 0, "%f%f", c->location.latitude,
+  buf = malloc(buflen + 1);
+  snprintf(buf, buflen + 1, "%f:%f", c->location.latitude,
       c->location.longitude);
   if(md5str((const char*)buf, lohash, sizeof(lohash)) != 0)
     return NULL;
@@ -21,9 +21,9 @@ char* get_cache_file_path(const Config *c) {
 
   /* find the cachefile for this exact location */
   buflen = snprintf(NULL, 0, c->cache_file, lohash);
-  buf = malloc(buflen);
+  buf = malloc(buflen + 1);
   GUARD_MALLOC(buf);
-  snprintf(buf, buflen, c->cache_file, lohash);
+  snprintf(buf, buflen + 1, c->cache_file, lohash);
 
   /* free after use */
   return buf;

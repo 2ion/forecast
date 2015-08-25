@@ -68,8 +68,6 @@ int lookup_location(Config *c, const char *n) {
     if(strcmp((const char*)c->location_map[i].name, n) == 0) {
       const double la = c->location_map[i].latitude;
       const double lo = c->location_map[i].longitude;
-      if(la != c->location.latitude || lo != c->location.longitude)
-        c->bypass_cache = true;
       c->location.latitude = c->location_map[i].latitude;
       c->location.longitude = c->location_map[i].longitude;
       return 0;

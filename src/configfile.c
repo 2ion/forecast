@@ -77,10 +77,10 @@ int load_config(Config *c) {
 
   /* General */
 
-  /* location is now a map
+  /* Locations */
   LOOKUP_FLOAT(location.latitude);
   LOOKUP_FLOAT(location.longitude);
-  */
+  load_location_map(&cfg, c);
 
   LOOKUP_INT(max_cache_age);
 
@@ -99,10 +99,7 @@ int load_config(Config *c) {
     if(c->op == -1)
       goto return_error;
   }
-
-  /* Pre-defined location mappings */
-  load_location_map(&cfg, c);
-
+  
   /* Plot */
 
   LOOKUP_COLOR(plot.bar.color);
@@ -180,6 +177,8 @@ void free_config(Config *c) {
   FREE_KEY((void*)c->apikey);
   FREE_KEY((void*)c->cache_file);
 #undef FREE_KEY
+  if(c->location_map_len > 0)
+    free(c->location_map);
 }
 
 int match_mode_arg(const char *str) {
