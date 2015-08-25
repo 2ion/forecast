@@ -12,7 +12,7 @@
 
 #include "forecast.h"
 
-int load_cache(const Config*, Data*, const char*);
-int save_cache(const Config*, const Data*, const char*);
+int load_cache(const Config*, Data*);
+int save_cache(const Config*, const Data*);
 
 #endif

@@ -46,6 +46,7 @@ enum {
 
 typedef struct {
   char *name;
+  char hash[33];
   double latitude;
   double longitude;
 } Location;
@@ -72,7 +73,7 @@ typedef struct {
   .location = {             \
     .latitude = 0.0,        \
     .longitude = 0.0,       \
-    .name = NULL            \
+    .name = NULL \
   },                        \
   .location_map = NULL,     \
   .location_map_len = 0,    \

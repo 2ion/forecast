@@ -1,26 +1,35 @@
 #include "cache.h"
 #include "hash.h"
 
-static int check_cache_file(const char*);
-static char* get_cache_file_path(const Config*, const char *location);
+static int check_cache_file(const Config *c, const char*);
+static char* get_cache_file_path(const Config*);
 
-char* get_cache_file_path(const Config *c, const char *loc) {
-  char md5buf[33];
+char* get_cache_file_path(const Config *c) {
+  char lohash[33];
   char *buf;
   int buflen;
 
-  if(md5str(loc, md5buf, sizeof(md5buf)) != 0)
+  /* hash the location's string representation */
+  buflen = snprintf(NULL, 0, "%f%f", c->location.latitude,
+      c->location.longitude);
+  buf = malloc(buflen);
+  snprintf(NULL, 0, "%f%f", c->location.latitude,
+      c->location.longitude);
+  if(md5str((const char*)buf, lohash, sizeof(lohash)) != 0)
     return NULL;
+  free(buf);
 
-  buflen = snprintf(NULL, 0, c->cache_file, md5buf);
+  /* find the cachefile for this exact location */
+  buflen = snprintf(NULL, 0, c->cache_file, lohash);
   buf = malloc(buflen);
   GUARD_MALLOC(buf);
-  snprintf(buf, buflen, c->cache_file, md5buf);
+  snprintf(buf, buflen, c->cache_file, lohash);
 
+  /* free after use */
   return buf;
 }
 
-int check_cache_file(conts char *path) {
+int check_cache_file(const Config *c, const char* path) {
   struct stat s;
   struct timeval tv;
 
@@ -38,14 +47,14 @@ int check_cache_file(conts char *path) {
   return 0;
 }
 
-int load_cache(const Config *c, Data *d, const char *loc) {
+int load_cache(const Config *c, Data *d) {
   FILE *cf;
   long cflen;
 
-  const char *cache_file = get_cache_file_path(c, loc);
+  const char *cache_file = get_cache_file_path(c);
   if(!cache_file) return -1;
 
-  if(check_cache_file(cache_file) != 0)
+  if(check_cache_file(c, cache_file) != 0)
     return  -1;
 
   if((cf = fopen(cache_file, "rb")) == NULL) {
@@ -63,15 +72,15 @@ int load_cache(const Config *c, Data *d, const char *loc) {
   fread(d->data, cflen, 1, cf);
   fclose(cf);
 
-  free(cache_file);
+  free((void*)cache_file);
   return 0;
 }
 
-int save_cache(const Config *c, const Data *d, const char *loc) {
+int save_cache(const Config *c, const Data *d) {
   int fd;
   int ret = 0;
 
-  const char *cache_file = get_cache_file_path(c, loc);
+  const char *cache_file = get_cache_file_path(c);
   if(!cache_file) return -1;
 
   if((fd = open(cache_file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
@@ -86,6 +95,6 @@ int save_cache(const Config *c, const Data *d, const char *loc) {
 
   close(fd);
 
-  free(cache_file);
+  free((void*)cache_file);
   return ret;
 }

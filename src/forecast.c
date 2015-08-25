@@ -26,6 +26,7 @@
 #include "cache.h"
 #include "configfile.h"
 #include "forecast.h"
+#include "hash.h"
 #include "network.h"
 #include "render.h"
 
@@ -50,6 +51,17 @@ static const struct option options_long[] = {
 static int    parse_location(const char *s, double *la, double *lo);
 static int    lookup_location(Config *c, const char *n);
 static void   usage(void);
+
+void hash_location(Config *c) {
+  char *b;
+  size_t blen = snprintf(NULL, 0, "%f%f", c->location.latitude, c->location.longitude);
+  b = malloc(blen);
+  GUARD_MALLOC(b);
+  snprintf(b, 0, "%f%f", c->location.latitude, c->location.longitude);
+  if(md5str((const char*)b, &c->location.hash[0], sizeof(c->location.hash)) != 0)
+    LERROR(EXIT_FAILURE, 0, "Failed to hash location");
+  free(b);
+}
 
 int lookup_location(Config *c, const char *n) {
   for(size_t i = 0; i < c->location_map_len; i++) {
@@ -111,8 +123,8 @@ void usage(void) {
 int main(int argc, char **argv) {
   Config c = CONFIG_NULL;
   Data d = DATA_NULL;
-  int opt;
   bool dump_data = false;
+  int opt;
 
   set_config_path(&c);
   if(load_config(&c) != 0)
