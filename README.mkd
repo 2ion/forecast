@@ -12,6 +12,17 @@ Capabilities include:
   weather forecasts and many more things
 * Dumping of the original JSON weather data
 
+## Dependencies
+
+* [libjson-c](https://github.com/json-c/json-c)
+* [libconfig](http://www.hyperrealm.com/libconfig/)
+* [libcurl](http://curl.haxx.se/libcurl/) (built with SSL support)
+* [libncursesw5](https://www.gnu.org/software/ncurses/)
+* [libcrypto](https://www.openssl.org/docs/manmaster/crypto/crypto.html)
+  (part of OpenSSL)
+
+The build system uses GNU autoconf and automake.
+
 ## API key
 
 In order to use the API, you need to obtain an API key from forecast.io.
