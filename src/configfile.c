@@ -180,8 +180,11 @@ void free_config(Config *c) {
   FREE_KEY((void*)c->apikey);
   FREE_KEY((void*)c->cache_file);
 #undef FREE_KEY
-  if(c->location_map_len > 0)
+  if(c->location_map_len > 0) {
+    for(int i = 0; i < c->location_map_len; i++)
+      free(c->location_map[i].name);
     free(c->location_map);
+  }
 }
 
 int match_mode_arg(const char *str) {
