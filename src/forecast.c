@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
       case 'L':
         if(lookup_location(&c, (const char*)optarg) == -1)
-          puts("-L: location not defined in config file, ignoring");
+          printf("-L: location <%s> not defined in config file, ignoring\n", optarg);
         break;
       case 'l':
         if(parse_location((const char*)optarg, &c.location.latitude, &c.location.longitude) == -1)
