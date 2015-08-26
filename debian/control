@@ -1,0 +1,20 @@
+Source: forecast
+Section: net
+Priority: optional
+Maintainer: Jens John <dev@2ion.de>
+Build-Depends: debhelper (>= 9), autotools-dev, libncursesw5-dev, libcurl4-openssl-dev, libjson-c-dev, libssl-dev, automake, autoconf, libconfig-dev, dh-autoreconf
+Standards-Version: 3.9.5
+Homepage: https://github.com/2ion/forecast
+
+Package: forecast
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Query weather forecasts from forecast.io
+ forecast is a query program for the forecast.io API. It provides a command
+ line interface which makes weather data for a configurable location available
+ in the terminal.
+ .
+ Capabilities include: Plotting tables with current, hourly and daily weather
+ conditions Rendering barplots of temperature and precepitation curves for
+ hourly and daily weather forecasts, sunrise and sunset times for daily weather
+ forecasts and many more things Dumping of the original JSON weather data.
