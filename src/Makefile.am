@@ -5,10 +5,12 @@ forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
 									$(LIBCONFIG_CFLAGS) \
 									$(LIBCURL_CFLAGS) \
 									$(LIBNCURSESW_CFLAGS) \
-									$(LIBCRYPTO_CFLAGS)
+									$(LIBCRYPTO_CFLAGS) \
+									$(ZLIB_CFLAGS)
 forecast_LDFLAGS = -lm \
 									 $(LIBJSONC_LIBS) \
 									 $(LIBCONFIG_LIBS) \
 									 $(LIBCURL_LIBS) \
 									 $(LIBNCURSESW_LIBS) \
-									 $(LIBCRYPTO_LIBS)
+									 $(LIBCRYPTO_LIBS) \
+									 $(ZLIB_LIBS)

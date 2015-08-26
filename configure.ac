@@ -14,6 +14,7 @@ PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
 PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
+PKG_CHECK_MODULES([ZLIB], [zlib])
 
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */
