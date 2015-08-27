@@ -38,17 +38,18 @@ make
 make install
 ```
 
-### Arch Linux
-
-forecast is available through the AUR as
-[`forecast-git`](https://aur.archlinux.org/packages/forecast-git/).
-
-### Debian
+### Debian and Ubuntu
 
 forecast is available as
 [`forecast`](http://pkg.bunsenlabs.org/debian/pool/main/f/forecast/)
 through the BunsenLabs project's Debian repository at
 [pkg.bunsenlabs.org](http://pkg.bunsenlabs.org/).
+
+
+### Arch Linux
+
+forecast is available through the AUR as
+[`forecast-git`](https://aur.archlinux.org/packages/forecast-git/).
 
 ## Synopsis
 
