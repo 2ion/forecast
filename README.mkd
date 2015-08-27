@@ -26,6 +26,8 @@ The build system uses GNU autoconf and automake.
 
 ## Build
 
+### Generic Linux/Unix system
+
 After installing all dependencies, this will configure and build the
 program:
 
@@ -35,6 +37,18 @@ program:
 make
 make install
 ```
+
+### Arch Linux
+
+forecast is available through the AUR as
+`[forecast-git](https://aur.archlinux.org/packages/forecast-git/)`
+
+### Debian
+
+forecast is available as
+`[forecast](http://pkg.bunsenlabs.org/debian/pool/main/f/forecast/)`
+through the BunsenLabs project's Debian repository at
+[pkg.bunsenlabs.org](http://pkg.bunsenlabs.org/).
 
 ## Synopsis
 
