@@ -124,6 +124,7 @@ int load_config(Config *c) {
   LOOKUP_STRING(plot.daylight.time_label_format);
   LOOKUP_STRING(plot.hourly.label_format);
 
+#undef LOOKUP_BOOL
 #undef LOOKUP_COLOR
 #undef LOOKUP_INT
 #undef LOOKUP_FLOAT
