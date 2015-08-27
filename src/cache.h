@@ -10,6 +10,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <lz4.h>
+
 #include "forecast.h"
 
 int load_cache(const Config*, Data*);

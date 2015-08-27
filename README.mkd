@@ -20,6 +20,7 @@ Capabilities include:
 * [libncursesw5](https://www.gnu.org/software/ncurses/)
 * [libcrypto](https://www.openssl.org/docs/manmaster/crypto/crypto.html)
   (part of OpenSSL)
+* [liblz4](https://github.com/Cyan4973/lz4)
 
 The build system uses GNU autoconf and automake.
 

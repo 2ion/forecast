@@ -23,7 +23,8 @@ extend_hourly = false;
 # character sequence EXACTLY once, as the string is used as an input to
 # snprintf(3). %s will be replaced with a MD5 hash of the location in
 # order to be able to manage cachefiles for multiple locations.
-cache_file = "/tmp/forecast.%s.cache";
+# The data in the cache files are compressed using the LZ4 algorithm.
+cache_file = "/tmp/forecast.cache_%s.lz4";
 
 # Location coordinates as doubles. These will be used as the default
 # when no named location mapping was specified on the command line.
