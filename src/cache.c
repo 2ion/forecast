@@ -18,9 +18,16 @@ void compress_data(Data *d) {
   int slen = d->datalen;
   int olen = LZ4_COMPRESSBOUND(slen);
   char cbuf[olen];
-  int ocnt = LZ4_compress_default((const char*)d->data, 
+
+#if LZ4_VERSION_MINOR >= 7
+#define FORECAST_LZ4_COMPRESS LZ4_compress_default
+#else
+#define FORECAST_LZ4_COMPRESS LZ4_compress
+#endif
+  int ocnt = FORECAST_LZ4_COMPRESS((const char*)d->data,
       cbuf, slen, olen);
-  
+#undef FORECAST_LZ4_COMPRESS
+
   if(ocnt == 0) /* should never happen */
     LERROR(EXIT_FAILURE, 0, "LZ4_compress_default() failed");
 
@@ -45,7 +52,7 @@ void decompress_data(Data *d) {
     GUARD_MALLOC(obuf);
   } while((ocnt = LZ4_decompress_safe((const char*)d->data,
         obuf, d->datalen, obuflen)) < 0 && (lz4tries-- > 0));
-  
+
   free(d->data);
   d->datalen = ocnt;
   d->data = malloc(d->datalen);
