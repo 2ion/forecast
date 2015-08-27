@@ -18,7 +18,36 @@
 
 #include "network.h"
 
+#define QUERY_VIRGIN "?%s=%s"
+#define QUERY_NEXT "&%s=%s"
+#define QUERYSTR(f) (f?(QUERY_VIRGIN):(QUERY_NEXT))
+
 static size_t request_curl_callback(void*, size_t, size_t, void*);
+static char* add_query_param(const char*, const char*, const char*);
+static char* subststr(char*, char*);
+
+char* subststr(char *o, char *n) {
+  free(o);
+  return n;
+}
+
+char* add_query_param(const char *s, const char *k, const char *v) {
+  const bool f = strchr((const char*)s, '?') == NULL ? true : false;
+  size_t elen;
+  char *ebuf, *obuf;
+
+  elen = snprintf(NULL, 0, QUERYSTR(f), k, v);
+  ebuf = malloc(elen + 1);
+  GUARD_MALLOC(ebuf);
+  snprintf(ebuf, elen + 1, QUERYSTR(f), k, v);
+
+  obuf = malloc(strlen(s) + elen + 1);
+  memcpy(obuf, s, strlen(s));
+  memcpy(&obuf[strlen(s)], ebuf, elen + 1);
+
+  free(ebuf);
+  return obuf;
+}
 
 size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data) {
   Data *d = (Data*) data;
@@ -39,25 +68,20 @@ size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data) {
 }
 
 int request(Config *c, Data *d) {
+  const char *url_template = "https://api.forecast.io/forecast/%s/%f,%f";
   int urllen;
   char *url;
   CURLcode r;
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
-  if(c->extend_hourly) {
-    urllen = snprintf(NULL, 0, "https://api.forecast.io/forecast/%s/%f,%f?extend=hourly",
-        c->apikey, c->location.latitude, c->location.longitude) + 1;
-    url = malloc(urllen); GUARD_MALLOC(url);
-    snprintf(url, urllen, "https://api.forecast.io/forecast/%s/%f,%f?extend=hourly",
-        c->apikey, c->location.latitude, c->location.longitude);
-  } else {
-    urllen = snprintf(NULL, 0, "https://api.forecast.io/forecast/%s/%f,%f",
-        c->apikey, c->location.latitude, c->location.longitude) + 1;
-    url = malloc(urllen); GUARD_MALLOC(url);
-    snprintf(url, urllen, "https://api.forecast.io/forecast/%s/%f,%f",
-        c->apikey, c->location.latitude, c->location.longitude);
-  }
+  urllen = snprintf(NULL, 0, url_template, c->apikey, c->location.latitude, c->location.longitude) + 1;
+  url = malloc(urllen);
+  GUARD_MALLOC(url);
+  snprintf(url, urllen, url_template, c->apikey, c->location.latitude, c->location.longitude);
+
+  if(c->extend_hourly)
+    url = subststr(url, add_query_param((const char*)url, "extend", "hourly"));
 
   CURL *curl = curl_easy_init();
   curl_easy_setopt(curl, CURLOPT_URL, url);
