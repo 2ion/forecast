@@ -20,13 +20,17 @@ void compress_data(Data *d) {
   char cbuf[olen];
 
 #if LZ4_VERSION_MINOR >= 7
-#define FORECAST_LZ4_COMPRESS LZ4_compress_default
+  int ocnt = LZ4_compress_default((const char*)d->data, cbuf, slen, olen);
 #else
-#define FORECAST_LZ4_COMPRESS LZ4_compress
+  /* In this API version, $cbuf is required to be large enough to handle
+   * up to LZ4_COMPRESSBOUND($slen) bytes. Since we already allocate
+   * this large of a buffer anyway, we just drop $olen.
+   *
+   * This is required for building against the liblz4 version in Debian
+   * Jessie.
+   */
+  int ocnt = LZ4_compress((const char*)d->data, cbuf, slen);
 #endif
-  int ocnt = FORECAST_LZ4_COMPRESS((const char*)d->data,
-      cbuf, slen, olen);
-#undef FORECAST_LZ4_COMPRESS
 
   if(ocnt == 0) /* should never happen */
     LERROR(EXIT_FAILURE, 0, "LZ4_compress_default() failed");
