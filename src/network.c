@@ -18,6 +18,8 @@
 
 #include "network.h"
 
+static size_t request_curl_callback(void*, size_t, size_t, void*);
+
 size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data) {
   Data *d = (Data*) data;
   size_t ptrlen = size * nmemb;

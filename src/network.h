@@ -25,7 +25,6 @@
 
 #include "forecast.h"
 
-int    request(Config *c, Data *d);
-size_t request_curl_callback(void*, size_t, size_t, void*);
+int request(Config *c, Data *d);
 
 #endif
