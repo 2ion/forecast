@@ -42,6 +42,7 @@ char* add_query_param(const char *s, const char *k, const char *v) {
   snprintf(ebuf, elen + 1, QUERYSTR(f), k, v);
 
   obuf = malloc(strlen(s) + elen + 1);
+  GUARD_MALLOC(obuf);
   memcpy(obuf, s, strlen(s));
   memcpy(&obuf[strlen(s)], ebuf, elen + 1);
 
