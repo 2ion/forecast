@@ -276,7 +276,7 @@ int render(const Config *c, Data *d) {
       break;
   }
 #undef PRINT_HEADER
-
+  json_object_put(o); /* free(o) by decreasing the refcount */
   return 0;
 }
 
