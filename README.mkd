@@ -101,7 +101,6 @@ As for the meaning of the keys, read the comments in forecastrc.example
 file which is part of the forecast distribution. When forecast is
 already installed on your system, the documentation files are located in
 /usr/share/doc/forecast.
-```
 
 ## Example plots
 
