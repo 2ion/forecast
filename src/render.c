@@ -50,16 +50,17 @@ void render_hourly_datapoints(struct json_object *hourly) {
 void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly) {
   assert(hourly);
 
-  double data[48];
-  char labels[48][pc->bar.width+1];
-  char *plabels[48];
-  int i;
-
   EXTRACT_PREFIXED(hourly, data);
 
   struct array_list *al = json_object_get_array(hourly_data);
 
-  for(i = 0; i < array_list_length(al) && i < pc->hourly.succeeding_hours + 1; i++) {
+  const int hlen = array_list_length(al);
+  double data[hlen];
+  char labels[hlen][pc->bar.width+1];
+  char *plabels[hlen];
+  int i;
+
+  for(i = 0; i < hlen && i < pc->hourly.succeeding_hours + 1; i++) {
     struct json_object *o = array_list_get_idx(al, i);
 
     EXTRACT_PREFIXED(o, temperature);
@@ -83,12 +84,13 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
 
   struct array_list *al = json_object_get_array(o_data);
 
-  double d[48];
-  char labels[48][pc->bar.width+1];
-  char *plabels[48];
+  const int hlen = array_list_length(al);
+  double d[hlen];
+  char labels[hlen][pc->bar.width+1];
+  char *plabels[hlen];
   int i;
 
-  for(i = 0; i < pc->hourly.succeeding_hours + 1 && i < 48 ; i++) {
+  for(i = 0; i < pc->hourly.succeeding_hours + 1 && i < hlen ; i++) {
     struct json_object *oo = array_list_get_idx(al, i);
 
     EXTRACT_PREFIXED(oo, precipProbability);
