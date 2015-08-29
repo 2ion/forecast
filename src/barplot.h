@@ -55,7 +55,8 @@ enum {
   },                                  \
   .hourly = {                         \
     .succeeding_hours = 10,           \
-    .label_format = NULL              \
+    .label_format = NULL,             \
+    .step = 2                         \
   },                                  \
   .daily = {                          \
     .label_format = NULL              \
@@ -86,6 +87,7 @@ typedef struct {
   } legend;
   struct {
     int succeeding_hours;
+    int step;
     char *label_format;
   } hourly;
   struct {

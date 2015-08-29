@@ -55,21 +55,24 @@ forecast is available through the AUR as
 
 ```
 Usage:
-  forecast [c:dehL:l:m:rv] [OPTIONS]
+  forecast [c:dehL:l:m:rs:u:v] [OPTIONS]
 Options:
-  -c|--config            PATH   Configuration file to use
-  -d|--dump                     Dump the JSON data and a newline to stdout
-  -e|--extend-hourly            Request data for one week instead of two days
-                                for hourly forecasts.
-  -h|--help                     Print this message and exit
-  -L|--location-by-name  NAME   Select a location predefined in the configuration file
-  -l|--location          CHOORD Query the weather at this location; CHOORD is a string in the format
-                                <latitude>:<longitude> where the choordinates are given as floating
-                                point numbers
-  -m|--mode              MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,
-                                plot-precip-hourly, plot-daylight. Defaults to 'print'
-  -r|--request                  By pass the cache if a cache file exists
-  -v|--version                  Print program version and exit
+  -c|--config             PATH   Configuration file to use
+  -d|--dump                      Dump the JSON data and a newline to stdout
+  -e|--extend-hourly             Request data for one week instead of two days
+                                 for hourly forecasts.
+  -h|--help                      Print this message and exit
+  -L|--location-by-name   NAME   Select a location predefined in the configuration file
+  -l|--location           CHOORD Query the weather at this location; CHOORD is a string in the format
+                                 <latitude>:<longitude> where the choordinates are given as floating
+                                 point numbers
+  -m|--mode               MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,
+                                 plot-precip-hourly, plot-daylight. Defaults to 'print'
+  -r|--request                   By pass the cache if a cache file exists
+  -s|--step               N      In hourly plots, use only every Nth datapoint.
+  -u|--units              UNITS  Location-specific unit table to be used. One of si, us, uk, ca, auto.
+                                 When specifying 'auto', the unit will be set depending on location
+   -v|--version                   Print program version and exit
 ```
 
 When using --location, the cache will be bypassed in any case. In
@@ -90,7 +93,13 @@ $HOME/.forecastrc
 ```
 but you may override the location by using the -c flag.
 
-The configuration must contain at least the following settings:
+The best way to create the config file is to copy and edit the provided
+forecastrc.example.
+
+If available, command line parameters take precedence over the config
+file settings.
+
+As for the meaning of the keys, read the comments in forecastrc.example.
 
 ```
 # forecast.io API key
@@ -175,6 +184,9 @@ plot: {
     # plot-hourly: Consecutive hours to plot
     succeeding_hours = 30;
 
+    # For all hourly data queries, use every nth datapoint
+    step = 2;
+
     # Bar labels, see strftime(3) for possible formats
     label_format = "%H:%M";
 
@@ -210,16 +222,7 @@ plot: {
 };
 ```
 
-The best way to create the config file is to copy and edit the provided
-forecastrc.example.
-
-If available, command line parameters take precedence over the config
-file settings.
-
-As for the meaning of the keys, read the comments in forecastrc.example.
-
 ## Example plots
-
 
 Daily overlay forecast plot (-m plot-daily), with the label format
 "%d%b", showing the min/max temperatures on each day:

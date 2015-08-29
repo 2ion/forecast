@@ -35,7 +35,7 @@
 
 /* globals */
 
-#define CLI_OPTIONS "c:dehL:l:m:ru:v"
+#define CLI_OPTIONS "c:dehL:l:m:rs:u:v"
 static const char *options = CLI_OPTIONS;
 static const struct option options_long[] = {
   { "config",           required_argument,  NULL, 'c' },
@@ -46,6 +46,7 @@ static const struct option options_long[] = {
   { "location-by-name", required_argument,  NULL, 'L' },
   { "mode",             required_argument,  NULL, 'm' },
   { "request",          no_argument,        NULL, 'r' },
+  { "step",             required_argument,  NULL, 's' },
   { "units",            required_argument,  NULL, 'u' },
   { "version",          no_argument,        NULL, 'v' },
   { 0,                  0,                  0,    0   }
@@ -54,6 +55,15 @@ static const struct option options_long[] = {
 static int    parse_location(const char *s, double *la, double *lo);
 static int    lookup_location(Config *c, const char *n);
 static void   usage(void);
+static int    parse_integer(const char*);
+
+int parse_integer(const char *s) {
+  long int i = strtol(s, NULL, 0xA);
+  if(    i == LONG_MIN && errno == ERANGE
+      || i == LONG_MAX && errno == ERANGE)
+    return -1;
+  return i;
+}
 
 void hash_location(Config *c) {
   char *b;
@@ -119,9 +129,10 @@ void usage(void) {
        "  -m|--mode               MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,\n"
        "                                 plot-precip-hourly, plot-daylight. Defaults to 'print'\n"
        "  -r|--request                   By pass the cache if a cache file exists\n"
+       "  -s|--step               N      In hourly plots, use only every Nth datapoint.\n"
        "  -u|--units              UNITS  Location-specific unit table to be used. One of si, us, uk, ca, auto.\n"
        "                                 When specifying 'auto', the unit will be set depending on location\n."
-       "  -v|--version                  Print program version and exit"
+       "  -v|--version                   Print program version and exit"
        );
 }
 
@@ -182,6 +193,15 @@ int main(int argc, char **argv) {
           puts("-u: invalid unit table, defaulting to 'si'");
           c.units = UNITS_SI;
         }
+        break;
+      case 's':
+        if((c.plot.hourly.step = parse_integer((const char*)optarg)) == -1) {
+          puts("-s: integer over- or underflow, defaulting to 1");
+            c.plot.hourly.step = 1;
+        }
+        if(c.extend_hourly && c.plot.hourly.step > 168 ||
+            !c.extend_hourly && c.plot.hourly.step > 48)
+          puts("-s: warning: step length is greater than the available data set");
         break;
     }
   }

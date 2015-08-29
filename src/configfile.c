@@ -102,7 +102,7 @@ int load_config(Config *c) {
     if(c->op == -1)
       goto return_error;
   }
-  
+
   /* Plot */
 
   LOOKUP_COLOR(plot.bar.color);
@@ -117,6 +117,7 @@ int load_config(Config *c) {
   LOOKUP_INT(plot.bar.width);
   LOOKUP_INT(plot.daylight.width_max);
   LOOKUP_INT(plot.height);
+  LOOKUP_INT(plot.hourly.step);
   LOOKUP_INT(plot.hourly.succeeding_hours);
 
   LOOKUP_STRING(plot.daily.label_format);

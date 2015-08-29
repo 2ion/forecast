@@ -31,7 +31,7 @@ char * render_time(struct json_object *timeptr) {
   return ctime(&t);
 }
 
-void render_hourly_datapoints(struct json_object *hourly) {
+void render_hourly_datapoints(const PlotCfg *pc, struct json_object *hourly) {
   assert(hourly);
 
   EXTRACT_PREFIXED(hourly, summary);
@@ -41,8 +41,8 @@ void render_hourly_datapoints(struct json_object *hourly) {
   puts(   "-------------------------+");
   printf( "Hourly                     %s\n", json_object_get_string(hourly_summary));
 
-  for(int i = 0; i < array_list_length(al); i++) {
-    struct json_object *o = array_list_get_idx(al, i);
+  for(int i = 0; i * pc->hourly.step < array_list_length(al); i++) {
+    struct json_object *o = array_list_get_idx(al, i * pc->hourly.step);
     render_datapoint(o);
   }
 }
@@ -60,8 +60,8 @@ void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly
   char *plabels[hlen];
   int i;
 
-  for(i = 0; i < hlen && i < pc->hourly.succeeding_hours + 1; i++) {
-    struct json_object *o = array_list_get_idx(al, i);
+  for(i = 0; i * pc->hourly.step < hlen && i < pc->hourly.succeeding_hours + 1; i++) {
+    struct json_object *o = array_list_get_idx(al, i * pc->hourly.step);
 
     EXTRACT_PREFIXED(o, temperature);
     EXTRACT_PREFIXED(o, time);
@@ -90,8 +90,8 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
   char *plabels[hlen];
   int i;
 
-  for(i = 0; i < pc->hourly.succeeding_hours + 1 && i < hlen ; i++) {
-    struct json_object *oo = array_list_get_idx(al, i);
+  for(i = 0; i < pc->hourly.succeeding_hours + 1 && i * pc->hourly.step < hlen ; i++) {
+    struct json_object *oo = array_list_get_idx(al, i * pc->hourly.step);
 
     EXTRACT_PREFIXED(oo, precipProbability);
     EXTRACT_PREFIXED(oo, time);
@@ -259,7 +259,7 @@ int render(const Config *c, Data *d) {
       break;
     case OP_PRINT_HOURLY:
       PRINT_HEADER;
-      render_hourly_datapoints(o_hourly);
+      render_hourly_datapoints(&c->plot, o_hourly);
       break;
     case OP_PLOT_HOURLY:
       render_hourly_datapoints_plot(&c->plot, o_hourly);

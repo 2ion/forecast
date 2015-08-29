@@ -81,6 +81,9 @@ plot: {
     # plot-hourly: Consecutive hours to plot
     succeeding_hours = 30;
 
+    # For all hourly data queries, use every nth datapoint
+    step = 2;
+
     # Bar labels, see strftime(3) for possible formats
     label_format = "%H:%M";
 
