@@ -180,6 +180,8 @@ void free_config(Config *c) {
   FREE_KEY(c->plot.hourly.label_format);
   FREE_KEY((void*)c->apikey);
   FREE_KEY((void*)c->cache_file);
+  FREE_KEY(c->plot.daylight.time_label_format);
+  FREE_KEY(c->plot.daylight.date_label_format);
 #undef FREE_KEY
   if(c->location_map_len > 0) {
     for(int i = 0; i < c->location_map_len; i++)
