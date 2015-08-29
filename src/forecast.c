@@ -115,7 +115,7 @@ int parse_location(const char *s, double *la, double *lo) {
 
 void usage(void) {
   puts("Usage:\n"
-       "  forecast [" CLI_OPTIONS "] [OPTIONS]\n"
+       "  forecast [" CLI_OPTIONS "] [LONGFORM OPTIONS]\n"
        "Options:\n"
        "  -c|--config             PATH   Configuration file to use\n"
        "  -d|--dump                      Dump the JSON data and a newline to stdout\n"

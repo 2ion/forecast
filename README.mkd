@@ -91,135 +91,16 @@ default located at
 ```sh
 $HOME/.forecastrc
 ```
-but you may override the location by using the -c flag.
+but you may override the location by using the -c flag. If available,
+command line parameters take precedence over the config file settings.
 
 The best way to create the config file is to copy and edit the provided
 forecastrc.example.
 
-If available, command line parameters take precedence over the config
-file settings.
-
-As for the meaning of the keys, read the comments in forecastrc.example.
-
-```
-# forecast.io API key
-apikey = "";
-
-# Default mode for forecast when invoked without any command line
-# options. Must be one of print, print-hourly, plot-hourly, plot-daily,
-# plot-precip-daily, plot-precip-hourly
-op = "print";
-
-# When the last requested data set is >= $max_cache_age seconds old,
-# request new data. This will significantly speed up subsequent
-# invocations. Set to 0 in order to always bypass the cache.
-max_cache_age = 1200;
-
-# If set to true, request data for 7 days instead of 2 (the default)
-# when querying hourly weather data, allowing
-# plot.hourly.succeeding_hours to be set to up to 168 hours instead of
-# just 48. This approximately doubles the request size.
-extend_hourly = false;
-
-# File to save cache data to; should be in a location your user has write
-# access to. The path is used as a template and must contain the %s
-# character sequence EXACTLY once, as the string is used as an input to
-# snprintf(3). %s will be replaced with a MD5 hash of the location in
-# order to be able to manage cachefiles for multiple locations.
-# The data in the cache files are compressed using the LZ4 algorithm.
-cache_file = "/tmp/forecast.cache_%s.lz4";
-
-# Location coordinates as doubles. These will be used as the default
-# when no named location mapping was specified on the command line.
-location: {
-  latitude = 52.5161;
-  longitude = 13.3770;
-};
-
-# Pre-defined locations which can be referenced by name using the
-# -L/--location-by-name optionsoptions. The coordinates of the default
-# location setting will be replaced with the ones defined in the array.
-# WARNING: The cache handling routine does not yet accommodate this
-# setting well; the cache will be refreshed whenever the named
-# location's coordniates defer from the default location. This will get
-# fixed ASAP.
-location_map: {
-  Berlin: [ 52.5161,  13.3770 ];
-  Tokyo:  [ 35.7000, 139.7667 ];
-};
-
-# Plot appearance
-plot: {
-
-  # The plot's y axis will extend to +/- this value in terminal lines
-  height = 10;
-
-  bar: {
-
-    # Bar width in columns
-    width = 5;
-
-    # Primary bar color
-    # One of: WHITE, BLACK, RED, GREEN, CYAN, BLUE, MAGENTA, YELLOW
-    # Name must be uppercase
-    color = "RED";
-
-    # Secondary bar color in overlay plots (currently only plot-daily)
-    overlay_color = "BLACK";
-
-  };
-
-  legend: {
-
-    # Color used for labels
-    color = "WHITE";
-
-    # Color used for highlight/color accents in text
-    texthighlight_color = "RED";
-
-  };
-
-  hourly: {
-
-    # plot-hourly: Consecutive hours to plot
-    succeeding_hours = 30;
-
-    # For all hourly data queries, use every nth datapoint
-    step = 2;
-
-    # Bar labels, see strftime(3) for possible formats
-    label_format = "%H:%M";
-
-  };
-
-  daily: {
-
-    # Bar labels, see strftime(3) for possible formats
-    label_format = "%d%b";
-
-  };
-
-  precipitation: {
-    # Bar color used in plot-precip-daily, plot-precip-hourly
-    bar_color = "BLUE";
-  };
-
-  daylight: {
-    # This is a horizontal plot - fraction of the terminal width to
-    # occupy
-    width_frac = 0.80;
-
-    # Maximum number of columns to occupy. This is useful for keeping
-    # the plot readable on very large terminal windows 
-    width_max = 72;
-
-    color = "YELLOW";
-    date_label_format = "%d%b";
-    time_label_format = "%H:%M";
-
-  };
-
-};
+As for the meaning of the keys, read the comments in forecastrc.example
+file which is part of the forecast distribution. When forecast is
+already installed on your system, the documentation files are located in
+/usr/share/doc/forecast.
 ```
 
 ## Example plots

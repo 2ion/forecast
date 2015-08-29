@@ -1,20 +1,162 @@
-.TH FORECAST 1 forecast\-git
-
+.TH "FORECAST" "1" "Version 0.5.0+git" "User Manual" ""
 .SH NAME
-forecast \- query weather forecasts from forecast.io
-
+.PP
+forecast \- a weather data query program for the forecast.io API
 .SH SYNOPSIS
-.B forecast
-[c:dehL:l:m:rv] [OPTIONS]
-
+.PP
+forecast [\f[I]OPTIONS\f[]]
 .SH DESCRIPTION
-forecast is a query program for the forecast.io weather information API.
-It provides a command line interface for displaying weather data for a
-configurable location.
-.P
-forecast outputs UTF-8 encoded plain text to stdout. The data is laid
-out to be easily readable.
-
-.SH HOMEPAGE
-The project's homepage is located at https://github.com/2ion/forecast.
-
+.PP
+forecast is a query program for the forecast.io API.
+It provides a command line interface which makes weather data for a
+configurable location available in the terminal.
+.PP
+Capabilities include:
+.IP \[bu] 2
+Plotting tables with current, hourly and daily weather conditions
+.IP \[bu] 2
+Rendering barplots of temperature and precepitation curves for hourly
+and daily weather forecasts, sunrise and sunset times for daily weather
+forecasts and many more things
+.IP \[bu] 2
+Dumping of the original JSON weather data
+.PP
+When using \-\-location, the cache will be bypassed in any case.
+In plotting mode, the plot will be shown until you press a key.
+.SH OPTIONS
+.TP
+.B \-c \f[I]PATH\f[], \-\-config \f[I]PATH\f[]
+Path to a configuration file in a non\-default location.
+.RS
+.RE
+.TP
+.B \-d, \-\-dump
+Print the JSON data for the current query to standard output.
+.RS
+.RE
+.TP
+.B \-e, \-\-extend\-hourly
+Request data for one week instead of two days for hourly forecasts.
+.RS
+.RE
+.TP
+.B \-h, \-\-help
+Show a short command line synopsis and exit.
+.RS
+.RE
+.TP
+.B \-L \f[I]LOCATION\f[], \-\-location\-by\-name \f[I]LOCATION\f[]
+Select a pre\-defined location.
+The available locations are configured in the \f[I]location_map\f[] key.
+.RS
+.RE
+.TP
+.B \-l \f[I]COORDINATES\f[], \-\-location \f[I]COORDINATES\f[]
+Query the weather for the given location.
+\f[I]COORD\f[] is a string in the format \f[B]latitude:longitude\f[]
+with the coordinates given as floating point numbers.
+.RS
+.RE
+.TP
+.B \-m \f[I]MODE\f[], \-\-mode \f[I]MODE\f[]
+Select the operation mode:
+.RS
+.IP \[bu] 2
+\f[B]print\f[] Print a table detailing the current weather situation
+.IP \[bu] 2
+\f[B]print\-hourly\f[] Print a table detailing an hourly weather
+forecast
+.IP \[bu] 2
+\f[B]plot\-hourly\f[] Plot an hourly temperature forecast
+.IP \[bu] 2
+\f[B]plot\-daily\f[] Plot a daily temperature forecast including min/max
+temperatures
+.IP \[bu] 2
+\f[B]plot\-precip\-hourly\f[] Plot an hourly precipitation forecast
+.IP \[bu] 2
+\f[B]plot\-precip\-daily\f[] Plot a daily precipitation forecast
+.RE
+.TP
+.B \-r, \-\-request
+Bypass the cache even if a cache file exists.
+.RS
+.RE
+.TP
+.B \-s \f[I]N\f[], \-\-step \f[I]N\f[]
+In hourly plots, consider only every \f[I]N\f[]th hour.
+.RS
+.RE
+.TP
+.B \-u \f[I]TABLE\f[], \-\-units \f[I]TABLE\f[]
+Use a localized unit table.
+Must be one of:
+.RS
+.IP \[bu] 2
+\f[B]si\f[] Use SI units
+.IP \[bu] 2
+\f[B]us\f[] Use US\-typical imperial units
+.IP \[bu] 2
+\f[B]uk\f[] Like \f[B]si\f[], but with wind speed in mph
+.IP \[bu] 2
+\f[B]ca\f[] Like \f[B]si\f[], but with wind speed in km/h instead of m/s
+.IP \[bu] 2
+\f[B]auto\f[] The unit table depends on the queried location
+.RE
+.TP
+.B \-v, \-\-version
+Print program version and configuration file location, then exit.
+.RS
+.RE
+.SH CONFIGURATION
+.PP
+The behaviour of forecast is defined by both configuration file settings
+and command line options.
+All aspects are configured in the configuration file.
+Any present command line option takes precedence over the equivalent
+configuration file setting.
+.SS CONFIGURATION FILE
+.PP
+forecast uses a configuration file in libconfig format.
+The file is by default located at
+.IP
+.nf
+\f[C]
+$HOME/.forecastrc
+\f[]
+.fi
+.PP
+but you may override the location by using the \-c flag.
+If available, command line parameters take precedence over the config
+file settings.
+.PP
+The best way to create the config file is to copy and edit the provided
+forecastrc.example.
+.PP
+As for the meaning of the keys, read the comments in forecastrc.example
+file which is part of the forecast distribution.
+When forecast is already installed on your system, the documentation
+files are located in
+.IP
+.nf
+\f[C]
+/usr/share/doc/forecast
+\f[]
+.fi
+.SS API KEY
+.PP
+In order to query weather data, you need to obtain an API key from
+.IP
+.nf
+\f[C]
+https://developer.forecast.io
+\f[]
+.fi
+.PP
+and configure it in the configuration file.
+The key cannot be set from the command line.
+If the key is not present, forecast will not work.
+.SH PROJECT HOMEPAGE
+.PP
+https://github.com/2ion/forecast
+.SH AUTHORS
+Jens John <dev@2ion.de>.
