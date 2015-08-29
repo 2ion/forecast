@@ -190,6 +190,7 @@ void free_config(Config *c) {
   }
 }
 
+
 int match_mode_arg(const char *str) {
   if(strcmp(str, "plot-hourly") == 0)
     return OP_PLOT_HOURLY;
@@ -205,6 +206,21 @@ int match_mode_arg(const char *str) {
     return OP_PLOT_PRECIPITATION_HOURLY;
   else if(strcmp(str, "plot-daylight") == 0)
     return OP_PLOT_DAYLIGHT;
+  else
+    return -1;
+}
+
+int match_units_arg(const char *str) {
+  if(strcmp(str, "auto") == 0)
+    return UNITS_AUTO;
+  else if(strcmp(str, "uk") == 0)
+    return UNITS_UK2;
+  else if (strcmp(str, "us") == 0)
+    return UNITS_US;
+  else if (strcmp(str, "ca") == 0)
+    return UNITS_CA;
+  else if (strcmp(str, "si") == 0)
+    return UNITS_SI;
   else
     return -1;
 }

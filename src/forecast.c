@@ -29,23 +29,25 @@
 #include "hash.h"
 #include "network.h"
 #include "render.h"
+#include "units.h"
 
 #define FREE_IF(flag, var) if(flag == true) free((void*)(var))
 
 /* globals */
 
-#define CLI_OPTIONS "c:dehL:l:m:rv"
+#define CLI_OPTIONS "c:dehL:l:m:ru:v"
 static const char *options = CLI_OPTIONS;
 static const struct option options_long[] = {
+  { "config",           required_argument,  NULL, 'c' },
+  { "dump",             no_argument,        NULL, 'd' },
+  { "extend-hourly",    no_argument,        NULL, 'e' },
   { "help",             no_argument,        NULL, 'h' },
   { "location",         required_argument,  NULL, 'l' },
   { "location-by-name", required_argument,  NULL, 'L' },
-  { "config",           required_argument,  NULL, 'c' },
-  { "version",          no_argument,        NULL, 'v' },
   { "mode",             required_argument,  NULL, 'm' },
-  { "dump",             no_argument,        NULL, 'd' },
   { "request",          no_argument,        NULL, 'r' },
-  { "extend-hourly",    no_argument,        NULL, 'e' },
+  { "units",            required_argument,  NULL, 'u' },
+  { "version",          no_argument,        NULL, 'v' },
   { 0,                  0,                  0,    0   }
 };
 
@@ -105,18 +107,20 @@ void usage(void) {
   puts("Usage:\n"
        "  forecast [" CLI_OPTIONS "] [OPTIONS]\n"
        "Options:\n"
-       "  -c|--config            PATH   Configuration file to use\n"
-       "  -d|--dump                     Dump the JSON data and a newline to stdout\n"
-       "  -e|--extend-hourly            Request data for one week instead of two days\n"
-       "                                for hourly forecasts.\n" 
-       "  -h|--help                     Print this message and exit\n"
-       "  -L|--location-by-name  NAME   Select a location predefined in the configuration file\n"
-       "  -l|--location          CHOORD Query the weather at this location; CHOORD is a string in the format\n"
-       "                                <latitude>:<longitude> where the choordinates are given as floating\n"
-       "                                point numbers\n"
-       "  -m|--mode              MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,\n"
-       "                                plot-precip-hourly, plot-daylight. Defaults to 'print'\n"
-       "  -r|--request                  By pass the cache if a cache file exists\n"
+       "  -c|--config             PATH   Configuration file to use\n"
+       "  -d|--dump                      Dump the JSON data and a newline to stdout\n"
+       "  -e|--extend-hourly             Request data for one week instead of two days\n"
+       "                                 for hourly forecasts.\n"
+       "  -h|--help                      Print this message and exit\n"
+       "  -L|--location-by-name   NAME   Select a location predefined in the configuration file\n"
+       "  -l|--location           CHOORD Query the weather at this location; CHOORD is a string in the format\n"
+       "                                 <latitude>:<longitude> where the choordinates are given as floating\n"
+       "                                 point numbers\n"
+       "  -m|--mode               MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,\n"
+       "                                 plot-precip-hourly, plot-daylight. Defaults to 'print'\n"
+       "  -r|--request                   By pass the cache if a cache file exists\n"
+       "  -u|--units              UNITS  Location-specific unit table to be used. One of si, us, uk, ca, auto.\n"
+       "                                 When specifying 'auto', the unit will be set depending on location\n."
        "  -v|--version                  Print program version and exit"
        );
 }
@@ -158,7 +162,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
       case 'm':
         if((c.op = match_mode_arg((const char*)optarg)) == -1) {
-          puts("-m: invalid mode, selecting default");
+          puts("-m: invalid mode, defaulting to 'print'");
           c.op = OP_PRINT_CURRENTLY;
         }
         break;
@@ -173,8 +177,16 @@ int main(int argc, char **argv) {
           c.bypass_cache = true;
         c.extend_hourly = true;
         break;
+      case 'u':
+        if((c.units = match_units_arg((const char*)optarg)) == -1) {
+          puts("-u: invalid unit table, defaulting to 'si'");
+          c.units = UNITS_SI;
+        }
+        break;
     }
   }
+
+  set_global_unit_table(c.units);
 
   if(strlen(c.apikey) == 0)
     LERROR(EXIT_FAILURE, 0, "API key must not be empty.");

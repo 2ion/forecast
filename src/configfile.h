@@ -26,6 +26,7 @@
 
 #include "forecast.h"
 #include "render.h"
+#include "units.h"
 
 #define CHECKCOLOR(var, name) if(strcmp(tmp, #name) == 0) (var) = PASTE(COLOR, name);
 #define CHECKCOLORS(var)             \
@@ -42,6 +43,7 @@ void set_config_path(Config *c);
 int load_config(Config *c);
 void free_config(Config *c);
 int match_mode_arg(const char *str);
+int match_units_arg(const char *str);
 int string_isalnum(const char *str);
 
 #endif
