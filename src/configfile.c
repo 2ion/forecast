@@ -80,6 +80,13 @@ int load_config(Config *c) {
 
   LOOKUP_BOOL(extend_hourly);
 
+  /* language */
+  if(config_lookup_string(&cfg, "language", &tmp) == CONFIG_TRUE) {
+    c->language = match_lang_arg(tmp);
+    if(c->language == -1)
+      goto return_error;
+  }
+
   /* Locations */
   LOOKUP_FLOAT(location.latitude);
   LOOKUP_FLOAT(location.longitude);
@@ -207,21 +214,6 @@ int match_mode_arg(const char *str) {
     return OP_PLOT_PRECIPITATION_HOURLY;
   else if(strcmp(str, "plot-daylight") == 0)
     return OP_PLOT_DAYLIGHT;
-  else
-    return -1;
-}
-
-int match_units_arg(const char *str) {
-  if(strcmp(str, "auto") == 0)
-    return UNITS_AUTO;
-  else if(strcmp(str, "uk") == 0)
-    return UNITS_UK2;
-  else if (strcmp(str, "us") == 0)
-    return UNITS_US;
-  else if (strcmp(str, "ca") == 0)
-    return UNITS_CA;
-  else if (strcmp(str, "si") == 0)
-    return UNITS_SI;
   else
     return -1;
 }

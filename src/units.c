@@ -41,3 +41,18 @@ void show_unit_table(void) {
   SHOW_INDEX(visibility          );
 #undef SHOW_INDEX
 }
+
+int match_units_arg(const char *str) {
+  if(strcmp(str, "auto") == 0)
+    return UNITS_AUTO;
+  else if(strcmp(str, "uk") == 0)
+    return UNITS_UK2;
+  else if (strcmp(str, "us") == 0)
+    return UNITS_US;
+  else if (strcmp(str, "ca") == 0)
+    return UNITS_CA;
+  else if (strcmp(str, "si") == 0)
+    return UNITS_SI;
+  else
+    return -1;
+}

@@ -25,6 +25,7 @@
 
 #include "barplot.h"
 #include "config.h"
+#include "language.h"
 
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
         (__func__), (__LINE__), __VA_ARGS__)
@@ -64,6 +65,7 @@ typedef struct {
   bool bypass_cache;
   int extend_hourly; /* 'int' because if 'bool', libconfig complains (I'm just too lazy) */
   int units;
+  int language;
 } Config;
 
 #define CONFIG_NULL         \
@@ -83,7 +85,8 @@ typedef struct {
   .op = OP_PRINT_CURRENTLY, \
   .bypass_cache = false,    \
   .extend_hourly = false,   \
-  .units = UNITS_AUTO       \
+  .units = UNITS_AUTO,      \
+  .language = LANG_EN       \
 }
 
 typedef struct {

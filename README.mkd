@@ -55,7 +55,7 @@ forecast is available through the AUR as
 
 ```
 Usage:
-  forecast [c:dehL:l:m:rs:u:v] [OPTIONS]
+  forecast [c:dehL:l:m:rs:u:v] [LONGFORM OPTIONS]
 Options:
   -c|--config             PATH   Configuration file to use
   -d|--dump                      Dump the JSON data and a newline to stdout
@@ -66,13 +66,14 @@ Options:
   -l|--location           CHOORD Query the weather at this location; CHOORD is a string in the format
                                  <latitude>:<longitude> where the choordinates are given as floating
                                  point numbers
+  --language              NAME   Set the language for verbal descriptions.
   -m|--mode               MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,
                                  plot-precip-hourly, plot-daylight. Defaults to 'print'
   -r|--request                   By pass the cache if a cache file exists
   -s|--step               N      In hourly plots, use only every Nth datapoint.
   -u|--units              UNITS  Location-specific unit table to be used. One of si, us, uk, ca, auto.
                                  When specifying 'auto', the unit will be set depending on location
-   -v|--version                   Print program version and exit
+  -v|--version                   Print program version and exit
 ```
 
 When using --location, the cache will be bypassed in any case. In

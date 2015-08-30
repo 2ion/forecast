@@ -81,8 +81,15 @@ int request(Config *c, Data *d) {
   GUARD_MALLOC(url);
   snprintf(url, urllen, url_template, c->apikey, c->location.latitude, c->location.longitude);
 
+  /* QUERY PARAMETERS */
+
+  if(c->language != LANG_EN)
+    url = subststr(url, add_query_param((const char*)url, "lang", lang_name(c->language)));
+
   if(c->extend_hourly)
     url = subststr(url, add_query_param((const char*)url, "extend", "hourly"));
+
+  /*******************/
 
   CURL *curl = curl_easy_init();
   curl_easy_setopt(curl, CURLOPT_URL, url);

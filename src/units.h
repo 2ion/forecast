@@ -2,6 +2,7 @@
 #define UNITS_H
 
 #include <stdio.h>
+#include <string.h>
 
 /* global table of unit names */
 const char **unit_table;
@@ -40,5 +41,6 @@ enum {
 
 int set_global_unit_table(int);
 void show_unit_table(void);
+int match_units_arg(const char *str);
 
 #endif

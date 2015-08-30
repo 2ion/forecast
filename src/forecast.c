@@ -42,6 +42,7 @@ static const struct option options_long[] = {
   { "dump",             no_argument,        NULL, 'd' },
   { "extend-hourly",    no_argument,        NULL, 'e' },
   { "help",             no_argument,        NULL, 'h' },
+  { "language",         required_argument,  NULL, 'X' },
   { "location",         required_argument,  NULL, 'l' },
   { "location-by-name", required_argument,  NULL, 'L' },
   { "mode",             required_argument,  NULL, 'm' },
@@ -126,6 +127,7 @@ void usage(void) {
        "  -l|--location           CHOORD Query the weather at this location; CHOORD is a string in the format\n"
        "                                 <latitude>:<longitude> where the choordinates are given as floating\n"
        "                                 point numbers\n"
+       "  --language              NAME   Set the language for verbal descriptions.\n"
        "  -m|--mode               MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,\n"
        "                                 plot-precip-hourly, plot-daylight. Defaults to 'print'\n"
        "  -r|--request                   By pass the cache if a cache file exists\n"
@@ -202,6 +204,17 @@ int main(int argc, char **argv) {
         if(c.extend_hourly && c.plot.hourly.step > 168 ||
             !c.extend_hourly && c.plot.hourly.step > 48)
           puts("-s: warning: step length is greater than the available data set");
+        break;
+      case 'X':
+        {
+          int deflang = c.language;
+          if((c.language = match_lang_arg((const char*)optarg)) == -1) {
+            puts("--language: invalid identifier, defaulting to 'en'");
+            c.language = LANG_EN;
+          }
+          if(c.language != deflang) /* when the requested language is different from the default language */
+            c.bypass_cache = true;
+        }
         break;
     }
   }
