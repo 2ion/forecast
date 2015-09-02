@@ -43,7 +43,7 @@ make install
 forecast is available as
 [`forecast`](http://pkg.bunsenlabs.org/debian/pool/main/f/forecast/)
 through the BunsenLabs project's Debian repository at
-[pkg.bunsenlabs.org](http://pkg.bunsenlabs.org/).
+[pkg.bunsenlabs.org](http://pkg.bunsenlabs.org/repoidx.html#forecast).
 
 
 ### Arch Linux
