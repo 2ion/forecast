@@ -103,7 +103,10 @@ file which is part of the forecast distribution. When forecast is
 already installed on your system, the documentation files are located in
 /usr/share/doc/forecast.
 
-## Example plots
+## How it looks (or can look) like
+
+IRL demo pic with a sweet orange glow:
+![](https://raw.githubusercontent.com/2ion/forecast/gh-pages/philipsmonochrome_by_jaseg.jpg)
 
 Daily overlay forecast plot (-m plot-daily), with the label format
 "%d%b", showing the min/max temperatures on each day:
