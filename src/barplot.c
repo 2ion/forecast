@@ -126,6 +126,8 @@ void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, d
       scaled[i] = (int) floor(m);
     else
       scaled[i] = 0;
+    if(scaled[i] < 0)
+      *min = (double) scaled[i];
   }
 }
 
