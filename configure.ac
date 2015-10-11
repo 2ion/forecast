@@ -16,6 +16,22 @@ PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
 PKG_CHECK_MODULES([LZ4], [liblz4])
 
+# Deal with installing Bash completion functions
+AC_ARG_WITH([bash-completion-dir],
+            AS_HELP_STRING([--with-bash-completion-dir[=PATH]], [Install the Bash auto-completion script into the given directory @<:@default=yes@:>@]),
+            [],
+            [with_bash_completion_dir=yes])
+
+if test "x$with_bash_completion_dir" = "xyes"; then
+PKG_CHECK_MODULES([BASH_COMPLETION], [bash-completion >= 2.0],
+                  [BASH_COMPLETION_DIR="`pkg-config --variable=completionsdir bash-completion`"],
+                  [BASH_COMPLETION_DIR="$datadir/bash-completion/completions"])
+else
+  BASH_COMPLETION_DIR="$with_bash_completion_dir"
+fi
+AC_SUBST([BASH_COMPLETION_DIR])
+AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
+
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */
 #if __OPTIMIZE__
