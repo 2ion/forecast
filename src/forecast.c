@@ -92,8 +92,6 @@ int lookup_location(Config *c, const char *n) {
 }
 
 void list_locations(const Config *c) {
-  size_t blen = 0;
-  char *b = NULL;
   for(size_t i = 0; i < c->location_map_len; i++) {
     if(i == 0) printf("Locations: ");
     if(i < c->location_map_len-1)
@@ -156,7 +154,6 @@ int main(int argc, char **argv) {
   Data d = DATA_NULL;
   bool dump_data = false;
   int opt;
-  char *p;
 
   set_config_path(&c);
   if(load_config(&c) != 0)
