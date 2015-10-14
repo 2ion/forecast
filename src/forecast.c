@@ -55,6 +55,7 @@ static const struct option options_long[] = {
 
 static int    parse_location(const char *s, double *la, double *lo);
 static int    lookup_location(Config *c, const char *n);
+static void   list_locations(const Config *c);
 static void   usage(void);
 static int    parse_integer(const char*);
 
@@ -88,6 +89,18 @@ int lookup_location(Config *c, const char *n) {
     }
   }
   return -1;
+}
+
+void list_locations(const Config *c) {
+  size_t blen = 0;
+  char *b = NULL;
+  for(size_t i = 0; i < c->location_map_len; i++) {
+    if(i == 0) printf("Locations: ");
+    if(i < c->location_map_len-1)
+      printf("%s, ", c->location_map[i].name);
+    else
+      puts(c->location_map[i].name);
+  }
 }
 
 int parse_location(const char *s, double *la, double *lo) {
@@ -143,6 +156,7 @@ int main(int argc, char **argv) {
   Data d = DATA_NULL;
   bool dump_data = false;
   int opt;
+  char *p;
 
   set_config_path(&c);
   if(load_config(&c) != 0)
@@ -169,6 +183,7 @@ int main(int argc, char **argv) {
         puts(PACKAGE_STRING);
         puts("Compiled on: " __DATE__ " " __TIME__);
         printf("Configuration file: %s\n", c.path);
+        list_locations(&c);
         return EXIT_SUCCESS;
       case '?':
         usage();

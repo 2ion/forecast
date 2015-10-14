@@ -1,16 +1,22 @@
 #!/bin/bash
 _forecast ()
 {
+  # If forecast is not installed, fall back to filename completion
+  if ! type forecast &>/dev/null; then
+    _filedir
+  fi
+
   local cur=${COMP_WORDS[COMP_CWORD]}
   local prev=${COMP_WORDS[COMP_CWORD-1]}
 
   if [[ -n "$prev" ]]; then
     case "$prev" in
       -c|--config) _filedir; return;;
+      -L|--location-by-name) COMPREPLY=($(compgen -W "$(forecast -v|grep ^Locations:|cut -d: -f2|tr -d ' '|tr ',' ' ')" -- "$cur")); return;;
       --language) COMPREPLY=($(compgen -W "ar bs de el en es fr hr it nl pl pt ru sk tet tr uk x-pig-latin zh zh-tw" -- "$cur")); return;;
       -m|--mode) COMPREPLY=($(compgen -W "print print-hourly plot-hourly plot-daily plot-precip-daily plot-precip-hourly" -- "$cur")); return;;
       -u|--units) COMPREPLY=($(compgen -W "si us uk ca auto" -- "$cur")); return;;
-      -s|--step|-L|--location-by-name|-l|--location) return;;
+      -s|--step|-l|--location) return;;
     esac
   fi
 
