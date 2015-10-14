@@ -57,7 +57,6 @@ forecast is available through the AUR as
 Usage:
   forecast [c:dehL:l:m:rs:u:v] [LONGFORM OPTIONS]
 Options:
-  -c|--config             PATH   Configuration file to use
   -d|--dump                      Dump the JSON data and a newline to stdout
   -e|--extend-hourly             Request data for one week instead of two days
                                  for hourly forecasts.
@@ -92,8 +91,9 @@ default located at
 ```sh
 $HOME/.forecastrc
 ```
-but you may override the location by using the -c flag. If available,
-command line parameters take precedence over the config file settings.
+but you may override the location by setting the *FORECAST_CONFIG_PATH*
+environment variable. If available, command line parameters take
+precedence over the config file settings.
 
 The best way to create the config file is to copy and edit the provided
 forecastrc.example.
