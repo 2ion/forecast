@@ -35,10 +35,9 @@
 
 /* globals */
 
-#define CLI_OPTIONS "c:dehL:l:m:rs:u:v"
+#define CLI_OPTIONS "dehL:l:m:rs:u:v"
 static const char *options = CLI_OPTIONS;
 static const struct option options_long[] = {
-  { "config",           required_argument,  NULL, 'c' },
   { "dump",             no_argument,        NULL, 'd' },
   { "extend-hourly",    no_argument,        NULL, 'e' },
   { "help",             no_argument,        NULL, 'h' },
@@ -129,7 +128,6 @@ void usage(void) {
   puts("Usage:\n"
        "  forecast [" CLI_OPTIONS "] [LONGFORM OPTIONS]\n"
        "Options:\n"
-       "  -c|--config             PATH   Configuration file to use\n"
        "  -d|--dump                      Dump the JSON data and a newline to stdout\n"
        "  -e|--extend-hourly             Request data for one week instead of two days\n"
        "                                 for hourly forecasts.\n"
@@ -141,7 +139,7 @@ void usage(void) {
        "  --language              NAME   Set the language for verbal descriptions.\n"
        "  -m|--mode               MODE   One of print, print-hourly, plot-hourly, plot-daily, plot-precip-daily,\n"
        "                                 plot-precip-hourly, plot-daylight. Defaults to 'print'\n"
-       "  -r|--request                   By pass the cache if a cache file exists\n"
+       "  -r|--request                   Bypass the cache if a cache file exists\n"
        "  -s|--step               N      In hourly plots, use only every Nth datapoint.\n"
        "  -u|--units              UNITS  Location-specific unit table to be used. One of si, us, uk, ca, auto.\n"
        "                                 When specifying 'auto', the unit will be set depending on location\n."
@@ -172,9 +170,6 @@ int main(int argc, char **argv) {
         if(parse_location((const char*)optarg, &c.location.latitude, &c.location.longitude) == -1)
           puts("-l: malformed option argument");
         c.bypass_cache = true;
-        break;
-      case 'c':
-        c.path = optarg;
         break;
       case 'v':
         puts(PACKAGE_STRING);

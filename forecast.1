@@ -25,11 +25,6 @@ When using \-\-location, the cache will be bypassed in any case.
 In plotting mode, the plot will be shown until you press a key.
 .SH OPTIONS
 .TP
-.B \-c \f[I]PATH\f[], \-\-config \f[I]PATH\f[]
-Path to a configuration file in a non\-default location.
-.RS
-.RE
-.TP
 .B \-d, \-\-dump
 Print the JSON data for the current query to standard output.
 .RS
@@ -135,7 +130,9 @@ $HOME/.forecastrc
 \f[]
 .fi
 .PP
-but you may override the location by using the \-c flag.
+but you may override the location by setting the
+\f[I]FORECAST_CONFIG_PATH\f[] environment variable.
+.PP
 If available, command line parameters take precedence over the config
 file settings.
 .PP

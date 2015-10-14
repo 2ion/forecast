@@ -24,9 +24,6 @@ _forecast ()
 
   if [[ -n "$prev" ]]; then
     case "$prev" in
-      -c|--config)
-        _filedir
-        return;;
       -L|--location-by-name)
         COMPREPLY=($(compgen -W "$(forecast -v|"$GREP" ^Locations:|cut -d: -f2|tr -d ' '|tr ',' ' ')" -- "$cur"))
         return;;
@@ -53,7 +50,7 @@ _forecast ()
   fi
 
   if [[ -z "$cur" || $cur =~ ^- ]]; then
-    COMPREPLY=($(compgen -W "-c --config -d --dump -e --extended-hourly -h --help -L --location-by-name -l --location --language -m --mode -r --request -s --step -u --units -v --version" -- "$cur"))
+    COMPREPLY=($(compgen -W "-d --dump -e --extended-hourly -h --help -L --location-by-name -l --location --language -m --mode -r --request -s --step -u --units -v --version" -- "$cur"))
     return
   fi
 }
