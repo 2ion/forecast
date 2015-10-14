@@ -38,8 +38,7 @@ void render_hourly_datapoints(const PlotCfg *pc, struct json_object *hourly) {
   EXTRACT_PREFIXED(hourly, data);
   struct array_list *al = json_object_get_array(hourly_data);
 
-  puts(   "-------------------------+");
-  printf( "Hourly                     %s\n", json_object_get_string(hourly_summary));
+  printf( "Hourly                       %s\n", json_object_get_string(hourly_summary));
 
   for(int i = 0; i * pc->hourly.step < array_list_length(al); i++) {
     struct json_object *o = array_list_get_idx(al, i * pc->hourly.step);
@@ -206,18 +205,17 @@ int render_datapoint(struct json_object *o) {
   EXTRACT_PREFIXED(o, ozone);
   EXTRACT_PREFIXED(o, windBearing); // FIXME: might be undefined
 
-  puts(   "-------------------------+");
-  printf( "   Time                  | %s"
-          "   Condition             | %s\n"
-          "   Temperature           | %.*f °C\n"
-          "   Apparent temperature  | %.*f °C\n"
-          "   Dew point             | %.*f °C\n"
-          "   Precipitation         | %d %%\n"
-          "   RH (φ)                | %.*f %%\n"
-          "   Wind speed            | %d kph (%s)\n"
-          "   Cloud cover           | %d %%\n"
-          "   Pressure              | %.*f hPa\n"
-          "   Ozone                 | %.*f DU\n",
+  printf( "   Time                      %s"
+          "     Condition               %s\n"
+          "     Temperature             %.*f °C\n"
+          "     Apparent temperature    %.*f °C\n"
+          "     Dew point               %.*f °C\n"
+          "     Precipitation           %d %%\n"
+          "     RH (φ)                  %.*f %%\n"
+          "     Wind speed              %d kph (%s)\n"
+          "     Cloud cover             %d %%\n"
+          "     Pressure                %.*f hPa\n"
+          "     Ozone                   %.*f DU\n",
               render_time(o_time),
               json_object_get_string(o_summary),
           1,  render_f2c(json_object_get_double(o_temperature)),
@@ -243,14 +241,12 @@ int render(const Config *c, Data *d) {
   EXTRACT_PREFIXED(o, hourly);
   EXTRACT_PREFIXED(o, daily);
 
-#define PRINT_HEADER                                \
-  printf( "Latitude                 | %.*f\n"       \
-          "Longitude                | %.*f\n"       \
-          "Timezone                 | %s\n"         \
-          "-------------------------+\n"            \
-          "Currently\n",                            \
-          4,  json_object_get_double(o_latitude),   \
-          4,  json_object_get_double(o_longitude),  \
+#define PRINT_HEADER                                  \
+  printf( "Latitude                     %.*f\n"       \
+          "Longitude                    %.*f\n"       \
+          "Timezone                     %s\n",        \
+          4,  json_object_get_double(o_latitude),     \
+          4,  json_object_get_double(o_longitude),    \
               json_object_get_string(o_timezone));
   switch(c->op) {
     case OP_PRINT_CURRENTLY:
