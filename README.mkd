@@ -55,7 +55,7 @@ forecast is available through the AUR as
 
 ```
 Usage:
-  forecast [c:dehL:l:m:rs:u:v] [LONGFORM OPTIONS]
+  forecast [dehL:l:m:rs:u:v] [LONGFORM OPTIONS]
 Options:
   -d|--dump                      Dump the JSON data and a newline to stdout
   -e|--extend-hourly             Request data for one week instead of two days
