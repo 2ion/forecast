@@ -1,4 +1,7 @@
 #!/bin/bash
+
+_forecast_grep=/bin/grep
+
 _forecast ()
 {
   # If forecast is not installed, fall back to filename completion
@@ -8,23 +11,49 @@ _forecast ()
 
   local cur=${COMP_WORDS[COMP_CWORD]}
   local prev=${COMP_WORDS[COMP_CWORD-1]}
-  local GREP=$(which grep)
+
+  # Work around possible shell functions/aliases for grep, in particular
+  # to prevent --color=* options from being active.
+  local GREP
+  if [[ -x $_forecast_grep ]]; then
+    GREP=$_forecast_grep
+  else
+    GREP=$(which grep)
+    _forecast_grep=$GREP
+  fi
 
   if [[ -n "$prev" ]]; then
     case "$prev" in
-      -c|--config) _filedir; return;;
-      -L|--location-by-name) COMPREPLY=($(compgen -W "$(forecast -v|"$GREP" ^Locations:|cut -d: -f2|tr -d ' '|tr ',' ' ')" -- "$cur")); return;;
-      --language) COMPREPLY=($(compgen -W "ar bs de el en es fr hr it nl pl pt ru sk tet tr uk x-pig-latin zh zh-tw" -- "$cur")); return;;
-      -m|--mode) COMPREPLY=($(compgen -W "print print-hourly plot-hourly plot-daily plot-precip-daily plot-precip-hourly" -- "$cur")); return;;
-      -u|--units) COMPREPLY=($(compgen -W "si us uk ca auto" -- "$cur")); return;;
-      -s|--step|-l|--location) return;;
+      -c|--config)
+        _filedir
+        return;;
+      -L|--location-by-name)
+        COMPREPLY=($(compgen -W "$(forecast -v|"$GREP" ^Locations:|cut -d: -f2|tr -d ' '|tr ',' ' ')" -- "$cur"))
+        return;;
+      --language)
+        COMPREPLY=($(compgen -W "ar bs de el en es fr hr it nl pl pt ru sk tet tr uk x-pig-latin zh zh-tw" -- "$cur"))
+        return;;
+      -m|--mode) COMPREPLY=($(compgen -W "print print-hourly plot-hourly plot-daily plot-precip-daily plot-precip-hourly" -- "$cur"))
+        return;;
+      -u|--units) COMPREPLY=($(compgen -W "si us uk ca auto" -- "$cur"))
+        return;;
+      -s|--step)
+        # The completion list is sorted by default, so sensible
+        # suggestions with different first digits have been picked. In
+        # order to be able to display a sequence of numbers, the
+        # readline variable rl_sort_completion_matches must be 0.
+        COMPREPLY=($(compgen -W "2 4 6 8" -- "$cur"))
+        return;;
+      -l|--location)
+        if [[ -z "$cur" ]]; then
+          COMPREPLY=($(compgen -W ":"))
+        fi
+        return;;
     esac
   fi
 
   if [[ -z "$cur" || $cur =~ ^- ]]; then
-    COMPREPLY=($(compgen -W "-c --config -d --dump -e --extended-hourly
-    -h --help -L --location-by-name -l --location --language -m --mode
-    -r --request -s --step -u --units -v --version" -- "$cur"))
+    COMPREPLY=($(compgen -W "-c --config -d --dump -e --extended-hourly -h --help -L --location-by-name -l --location --language -m --mode -r --request -s --step -u --units -v --version" -- "$cur"))
     return
   fi
 }
