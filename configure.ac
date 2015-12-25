@@ -15,6 +15,7 @@ PKG_CHECK_MODULES([LIBCURL], [libcurl])
 PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
 PKG_CHECK_MODULES([LZ4], [liblz4])
+PKG_CHECK_MODULES([TALLOC], [talloc])
 
 # Deal with installing Bash completion functions
 AC_ARG_WITH([bash-completion-dir],
