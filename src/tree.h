@@ -41,6 +41,9 @@ struct _TLocation
   size_t w_daily_len;
   size_t w_hourly_len;
 
+  size_t *w_daily_chld_len;
+  size_t *w_hourly_chld_len;
+
   TData **w_currently;
   TData ***w_daily;
   TData ***w_hourly;

@@ -5,8 +5,33 @@ static int          access_int(struct json_object*, const char*);
 static double       access_double(struct json_object*, const char*);
 static size_t       json_object_length(struct json_object *o);
 static TData**      parse_hourly_object(struct json_object*, TALLOC_CTX*, size_t*);
+static TData**      parse_daily_object(struct json_object*, TALLOC_CTX*, size_t*);
 
 /*********************************************************************/
+
+TData** parse_daily_object(struct json_object *o, TALLOC_CTX *parent, size_t *alen)
+{
+  TData **array;
+  size_t i = 0;
+
+  *alen = json_object_length(o);
+  array = talloc_array(parent, TData*, *alen);
+
+  json_object_object_foreach(o, k, v)
+  {
+    TData *td = talloc(array, TData);
+    td->name = talloc_strdup(td, k);
+    if(strcmp(td->name, "summary") == 0
+        || strcmp(td->name, "icon") == 0
+        || strcmp(td->name, "precipType") == 0)
+      td->value.s = talloc_strdup(td, json_object_get_string(v));
+    else
+      td->value.d = json_object_get_double(v);
+    array[i++] = td;
+  }
+
+  return array;
+}
 
 TData** parse_hourly_object(struct json_object *o, TALLOC_CTX *parent, size_t *alen)
 {
@@ -20,7 +45,8 @@ TData** parse_hourly_object(struct json_object *o, TALLOC_CTX *parent, size_t *a
   {
     TData *td = talloc(array, TData);
     td->name = talloc_strdup(td, k);
-    if(strcmp(td->name, "summary") == 0 || strcmp(td->name, "icon") == 0)
+    if(strcmp(td->name, "summary") == 0
+        || strcmp(td->name, "icon") == 0)
       td->value.s = talloc_strdup(td, json_object_get_string(v));
     else
       td->value.d = json_object_get_double(v);
@@ -98,7 +124,6 @@ TLocation* tree_new(const Data *d)
   TLocation *l;
   struct json_object *o, *oo, *ooo;
   struct array_list *al;
-  size_t j;
 
   if((o = json_tokener_parse(d->data)) == NULL)
     return NULL;
@@ -120,6 +145,15 @@ TLocation* tree_new(const Data *d)
   json_object_object_get_ex(oo, "summary", &ooo);
   l->w_hourly_summary = talloc_strdup(l, json_object_get_string(ooo));
   json_object_object_get_ex(oo, "data", &ooo);
+  al = json_object_get_array(ooo);
+  l->w_hourly_len = array_list_length(al);
+  l->w_hourly_chld_len = talloc_array(l, size_t, l->w_hourly_len);
+  l->w_hourly = talloc_array(l, TData**, l->w_hourly_len);
+  for(size_t i = 0; i < l->w_hourly_len; i++)
+  {
+    struct json_object *p = array_list_get_idx(al, i);
+    l->w_hourly[i] = parse_hourly_object(p, l->w_hourly, &(l->w_hourly_chld_len[i]));
+  }
 
   json_object_put(o); /* free(o) by decreasing the refcount */
   return l;
