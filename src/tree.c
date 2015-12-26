@@ -131,16 +131,20 @@ TLocation* tree_new(const Data *d)
   if((l = talloc(NULL, TLocation)) == NULL)
     return NULL;
 
+  /* top-level data */
+
   l->timezone = access_string(o, "timezone", l);
   l->latitude = access_double(o, "latitude");
   l->longitude = access_double(o, "longitude");
   l->offset = access_int(o, "offset");
 
-  /* w_currently */
+  /* .currently */
+
   json_object_object_get_ex(o, "currently", &oo);
   l->w_currently = parse_hourly_object(o, l, &l->w_currently_len);
 
-  /* w_hourly */
+  /* .hourly */
+
   json_object_object_get_ex(o, "hourly", &oo);
   json_object_object_get_ex(oo, "summary", &ooo);
   l->w_hourly_summary = talloc_strdup(l, json_object_get_string(ooo));
@@ -155,7 +159,30 @@ TLocation* tree_new(const Data *d)
     l->w_hourly[i] = parse_hourly_object(p, l->w_hourly, &(l->w_hourly_chld_len[i]));
   }
 
-  json_object_put(o); /* free(o) by decreasing the refcount */
+  /* .daily */
+
+  json_object_object_get_ex(o, "daily", &oo);
+  json_object_object_get_ex(oo, "summary", &ooo);
+  l->w_daily_summary = talloc_strdup(l, json_object_get_string(ooo));
+  json_object_object_get_ex(oo, "data", &ooo);
+  al = json_object_get_array(ooo);
+  l->w_daily_len = array_list_length(al);
+  l->w_daily_chld_len = talloc_array(l, size_t, l->w_daily_len);
+  l->w_daily = talloc_array(l, TData**, l->w_daily_len);
+  for(size_t i = 0; i < l->w_daily_len; i++)
+  {
+    struct json_object *p = array_list_get_idx(al, i);
+    l->w_daily[i] = parse_daily_object(p, l->w_daily, &(l->w_daily_chld_len[i]));
+  }
+
+  /* .flags */
+
+  json_object_object_get_ex(o, "flags", &oo);
+  l->units = access_string(oo, "units", l);
+
+  /* free json-c data structures by decreasing the refcount */
+  json_object_put(o);
+
   return l;
 }
 

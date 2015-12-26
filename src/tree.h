@@ -29,13 +29,14 @@ struct _TLocation
   /* not provided by the JSON API */
   char *name;
 
+  char *timezone;
+  char *units;
   double latitude;
   double longitude;
-  char *timezone;
   int offset;
 
-  char *w_hourly_summary;
   char *w_daily_summary;
+  char *w_hourly_summary;
 
   size_t w_currently_len;
   size_t w_daily_len;
@@ -44,9 +45,9 @@ struct _TLocation
   size_t *w_daily_chld_len;
   size_t *w_hourly_chld_len;
 
-  TData **w_currently;
   TData ***w_daily;
   TData ***w_hourly;
+  TData **w_currently;
 };
 
 TLocation* tree_new(const Data*);
