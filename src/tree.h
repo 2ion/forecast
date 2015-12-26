@@ -1,6 +1,8 @@
 #ifndef TREE_H
 #define TREE_H
 
+#include <json-c/json.h>
+#include <json-c/json_object.h>
 #include <string.h>
 #include <talloc.h>
 #include "forecast.h"
@@ -24,23 +26,24 @@ struct _TData
 
 struct _TLocation
 {
+  /* not provided by the JSON API */
   char *name;
+
   double latitude;
   double longitude;
   char *timezone;
   int offset;
 
+  char *w_hourly_summary;
+  char *w_daily_summary;
+
+  size_t w_currently_len;
+  size_t w_daily_len;
+  size_t w_hourly_len;
 
   TData **w_currently;
-  size_t w_currently_len;
-
-  TData **w_hourly;
-  size_t w_hourly_len;
-  char *w_hourly_summary;
-
-  TData **w_daily;
-  size_t w_daily_len;
-  char *w_daily_summary;
+  TData ***w_daily;
+  TData ***w_hourly;
 };
 
 TLocation* tree_new(const Data*);
