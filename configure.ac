@@ -9,13 +9,14 @@ AC_CONFIG_FILES([Makefile src/Makefile])
 
 AC_DEFINE([RCNAME], [".forecastrc"], [Configuration file name])
 
-PKG_CHECK_MODULES([LIBJSONC], [json-c])
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
-PKG_CHECK_MODULES([LIBCURL], [libcurl])
-PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
-PKG_CHECK_MODULES([LZ4], [liblz4])
-PKG_CHECK_MODULES([TALLOC], [talloc])
+PKG_CHECK_MODULES([LIBCURL], [libcurl])
+PKG_CHECK_MODULES([LIBFUSE], [fuse])
+PKG_CHECK_MODULES([LIBJSONC], [json-c])
+PKG_CHECK_MODULES([LIBLZ4], [liblz4])
+PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
+PKG_CHECK_MODULES([LIBTALLOC], [talloc])
 
 # Deal with installing Bash completion functions
 AC_ARG_WITH([bash-completion-dir],
