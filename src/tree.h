@@ -5,6 +5,7 @@
 #include <json-c/json_object.h>
 #include <string.h>
 #include <talloc.h>
+#include <stdio.h>
 #include "forecast.h"
 
 struct _TLocation;
@@ -13,12 +14,14 @@ struct _TData;
 typedef struct _TLocation TLocation;
 typedef struct _TData TData;
 
+enum { TD_DOUBLE, TD_STRING };
+
 struct _TData
 {
   char *name;
+  int type;
   union
   {
-    int i;
     double d;
     char *s;
   } value;
@@ -50,10 +53,12 @@ struct _TLocation
   TData **w_currently;
 };
 
-TLocation* tree_new(const Data*);
-void tree_free(TLocation*);
-int* tree_int(TData**, size_t, const char*);
-char* tree_char(TData**, size_t, const char*);
-double* tree_float(TData**, size_t, const char*);
+TLocation*  tree_new(const Data*);
+char*       tree_char(TData**, size_t, const char*);
+double*     tree_double(TData**, size_t, const char*);
+int*        tree_int(TData**, size_t, const char*);
+void        tree_free(TLocation*);
+void        tree_print(TLocation*, FILE*);
+int         tree_typeof(const char*);
 
 #endif

@@ -17,12 +17,19 @@ forecast_LDFLAGS = -lm \
 									 $(LIBLZ4_LIBS) \
 									 $(LIBTALLOC_LIBS)
 
-forecastfs_SOURCES = fs.c
+forecastfs_SOURCES = fs.c configfile.c network.c cache.c hash.c units.c language.c tree.c
 forecastfs_CFLAGS = $(LIBFUSE_CFLAGS) \
 										$(LIBCURL_CFLAGS) \
 										$(LIBJSONC_CFLAGS) \
-										$(LIBTALLOC_CFLAGS)
-forecastfs_LDFLAGS = $(LIBFUSE_LIBS) \
+										$(LIBTALLOC_CFLAGS) \
+										$(LIBCONFIG_CFLAGS) \
+										$(LIBCRYPTO_CFLAGS) \
+										$(LIBLZ4_CFLAGS)
+forecastfs_LDFLAGS = -lm \
+										 $(LIBFUSE_LIBS) \
 										 $(LIBCURL_LIBS) \
-										 $(LIBJSONC_CFLAGS) \
-										 $(LIBTALLOC_LDFLAGS)
+										 $(LIBJSONC_LIBS) \
+										 $(LIBTALLOC_LIBS) \
+										 $(LIBCONFIG_LIBS) \
+										 $(LIBCRYPTO_LIBS) \
+										 $(LIBLZ4_LIBS)

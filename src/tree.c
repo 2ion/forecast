@@ -6,6 +6,13 @@ static double       access_double(struct json_object*, const char*);
 static size_t       json_object_length(struct json_object *o);
 static TData**      parse_hourly_object(struct json_object*, TALLOC_CTX*, size_t*);
 static TData**      parse_daily_object(struct json_object*, TALLOC_CTX*, size_t*);
+static void         print_tdata_array(TData**, size_t, size_t, FILE*);
+
+static const struct
+{
+  char *tee;
+  char *branch;
+} graphc = { "├", "──" };
 
 /*********************************************************************/
 
@@ -81,14 +88,6 @@ void tree_free(TLocation *l)
   talloc_free(l);
 }
 
-int* tree_int(TData **t, size_t tlen, const char *key)
-{
-  for(size_t i = 0; i < tlen; i++)
-    if(strcmp(t[i]->name, key) == 0)
-      return &(t[i]->value.i);
-  return NULL;
-}
-
 char* tree_char(TData **t, size_t tlen, const char *key)
 {
   for(size_t i = 0; i < tlen; i++)
@@ -97,7 +96,7 @@ char* tree_char(TData **t, size_t tlen, const char *key)
   return NULL;
 }
 
-double* tree_float(TData **t, size_t tlen, const char *key)
+double* tree_double(TData **t, size_t tlen, const char *key)
 {
   for(size_t i = 0; i < tlen; i++)
     if(strcmp(t[i]->name, key) == 0)
@@ -105,7 +104,70 @@ double* tree_float(TData **t, size_t tlen, const char *key)
   return NULL;
 }
 
+void tree_print(TLocation *root, FILE *stream)
+{
+  fprintf(stream,
+      "units      %s\n"
+      "latitude   %.2f\n"
+      "longitude  %.2f\n"
+      "timezone   %s\n"
+      "tz offset  %d\n",
+      root->units,
+      root->latitude,
+      root->longitude,
+      root->timezone,
+      root->offset);
+
+  fputs("currently\n", stream);
+  print_tdata_array(root->w_currently, root->w_currently_len, 2, stream);
+
+  fputs("hourly\n", stream);
+  for(size_t i = 0; i < root->w_hourly_len; i++)
+  {
+    fputs("---\n", stream);
+    print_tdata_array(root->w_hourly[i], root->w_hourly_chld_len[i], 2, stream);
+  }
+
+  fputs("daily\n", stream);
+  for(size_t i = 0; i < root->w_daily_len; i++)
+  {
+    fputs("---\n", stream);
+    print_tdata_array(root->w_daily[i], root->w_daily_chld_len[i], 2, stream);
+  }
+}
+
 /*********************************************************************/
+
+void print_tdata_array(TData **a, size_t alen, size_t indent, FILE *stream)
+{
+  char sep[indent+1];
+
+  memset(sep, ' ', indent);
+  sep[indent] = '\0';
+
+  for(size_t i = 0; i < alen; i++)
+  {
+    switch(a[i]->type)
+    {
+      case TD_DOUBLE:
+        fprintf(stream, "%s%s%s %s: %.2f\n",
+            sep,
+            graphc.tee,
+            graphc.branch,
+            a[i]->name,
+            a[i]->value.d);
+        break;
+      case TD_STRING:
+        fprintf(stream, "%s%s%s %s: %s\n",
+            sep,
+            graphc.tee,
+            graphc.branch,
+            a[i]->name,
+            a[i]->value.s);
+        break;
+    }
+  }
+}
 
 TData** parse_daily_object(struct json_object *o, TALLOC_CTX *parent, size_t *alen)
 {
@@ -122,9 +184,15 @@ TData** parse_daily_object(struct json_object *o, TALLOC_CTX *parent, size_t *al
     if(strcmp(td->name, "summary") == 0
         || strcmp(td->name, "icon") == 0
         || strcmp(td->name, "precipType") == 0)
+    {
       td->value.s = talloc_strdup(td, json_object_get_string(v));
+      td->type = TD_STRING;
+    }
     else
+    {
       td->value.d = json_object_get_double(v);
+      td->type = TD_DOUBLE;
+    }
     array[i++] = td;
   }
 
@@ -145,9 +213,15 @@ TData** parse_hourly_object(struct json_object *o, TALLOC_CTX *parent, size_t *a
     td->name = talloc_strdup(td, k);
     if(strcmp(td->name, "summary") == 0
         || strcmp(td->name, "icon") == 0)
+    {
       td->value.s = talloc_strdup(td, json_object_get_string(v));
+      td->type = TD_STRING;
+    }
     else
+    {
       td->value.d = json_object_get_double(v);
+      td->type = TD_DOUBLE;
+    }
     array[i++] = td;
   }
 
