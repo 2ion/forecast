@@ -7,12 +7,10 @@ static size_t       json_object_length(struct json_object *o);
 static TData**      parse_hourly_object(struct json_object*, TALLOC_CTX*, size_t*);
 static TData**      parse_daily_object(struct json_object*, TALLOC_CTX*, size_t*);
 static void         print_tdata_array(TData**, size_t, size_t, FILE*);
+static int          compare_against_array(const char**,  const char*);
 
-static const struct
-{
-  char *tee;
-  char *branch;
-} graphc = { "├", "──" };
+static const struct { char *tee; char *branch; } graphc = { "├", "──" };
+static const char *string_keys[] = { "summary", "icon", "precipType", NULL };
 
 /*********************************************************************/
 
@@ -138,6 +136,14 @@ void tree_print(TLocation *root, FILE *stream)
 
 /*********************************************************************/
 
+int compare_against_array(const char **array, const char *needle)
+{
+  for(const char *e = array[0]; *e; e++)
+    if(strcmp(e, needle) == 0)
+      return 0;
+  return 1;
+}
+
 void print_tdata_array(TData **a, size_t alen, size_t indent, FILE *stream)
 {
   char sep[indent+1];
@@ -169,6 +175,7 @@ void print_tdata_array(TData **a, size_t alen, size_t indent, FILE *stream)
   }
 }
 
+
 TData** parse_daily_object(struct json_object *o, TALLOC_CTX *parent, size_t *alen)
 {
   TData **array;
@@ -181,9 +188,7 @@ TData** parse_daily_object(struct json_object *o, TALLOC_CTX *parent, size_t *al
   {
     TData *td = talloc(array, TData);
     td->name = talloc_strdup(td, k);
-    if(strcmp(td->name, "summary") == 0
-        || strcmp(td->name, "icon") == 0
-        || strcmp(td->name, "precipType") == 0)
+    if(compare_against_array(string_keys, td->name) == 0)
     {
       td->value.s = talloc_strdup(td, json_object_get_string(v));
       td->type = TD_STRING;
@@ -211,8 +216,7 @@ TData** parse_hourly_object(struct json_object *o, TALLOC_CTX *parent, size_t *a
   {
     TData *td = talloc(array, TData);
     td->name = talloc_strdup(td, k);
-    if(strcmp(td->name, "summary") == 0
-        || strcmp(td->name, "icon") == 0)
+    if(compare_against_array(string_keys, td->name) == 0)
     {
       td->value.s = talloc_strdup(td, json_object_get_string(v));
       td->type = TD_STRING;
