@@ -135,6 +135,7 @@ void tree_print(TLocation *root, FILE *stream)
 }
 
 /*********************************************************************/
+/*                          static functions                         */
 
 int compare_against_array(const char **array, const char *needle)
 {
