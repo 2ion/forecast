@@ -4,29 +4,40 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>forecast by 2ion</title>
-
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-dark.css">
-    <script src="javascripts/scale.fix.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
   </head>
   <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/2ion/forecast">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/2ion/forecast/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/2ion/forecast/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
     <div class="wrapper">
-      <header>
-        <h1>forecast</h1>
-        <p>Weather forecast query tool for the command line</p>
-        <p class="view"><a href="https://github.com/2ion/forecast">View the Project on GitHub <small>2ion/forecast</small></a></p>
-        <ul>
-          <li><a href="https://github.com/2ion/forecast/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/2ion/forecast/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/2ion/forecast">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
+
       <section>
+        <div id="title">
+          <h1>forecast</h1>
+          <p>Weather forecast query tool for the command line</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/2ion">2ion</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
         <p>forecast is a query program for the <a href="https://forecast.io">forecast.io</a>
 API. It provides a command line interface which makes weather data for a
 configurable location available in the terminal.</p>
@@ -42,18 +53,44 @@ weather forecasts and many more things</li>
 </ul>
 
 <h2>
+<a id="current-project-status" class="anchor" href="#current-project-status" aria-hidden="true"><span class="octicon octicon-link"></span></a>Current project status</h2>
+
+<p>The last stable release is <code>0.5.0</code>. Development is active. Currently, a
+partial rewrite is underway which will use a tree data structure (see
+<code>tree.c</code>) as the central data store.</p>
+
+<p>This rewrite will simplify much of the messy code in <code>render.c</code> and
+enable the implementation of several new and improved features. One of
+these will be <strong>forecastfs</strong>, a FUSE-based virtual file system for
+presenting weather data to any file-aware program. After finishing
+forecastfs, the ncurses UI will receive more love and features.</p>
+
+<h2>
 <a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dependencies</h2>
 
 <ul>
-<li><a href="https://github.com/json-c/json-c">libjson-c</a></li>
-<li><a href="http://www.hyperrealm.com/libconfig/">libconfig</a></li>
 <li>
-<a href="http://curl.haxx.se/libcurl/">libcurl</a> (built with SSL support)</li>
-<li><a href="https://www.gnu.org/software/ncurses/">libncursesw5</a></li>
+<a href="https://github.com/json-c/json-c">libjson-c</a> is used for retrieving
+the weather data.</li>
+<li>
+<a href="http://www.hyperrealm.com/libconfig/">libconfig</a> is used for
+configuration file management.</li>
+<li>
+<a href="http://curl.haxx.se/libcurl/">libcurl</a> (built with SSL support) is
+used for interacting with the forecast.io API.</li>
+<li>
+<a href="https://www.gnu.org/software/ncurses">libncursesw5</a> drives the
+terminal UI.</li>
 <li>
 <a href="https://www.openssl.org/docs/manmaster/crypto/crypto.html">libcrypto</a>
-(part of OpenSSL)</li>
-<li><a href="https://github.com/Cyan4973/lz4">liblz4</a></li>
+(part of OpenSSL) is used as a source for hash algorithms. Suggestions
+for more lightweight alternatives are welcome.</li>
+<li>
+<a href="https://github.com/Cyan4973/lz4">liblz4</a> is used for compressing the
+on-disk cache files.</li>
+<li>
+<a href="https://talloc.samba.org/talloc/doc/html/index.html">libtalloc</a> is
+the future of forecast's memory management.</li>
 </ul>
 
 <p>The build system uses GNU autoconf and automake.</p>
@@ -90,9 +127,8 @@ through the BunsenLabs project's Debian repository at
 <a id="synopsis" class="anchor" href="#synopsis" aria-hidden="true"><span class="octicon octicon-link"></span></a>Synopsis</h2>
 
 <pre><code>Usage:
-  forecast [c:dehL:l:m:rs:u:v] [LONGFORM OPTIONS]
+  forecast [dehL:l:m:rs:u:v] [LONGFORM OPTIONS]
 Options:
-  -c|--config             PATH   Configuration file to use
   -d|--dump                      Dump the JSON data and a newline to stdout
   -e|--extend-hourly             Request data for one week instead of two days
                                  for hourly forecasts.
@@ -129,8 +165,9 @@ default located at</p>
 
 <div class="highlight highlight-source-shell"><pre><span class="pl-smi">$HOME</span>/.forecastrc</pre></div>
 
-<p>but you may override the location by using the -c flag. If available,
-command line parameters take precedence over the config file settings.</p>
+<p>but you may override the location by setting the <em>FORECAST_CONFIG_PATH</em>
+environment variable. If available, command line parameters take
+precedence over the config file settings.</p>
 
 <p>The best way to create the config file is to copy and edit the provided
 forecastrc.example.</p>
@@ -143,26 +180,38 @@ already installed on your system, the documentation files are located in
 <h2>
 <a id="how-it-looks-or-can-look-like" class="anchor" href="#how-it-looks-or-can-look-like" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it looks (or can look) like</h2>
 
-<p>IRL demo pic with a sweet orange glow:
-<img src="https://raw.githubusercontent.com/2ion/forecast/gh-pages/philipsmonochrome_by_jaseg.jpg" alt=""></p>
+<p>IRL demo pic with a sweet orange glow:</p>
+
+<p><a href="https://scrot.moe/image/aTf8"><img src="https://cdn.scrot.moe/images/2015/12/30/philipsmonochrome_by_jaseg.th.jpg" alt="philipsmonochrome_by_jaseg.th.jpg"></a></p>
 
 <p>Daily overlay forecast plot (-m plot-daily), with the label format
-"%d%b", showing the min/max temperatures on each day:
-<img src="https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex4.png" alt=""></p>
+"%d%b", showing the min/max temperatures on each day:</p>
 
-<p>Hourly forecast plot (-m plot-hourly), with the label format "%H:%M":
-<img src="https://raw.githubusercontent.com/2ion/forecast/gh-pages/ex3.png" alt=""></p>
+<p><a href="https://scrot.moe/image/aRzq"><img src="https://cdn.scrot.moe/images/2015/12/30/ex4.th.png" alt="ex4.md.png"></a></p>
+
+<p>Hourly forecast plot (-m plot-hourly), with the label format "%H:%M":</p>
+
+<p><a href="https://scrot.moe/image/adoy"><img src="https://cdn.scrot.moe/images/2015/12/30/ex3.th.png" alt="ex3.md.png"></a></p>
 
 <h2>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
 
-<p>GNU GPL v3+</p>
+<pre><code>This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</code></pre>
       </section>
+
     </div>
-    <footer>
-      <p>Project maintained by <a href="https://github.com/2ion">2ion</a></p>
-      <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
-    </footer>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
     
   </body>
