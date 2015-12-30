@@ -126,14 +126,17 @@ already installed on your system, the documentation files are located in
 ## How it looks (or can look) like
 
 IRL demo pic with a sweet orange glow:
+
 [![philipsmonochrome_by_jaseg.th.jpg](https://cdn.scrot.moe/images/2015/12/30/philipsmonochrome_by_jaseg.th.jpg)](https://scrot.moe/image/aTf8)
 
 Daily overlay forecast plot (-m plot-daily), with the label format
 "%d%b", showing the min/max temperatures on each day:
+
 [![ex4.md.png](https://cdn.scrot.moe/images/2015/12/30/ex4.th.png)](https://scrot.moe/image/aRzq)
 
 Hourly forecast plot (-m plot-hourly), with the label format "%H:%M":
-[![ex3.md.png](https://cdn.scrot.moe/images/2015/12/30/ex3.md.png)](https://scrot.moe/image/adoy)
+
+[![ex3.md.png](https://cdn.scrot.moe/images/2015/12/30/ex3.th.png)](https://scrot.moe/image/adoy)
 
 ## License
 
