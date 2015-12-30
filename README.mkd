@@ -12,16 +12,35 @@ Capabilities include:
   weather forecasts and many more things
 * Dumping of the original JSON weather data
 
+## Current project status
+
+The last stable release is `0.5.0`. Development is active. Currently, a
+partial rewrite is underway which will use a tree data structure (see
+`tree.c`) as the central data store.
+
+This rewrite will simplify much of the messy code in `render.c` and
+enable the implementation of several new and improved features. One of
+these will be **forecastfs**, a FUSE-based virtual file system for
+presenting weather data to any file-aware program. After finishing
+forecastfs, the ncurses UI will receive more love and features.
+
 ## Dependencies
 
-* [libjson-c](https://github.com/json-c/json-c)
-* [libconfig](http://www.hyperrealm.com/libconfig/)
-* [libcurl](http://curl.haxx.se/libcurl/) (built with SSL support)
-* [libncursesw5](https://www.gnu.org/software/ncurses/)
+* [libjson-c](https://github.com/json-c/json-c) is used for retrieving
+  the weather data.
+* [libconfig](http://www.hyperrealm.com/libconfig/) is used for
+  configuration file management.
+* [libcurl](http://curl.haxx.se/libcurl/) (built with SSL support) is
+  used for interacting with the forecast.io API.
+* [libncursesw5](https://www.gnu.org/software/ncurses) drives the
+  terminal UI.
 * [libcrypto](https://www.openssl.org/docs/manmaster/crypto/crypto.html)
-  (part of OpenSSL)
-* [liblz4](https://github.com/Cyan4973/lz4)
-* [libtalloc](https://talloc.samba.org/talloc/doc/html/index.html)
+  (part of OpenSSL) is used as a source for hash algorithms. Suggestions
+  for more lightweight alternatives are welcome.
+* [liblz4](https://github.com/Cyan4973/lz4) is used for compressing the
+  on-disk cache files.
+* [libtalloc](https://talloc.samba.org/talloc/doc/html/index.html) is
+  the future of forecast's memory management.
 
 The build system uses GNU autoconf and automake.
 
