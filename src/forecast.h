@@ -20,15 +20,10 @@
 
 #include <sys/types.h>
 
-
 #include "barplot.h"
 #include "config.h"
 #include "language.h"
 #include "lerror.h"
-
-#define GUARD_MALLOC(v) \
-  if((v) == NULL)       \
-    LERROR(EXIT_FAILURE, errno, "malloc(%s) returned NULL", #v);
 
 /* types */
 
