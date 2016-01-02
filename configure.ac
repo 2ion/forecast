@@ -10,6 +10,8 @@ AC_CONFIG_FILES([Makefile src/Makefile])
 AC_DEFINE([RCNAME], [".forecastrc"], [Configuration file name])
 AC_DEFINE([FUSE_USE_VERSION], [26], [libfuse API version used by forecastfs])
 
+AC_CHECK_FUNCS([error_at_line])
+
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
 PKG_CHECK_MODULES([LIBCURL], [libcurl])

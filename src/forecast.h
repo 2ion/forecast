@@ -21,14 +21,19 @@
 #include <sys/types.h>
 
 #include <errno.h>
-#include <error.h>
 
 #include "barplot.h"
 #include "config.h"
 #include "language.h"
 
+#ifdef HAVE_ERROR_AT_LINE
+#include <error.h>
 #define LERROR(status, errnum, ...) error_at_line((status), (errnum), \
         (__func__), (__LINE__), __VA_ARGS__)
+#else
+#include "lerror.h"
+#endif
+
 #define GUARD_MALLOC(v) \
   if((v) == NULL)       \
     LERROR(EXIT_FAILURE, errno, "malloc(%s) returned NULL", #v);

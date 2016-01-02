@@ -48,7 +48,8 @@ int main(int argc, char**argv)
 
   set_config_path(&c);
   if(load_config(&c) != 0)
-    LOG("Failed %s", "s");
+    exit(1);
+
 
   request(&c, &d);
   root = tree_new(&d);
