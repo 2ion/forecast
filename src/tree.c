@@ -14,7 +14,7 @@ static const char *string_keys[] = { "summary", "icon", "precipType", NULL };
 
 /*********************************************************************/
 
-TLocation* tree_new(const Data *d)
+TLocation* tree_new(const char *location_name, const Data *d)
 {
   TLocation *l;
   struct json_object *o, *oo, *ooo;
@@ -25,6 +25,9 @@ TLocation* tree_new(const Data *d)
 
   if((l = talloc(NULL, TLocation)) == NULL)
     return NULL;
+
+  l->name = talloc_strdup(l, location_name);
+  l->json_data = talloc_strndup(l, d->data, d->datalen);
 
   /* top-level data */
 

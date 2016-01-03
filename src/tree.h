@@ -29,8 +29,8 @@ struct _TData
 
 struct _TLocation
 {
-  /* not provided by the JSON API */
   char *name;
+  char *json_data;
 
   char *timezone;
   char *units;
@@ -53,7 +53,7 @@ struct _TLocation
   TData **w_currently;
 };
 
-TLocation*  tree_new(const Data*);
+TLocation*  tree_new(const char*, const Data*);
 char*       tree_char(TData**, size_t, const char*);
 double*     tree_double(TData**, size_t, const char*);
 int*        tree_int(TData**, size_t, const char*);

@@ -52,7 +52,7 @@ int main(int argc, char**argv)
 
 
   request(&c, &d);
-  root = tree_new(&d);
+  root = tree_new("default_location", &d);
   tree_print(root, stdout);
 
   tree_free(root);
