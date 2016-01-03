@@ -11,4 +11,13 @@
 #include "network.h"
 #include "tree.h"
 
+struct _FuseState;
+typedef struct _FuseState FuseState;
+
+struct _FuseState
+{
+  Config c;
+  TLocation *locations;
+};
+
 #endif

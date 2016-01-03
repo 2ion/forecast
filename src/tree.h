@@ -30,7 +30,9 @@ struct _TData
 struct _TLocation
 {
   char *name;
+
   char *json_data;
+  size_t json_data_len;
 
   char *timezone;
   char *units;

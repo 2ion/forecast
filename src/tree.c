@@ -28,6 +28,7 @@ TLocation* tree_new(const char *location_name, const Data *d)
 
   l->name = talloc_strdup(l, location_name);
   l->json_data = talloc_strndup(l, d->data, d->datalen);
+  l->json_data_len = d->datalen;
 
   /* top-level data */
 
