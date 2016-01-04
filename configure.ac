@@ -45,7 +45,7 @@ AC_SUBST([BASH_COMPLETION_DIR])
 
 AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
 
-AM_CONDITIONAL([BUILD_FORECASTFS],[expr "$build_os" : linux])
+AM_CONDITIONAL([BUILD_FORECASTFS],[expr "$build_os" : linux >/dev/null])
 
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */
