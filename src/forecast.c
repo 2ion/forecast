@@ -60,8 +60,8 @@ static int    parse_integer(const char*);
 
 int parse_integer(const char *s) {
   long int i = strtol(s, NULL, 0xA);
-  if(    i == LONG_MIN && errno == ERANGE
-      || i == LONG_MAX && errno == ERANGE)
+  if(    (i == LONG_MIN && errno == ERANGE)
+      || (i == LONG_MAX && errno == ERANGE))
     return -1;
   return i;
 }
