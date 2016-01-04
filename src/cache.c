@@ -102,7 +102,17 @@ int check_cache_file(const Config *c, const char* path) {
   if(stat(path, &s) != 0)
     return -1;
   gettimeofday(&tv, NULL);
+
+  /* Mac OSX is not fully POSIX:2008 compliant and does not include the
+   * .st_mtim member in the stat struct. .st_mtimespec seems to have the
+   * same meaning however. With this, forecast builds on OSX
+   * 10.11.2.
+   */
+#if defined(__APPLE__)
+  if((tv.tv_sec - s.st_mtimespec.tv_sec) >= c->max_cache_age)
+#else
   if((tv.tv_sec - s.st_mtim.tv_sec) >= c->max_cache_age)
+#endif
     return -1;
 
   return 0;
