@@ -12,16 +12,23 @@ AC_DEFINE([FUSE_USE_VERSION], [26], [libfuse API version used by forecastfs])
 
 AC_CHECK_FUNCS([error_at_line])
 
+AC_CANONICAL_BUILD
+
+AC_MSG_CHECKING([whether the build system supports libfuse])
+if test "x$build_os" = xlinux; then
+AC_MSG_RESULT([yes, will also build forecastfs])
+PKG_CHECK_MODULES([LIBFUSE], [fuse])
+else
+AC_MSG_RESULT([no])
+fi
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
-PKG_CHECK_MODULES([LIBFUSE], [fuse])
 PKG_CHECK_MODULES([LIBJSONC], [json-c])
 PKG_CHECK_MODULES([LIBLZ4], [liblz4])
 PKG_CHECK_MODULES([LIBNCURSESW], [ncursesw])
 PKG_CHECK_MODULES([LIBTALLOC], [talloc])
 
-# Deal with installing Bash completion functions
 AC_ARG_WITH([bash-completion-dir],
             AS_HELP_STRING([--with-bash-completion-dir[=PATH]], [Install the Bash auto-completion script into the given directory @<:@default=yes@:>@]),
             [],
@@ -35,7 +42,10 @@ else
   BASH_COMPLETION_DIR="$with_bash_completion_dir"
 fi
 AC_SUBST([BASH_COMPLETION_DIR])
+
 AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
+
+AM_CONDITIONAL([BUILD_FORECASTFS],[test "x$build_os" = xlinux])
 
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */

@@ -1,4 +1,8 @@
-bin_PROGRAMS = forecast forecastfs
+bin_PROGRAMS = forecast
+if BUILD_FORECASTFS
+bin_PROGRAMS += forecastfs
+endif
+
 
 forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c hash.c units.c language.c tree.c lerror.c
 forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
