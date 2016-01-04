@@ -65,11 +65,28 @@ forecast is available as
 through the BunsenLabs project's Debian repository at
 [pkg.bunsenlabs.org](http://pkg.bunsenlabs.org/repoidx.html#forecast).
 
+The program builds cleanly on Debian Jessie and newer and Ubuntu 15.04
+and newer, as well as all derived distributions.
+
+If you are using **Ubuntu 14.04 or older**, you need to manually work
+around the [problem](https://launchpad.net/ubuntu/+source/lz4/0.0~r122-2) that the
+liblz4-dev package doesn't yet contain a pkgconfig file. To this end,
+remove the package check from `configure.ac` and append `-llz4` manually
+to the `LDFLAGS` variables in `src/Makefile.am`.
 
 ### Arch Linux
 
 forecast is available through the AUR as
 [`forecast-git`](https://aur.archlinux.org/packages/forecast-git/).
+
+### OSX
+
+Read the notes [here](https://github.com/2ion/forecast/issues/4#issuecomment-168606665),
+then proceed with the generic build instructions.
+
+### BSD
+
+The program should also build on the BSDs, but that is untested.
 
 ## Synopsis
 
