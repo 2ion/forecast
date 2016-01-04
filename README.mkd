@@ -41,6 +41,8 @@ forecastfs, the ncurses UI will receive more love and features.
   on-disk cache files.
 * [libtalloc](https://talloc.samba.org/talloc/doc/html/index.html) is
   the future of forecast's memory management.
+* [libfuse](https://github.com/libfuse/libfuse) for the forecastfs
+  virtual file system. This is as of now only required on Linux.
 
 The build system uses GNU autoconf and automake.
 
