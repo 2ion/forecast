@@ -15,7 +15,7 @@ AC_CHECK_FUNCS([error_at_line])
 AC_CANONICAL_BUILD
 
 AC_MSG_CHECKING([whether the build system supports libfuse])
-if test "x$build_os" = xlinux; then
+if expr "$build_os" : linux >/dev/null; then
 AC_MSG_RESULT([yes, will also build forecastfs])
 PKG_CHECK_MODULES([LIBFUSE], [fuse])
 else
