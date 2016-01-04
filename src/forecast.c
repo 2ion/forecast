@@ -208,8 +208,8 @@ int main(int argc, char **argv) {
           puts("-s: integer over- or underflow, defaulting to 1");
             c.plot.hourly.step = 1;
         }
-        if(c.extend_hourly && c.plot.hourly.step > 168 ||
-            !c.extend_hourly && c.plot.hourly.step > 48)
+        if((c.extend_hourly && c.plot.hourly.step > 168) ||
+            (!c.extend_hourly && c.plot.hourly.step > 48))
           puts("-s: warning: step length is greater than the available data set");
         break;
       case 'X':

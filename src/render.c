@@ -189,7 +189,7 @@ void render_daylight(const PlotCfg *pc, struct json_object *daily) {
   barplot_daylight(pc, (const int*) &times[0], allen);
 }
 
-int render_datapoint(struct json_object *o) {
+void render_datapoint(struct json_object *o) {
   assert(o);
 
   EXTRACT_PREFIXED(o, time);
