@@ -18,12 +18,11 @@
 #ifndef FORECAST_H
 #define FORECAST_H
 
-#include <sys/types.h>
-
 #include "barplot.h"
-#include "config.h"
 #include "language.h"
 #include "lerror.h"
+
+#include "config.h"
 
 /* types */
 
@@ -93,5 +92,9 @@ typedef struct {
   .data = NULL,             \
   .datalen = 0              \
 }
+
+/* construct concatenated symbol names */
+#define _PASTE(x, y) x ## _ ## y
+#define PASTE(x, y) _PASTE(x, y)
 
 #endif

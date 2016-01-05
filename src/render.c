@@ -18,6 +18,24 @@
 
 #include "render.h"
 
+static char*        render_time(struct json_object*);
+static const char*  get_location_name(const Config*, intmax_t);
+static double       render_f2c(double fahrenheit);
+static double       render_mph2kph(double mph);
+static void         render_daily_temperature_plot(const PlotCfg*, struct json_object*);
+static void         render_datapoint(struct json_object *d);
+static void         render_daylight(const PlotCfg*, struct json_object*);
+static void         render_hourly_datapoints(const PlotCfg*, struct json_object*);
+static void         render_hourly_datapoints_plot(const PlotCfg*, struct json_object*);
+static void         render_precipitation_plot_daily(const PlotCfg *, struct json_object*);
+static void         render_precipitation_plot_hourly(const PlotCfg *, struct json_object*);
+
+const char* get_location_name(const Config *c, intmax_t i) {
+  if(i < c->location_map_len)
+    return NULL;
+  return c->location_map[i].name;
+}
+
 double render_mph2kph(double mph) {
   return mph * 1.609344;
 }
@@ -277,5 +295,3 @@ int render(const Config *c, Data *d) {
   json_object_put(o); /* free(o) by decreasing the refcount */
   return 0;
 }
-
-

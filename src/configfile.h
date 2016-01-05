@@ -25,7 +25,6 @@
 #include <string.h>
 
 #include "forecast.h"
-#include "render.h"
 #include "units.h"
 
 #define CHECKCOLOR(var, name) if(strcmp(tmp, #name) == 0) (var) = PASTE(COLOR, name);
