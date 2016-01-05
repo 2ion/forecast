@@ -84,7 +84,7 @@ int lookup_location(Config *c, const char *n) {
       const double lo = c->location_map[i].longitude;
       c->location.latitude = c->location_map[i].latitude;
       c->location.longitude = c->location_map[i].longitude;
-      return 0;
+      return i;
     }
   }
   return -1;
@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
         usage();
         return EXIT_SUCCESS;
       case 'L':
-        if(lookup_location(&c, (const char*)optarg) == -1)
+        if((c.location_map_idx = lookup_location(&c, (const char*)optarg)) == -1)
           printf("-L: location <%s> not defined in config file, ignoring\n", optarg);
         break;
       case 'l':

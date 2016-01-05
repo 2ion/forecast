@@ -51,6 +51,7 @@ typedef struct {
   Location location;
   Location *location_map;
   size_t location_map_len;
+  ssize_t location_map_idx;
   PlotCfg plot;
   int op;
   int max_cache_age;
@@ -73,6 +74,7 @@ typedef struct {
   },                        \
   .location_map = NULL,     \
   .location_map_len = 0,    \
+  .location_map_idx = -1,   \
   .plot = PLOTCFG_DEFAULT,  \
   .op = OP_PRINT_CURRENTLY, \
   .bypass_cache = false,    \
