@@ -21,7 +21,9 @@ enum {
   LANG_TR           = 0x0e,
   LANG_UK           = 0x0f,
   LANG_X_PIG_LATIN  = 0x10,
-  LANG_ZH           = 0x11
+  LANG_ZH           = 0x11,
+  LANG_ZH_TW        = 0x12,
+  LANG_HR           = 0x13
 };
 
 int match_lang_arg(const char*);

@@ -1,9 +1,9 @@
 #include "language.h"
 
 const char *language_table[] = {
-  "ar", "bs", "de", "en", "es",   "fr", "it", "nl",           "pl",
-  "pt", "ru", "sk", "sv", "tet",  "tr", "uk", "x_pig_latin",  "zh",
-  NULL };
+  "ar",     "bs", "de", "en", "es",   "fr", "it", "nl",           "pl",
+  "pt",     "ru", "sk", "sv", "tet",  "tr", "uk", "x_pig_latin",  "zh",
+  "zh-tw",  "hr", NULL };
 
 int match_lang_arg(const char *s) {
   int i = -1;

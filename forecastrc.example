@@ -18,12 +18,12 @@ max_cache_age = 1200;
 # just 48. This approximately doubles the request size.
 extend_hourly = false;
 
-# The language used in verbal weather descriptions. Must be one of: 
-# ar (Arabic), bs (Bosnian), de (German), en (English, which is the
-# default), es (Spanish), fr (French), it (Italian), nl (Dutch), pl
-# (Polish), pt (Portuguese), ru (Russian), sk (Slovak), sv (Swedish),
-# tet (Tetum), tr (Turkish), uk (Ukrainian), x-pig-latin (Igpay
-# Atinlay), or zh (Chinese).
+# The language used in verbal weather descriptions. Must be one of: ar
+# (Arabic), bs (Bosnian), de (German), en (English, which is the
+# default), es (Spanish), fr (French), hr (Croatian), it (Italian), nl
+# (Dutch), pl (Polish), pt (Portuguese), ru (Russian), sk (Slovak), sv
+# (Swedish), tet (Tetum), tr (Turkish), uk (Ukrainian), x-pig-latin
+# (Igpay Atinlay), zh (Chinese), zh-tw (traditional Chinese).
 language = "en";
 
 # The unit table used for metereological variables like temperatures and wind
