@@ -144,7 +144,8 @@ already installed on your system, the documentation files are located in
 
 ## How it looks (or can look) like
 
-IRL demo pic with a sweet orange glow:
+IRL demo pic with a sweet orange glow, credit goes to
+[jaseg](https://github.com/jaseg):
 
 [![philipsmonochrome_by_jaseg.th.jpg](https://cdn.scrot.moe/images/2015/12/30/philipsmonochrome_by_jaseg.th.jpg)](https://scrot.moe/image/aTf8)
 
