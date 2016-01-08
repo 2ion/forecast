@@ -89,6 +89,9 @@ int request(Config *c, Data *d) {
   if(c->extend_hourly)
     url = subststr(url, add_query_param((const char*)url, "extend", "hourly"));
 
+  if(c->units != UNITS_AUTO)
+    url = subststr(url, add_query_param((const char*)url, "units", UNIT_STR(c->units)));
+
   /*******************/
 
   CURL *curl = curl_easy_init();

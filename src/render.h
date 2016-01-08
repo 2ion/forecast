@@ -26,6 +26,7 @@
 #include <time.h>
 
 #include "forecast.h"
+#include "units.h"
 
 #define NAME(prefix, name) PASTE(prefix, name)
 
@@ -44,6 +45,6 @@
   if(json_object_object_get_ex((object), #key, &(NAME(object, key))) != TRUE)                 \
     LERROR(EXIT_FAILURE, 0, "json_object_object_get_ex() failed: %s", #key);
 
-int     render(const Config *c, Data *d);
+int     render(Config *c, Data *d);
 
 #endif

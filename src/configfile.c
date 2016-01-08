@@ -87,6 +87,13 @@ int load_config(Config *c) {
       goto return_error;
   }
 
+  /* units */
+  if(config_lookup_string(&cfg, "units", &tmp) == CONFIG_TRUE) {
+    c->units = match_units_arg(tmp);
+    if(c->units == -1)
+      goto return_error;
+  }
+
   /* Locations */
   LOOKUP_FLOAT(location.latitude);
   LOOKUP_FLOAT(location.longitude);

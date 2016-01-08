@@ -1,5 +1,9 @@
 #include "units.h"
 
+/* global table of unit names */
+const char **unit_table = NULL;
+/******************************/
+
 const char *unit_table_si[]   = { "km", "mm/h", "mm/h", "cm", "°C", "°C", "°C", "°C", "°C", "m/s",  "hPa",  "km"  };
 const char *unit_table_ca[]   = { "km", "mm/h", "mm/h", "cm", "°C", "°C", "°C", "°C", "°C", "km/h", "hPa",  "km"  };
 const char *unit_table_uk2[]  = { "m",  "mm/h", "mm/h", "cm", "°C", "°C", "°C", "°C", "°C", "mph",  "hPa",  "m"   }; /*miles*/
@@ -19,7 +23,10 @@ int set_global_unit_table(int u) {
     case UNITS_UK2:
       unit_table = unit_table_uk2;
       break;
-    default: /* unknown unit code */
+    default: /* unit code without associated table, ATM 'auto' */
+      LERROR(0, 0, "No unit table for unit code '%s', defaulting to SI",
+          UNIT_STR(u));
+      unit_table = unit_table_si;
       return -1;
   }
   return 0;

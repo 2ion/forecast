@@ -26,6 +26,16 @@ extend_hourly = false;
 # Atinlay), or zh (Chinese).
 language = "en";
 
+# The unit table used for metereological variables like temperatures and wind
+# speeds. Valid values are: si (SI standard units), ca (like si but wind speed
+# is in mph), uk (like si but wind speed and distances are in miles), us (U.S.
+# imperial unit system), auto (let the API choose a unit set based on the
+# queried location).
+# Note that in the programmer's experience, 'auto' produces unpredictable and
+# often imappropriate results. Setting your own personal preference here is
+# recommended.
+units = "si";
+
 # File to save cache data to; should be in a location your user has write
 # access to. The path is used as a template and must contain the %s
 # character sequence EXACTLY once, as the string is used as an input to

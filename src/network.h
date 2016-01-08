@@ -25,6 +25,7 @@
 
 #include "forecast.h"
 #include "language.h"
+#include "units.h"
 
 int request(Config *c, Data *d);
 

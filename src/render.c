@@ -20,8 +20,6 @@
 
 static char*        render_time(struct json_object*);
 static const char*  get_location_name(const Config*, intmax_t);
-static double       render_f2c(double fahrenheit);
-static double       render_mph2kph(double mph);
 static void         render_daily_temperature_plot(const PlotCfg*, struct json_object*);
 static void         render_datapoint(struct json_object *d);
 static void         render_daylight(const PlotCfg*, struct json_object*);
@@ -34,14 +32,6 @@ const char* get_location_name(const Config *c, intmax_t i) {
   if(i < c->location_map_len)
     return NULL;
   return c->location_map[i].name;
-}
-
-double render_mph2kph(double mph) {
-  return mph * 1.609344;
-}
-
-double render_f2c(double fahrenheit) {
-  return (fahrenheit - 32.0) * 5.0/9.0;
 }
 
 char * render_time(struct json_object *timeptr) {
@@ -83,8 +73,7 @@ void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly
     EXTRACT_PREFIXED(o, temperature);
     EXTRACT_PREFIXED(o, time);
 
-    double v = json_object_get_double(o_temperature);
-    data[i] = render_f2c(v);
+    data[i] = json_object_get_double(o_temperature);
 
     time_t unixtime = json_object_get_int(o_time);
     struct tm *time = gmtime(&unixtime);
@@ -173,8 +162,8 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
     EXTRACT_PREFIXED(o, temperatureMax)
     EXTRACT_PREFIXED(o, time);
 
-    tempMin[i] = render_f2c(json_object_get_double(o_temperatureMin));
-    tempMax[i] = render_f2c(json_object_get_double(o_temperatureMax));
+    tempMin[i] = json_object_get_double(o_temperatureMin);
+    tempMax[i] = json_object_get_double(o_temperatureMax);
 
     time_t unixtime = json_object_get_int(o_time) + 86400;
     struct tm *time = gmtime(&unixtime);
@@ -225,32 +214,39 @@ void render_datapoint(struct json_object *o) {
 
   printf( "   Time                      %s"
           "     Condition               %s\n"
-          "     Temperature             %.*f °C\n"
-          "     Apparent temperature    %.*f °C\n"
-          "     Dew point               %.*f °C\n"
+          "     Temperature             %.*f %s\n"
+          "     Apparent temperature    %.*f %s\n"
+          "     Dew point               %.*f %s\n"
           "     Precipitation           %d %%\n"
           "     RH (φ)                  %.*f %%\n"
-          "     Wind speed              %d kph (%s)\n"
+          "     Wind speed              %d %s (%s)\n"
           "     Cloud cover             %d %%\n"
-          "     Pressure                %.*f hPa\n"
+          "     Pressure                %.*f %s\n"
           "     Ozone                   %.*f DU\n",
               render_time(o_time),
               json_object_get_string(o_summary),
-          1,  render_f2c(json_object_get_double(o_temperature)),
-          1,  render_f2c(json_object_get_double(o_apparentTemperature)),
-          1,  render_f2c(json_object_get_double(o_dewPoint)),
+          1,  json_object_get_double(o_temperature), unit_table[temperature],
+          1,  json_object_get_double(o_apparentTemperature), unit_table[apparentTemperature],
+          1,  json_object_get_double(o_dewPoint), unit_table[dewPoint],
               (int) (json_object_get_double(o_precipProbability) * 100.0),
           1,  json_object_get_double(o_humidity) * 100,
-              (int) render_mph2kph(json_object_get_double(o_windSpeed)),
-              RENDER_BEARING(json_object_get_double(o_windBearing)),
+              (int) json_object_get_double(o_windSpeed), unit_table[windSpeed], RENDER_BEARING(json_object_get_double(o_windBearing)),
               (int) (json_object_get_double(o_cloudCover) * 100.0),
-          2,  json_object_get_double(o_pressure),
+          2,  json_object_get_double(o_pressure), unit_table[pressure],
           2,  json_object_get_double(o_ozone)
         );
 }
 
-int render(const Config *c, Data *d) {
+int render(Config *c, Data *d) {
   struct json_object *o = json_tokener_parse(d->data);
+
+  /* learn unit table */
+  if(c->units == UNITS_AUTO) {
+    EXTRACT_PREFIXED(o, flags);
+    EXTRACT_PREFIXED(o_flags, units);
+    c->units = match_units_arg(json_object_get_string(o_flags_units));
+  }
+  set_global_unit_table(c->units);
 
   EXTRACT_PREFIXED(o, timezone);
   EXTRACT_PREFIXED(o, latitude);

@@ -226,8 +226,6 @@ int main(int argc, char **argv) {
     }
   }
 
-  set_global_unit_table(c.units);
-
   if(strlen(c.apikey) == 0)
     LERROR(EXIT_FAILURE, 0, "API key must not be empty.");
 

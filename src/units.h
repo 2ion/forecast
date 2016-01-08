@@ -3,10 +3,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "lerror.h"
 
-/* global table of unit names */
-const char **unit_table;
-/******************************/
+extern const char **unit_table;
 
 enum {
   UNITS_US,
