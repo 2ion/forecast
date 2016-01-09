@@ -40,7 +40,7 @@ TLocation* tree_new(const char *location_name, const Data *d)
   /* .currently */
 
   json_object_object_get_ex(o, "currently", &oo);
-  l->w_currently = parse_hourly_object(o, l, &l->w_currently_len);
+  l->w_currently = parse_hourly_object(oo, l, &l->w_currently_len);
 
   /* .hourly */
 
@@ -143,9 +143,10 @@ void tree_print(TLocation *root, FILE *stream)
 
 int compare_against_array(const char **array, const char *needle)
 {
-  for(const char *e = array[0]; *e; e++)
-    if(strcmp(e, needle) == 0)
+  for(size_t i = 0; array[i]; i++) {
+    if(strcmp(array[i], needle) == 0)
       return 0;
+  }
   return 1;
 }
 
