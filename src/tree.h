@@ -6,7 +6,9 @@
 #include <string.h>
 #include <talloc.h>
 #include <stdio.h>
+
 #include "forecast.h"
+#include "util.h"
 
 struct _TLocation;
 struct _TData;

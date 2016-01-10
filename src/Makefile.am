@@ -4,7 +4,7 @@ bin_PROGRAMS += forecastfs
 endif
 
 
-forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c hash.c units.c language.c tree.c lerror.c
+forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c hash.c units.c language.c util.c tree.c lerror.c
 forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
 									$(LIBCONFIG_CFLAGS) \
 									$(LIBCURL_CFLAGS) \
@@ -21,7 +21,7 @@ forecast_LDFLAGS = -lm \
 									 $(LIBLZ4_LIBS) \
 									 $(LIBTALLOC_LIBS)
 
-forecastfs_SOURCES = fs.c configfile.c network.c cache.c hash.c units.c language.c tree.c lerror.c
+forecastfs_SOURCES = fs.c configfile.c network.c cache.c hash.c units.c language.c tree.c lerror.c util.c
 forecastfs_CFLAGS = $(LIBFUSE_CFLAGS) \
 										$(LIBCURL_CFLAGS) \
 										$(LIBJSONC_CFLAGS) \

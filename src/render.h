@@ -19,13 +19,21 @@
 #ifndef RENDER_H
 #define RENDER_H
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 #include <assert.h>
 #include <json-c/json.h>
 #include <json-c/json_object.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
 #include "forecast.h"
+#include "tree.h"
 #include "units.h"
 
 #define NAME(prefix, name) PASTE(prefix, name)

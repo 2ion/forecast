@@ -19,19 +19,45 @@
 #include "render.h"
 
 static char*        render_time(struct json_object*);
-static const char*  get_location_name(const Config*, intmax_t);
+static const char*  get_location_name(const Config*);
 static void         render_daily_temperature_plot(const PlotCfg*, struct json_object*);
-static void         render_datapoint(struct json_object *d);
+static void         render_datapoint(FILE*, const TData**, size_t);
 static void         render_daylight(const PlotCfg*, struct json_object*);
-static void         render_hourly_datapoints(const PlotCfg*, struct json_object*);
+static void         render_hourly_datapoints(const PlotCfg*, const TData***, size_t*, size_t);
 static void         render_hourly_datapoints_plot(const PlotCfg*, struct json_object*);
 static void         render_precipitation_plot_daily(const PlotCfg *, struct json_object*);
 static void         render_precipitation_plot_hourly(const PlotCfg *, struct json_object*);
+static FILE*        columnate(void);
+static int          unitidx(const char*);
 
-const char* get_location_name(const Config *c, intmax_t i) {
-  if(i < c->location_map_len)
+/* text output configuration */
+static const char *ignored_datapoint_fields[] = { "icon", NULL };
+static const struct { const char* key; int unitidx; } key_unit_map[] = {
+#define x(key) { #key, key },
+  x(nearestStormDistance)
+  x(precipIntensity     )
+  x(precipIntensityMax  )
+  x(precipAccumulation  )
+  x(temperature         )
+  x(temperatureMin      )
+  x(temperatureMax      )
+  x(apparentTemperature )
+  x(dewPoint            )
+  x(windSpeed           )
+  x(pressure            )
+  x(visibility          )
+#undef ENTRY
+  { NULL, 0 }
+};
+
+FILE* columnate(void) {
+  return popen("column -t -s@", "w");
+}
+
+const char* get_location_name(const Config *c) {
+  if(c->location_map_idx < 0)
     return NULL;
-  return c->location_map[i].name;
+  return c->location_map[c->location_map_idx].name;
 }
 
 char * render_time(struct json_object *timeptr) {
@@ -39,9 +65,8 @@ char * render_time(struct json_object *timeptr) {
   return ctime(&t);
 }
 
-void render_hourly_datapoints(const PlotCfg *pc, struct json_object *hourly) {
-  assert(hourly);
-
+void render_hourly_datapoints(const PlotCfg *pc, const TData ***tdp, size_t *tdlen, size_t tdplen) {
+  /*
   EXTRACT_PREFIXED(hourly, summary);
   EXTRACT_PREFIXED(hourly, data);
   struct array_list *al = json_object_get_array(hourly_data);
@@ -52,6 +77,7 @@ void render_hourly_datapoints(const PlotCfg *pc, struct json_object *hourly) {
     struct json_object *o = array_list_get_idx(al, i * pc->hourly.step);
     render_datapoint(o);
   }
+  */
 }
 
 void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly) {
@@ -196,81 +222,46 @@ void render_daylight(const PlotCfg *pc, struct json_object *daily) {
   barplot_daylight(pc, (const int*) &times[0], allen);
 }
 
-void render_datapoint(struct json_object *o) {
-  assert(o);
-
-  EXTRACT_PREFIXED(o, time);
-  EXTRACT_PREFIXED(o, temperature);
-  EXTRACT_PREFIXED(o, apparentTemperature);
-  EXTRACT_PREFIXED(o, summary);
-  EXTRACT_PREFIXED(o, dewPoint);
-  EXTRACT_PREFIXED(o, humidity);
-  EXTRACT_PREFIXED(o, precipProbability);
-  EXTRACT_PREFIXED(o, cloudCover);
-  EXTRACT_PREFIXED(o, windSpeed);
-  EXTRACT_PREFIXED(o, pressure);
-  EXTRACT_PREFIXED(o, ozone);
-  EXTRACT_PREFIXED(o, windBearing); // FIXME: might be undefined
-
-  printf( "   Time                      %s"
-          "     Condition               %s\n"
-          "     Temperature             %.*f %s\n"
-          "     Apparent temperature    %.*f %s\n"
-          "     Dew point               %.*f %s\n"
-          "     Precipitation           %d %%\n"
-          "     RH (φ)                  %.*f %%\n"
-          "     Wind speed              %d %s (%s)\n"
-          "     Cloud cover             %d %%\n"
-          "     Pressure                %.*f %s\n"
-          "     Ozone                   %.*f DU\n",
-              render_time(o_time),
-              json_object_get_string(o_summary),
-          1,  json_object_get_double(o_temperature), unit_table[temperature],
-          1,  json_object_get_double(o_apparentTemperature), unit_table[apparentTemperature],
-          1,  json_object_get_double(o_dewPoint), unit_table[dewPoint],
-              (int) (json_object_get_double(o_precipProbability) * 100.0),
-          1,  json_object_get_double(o_humidity) * 100,
-              (int) json_object_get_double(o_windSpeed), unit_table[windSpeed], RENDER_BEARING(json_object_get_double(o_windBearing)),
-              (int) (json_object_get_double(o_cloudCover) * 100.0),
-          2,  json_object_get_double(o_pressure), unit_table[pressure],
-          2,  json_object_get_double(o_ozone)
-        );
+void render_datapoint(FILE *stream, const TData **td, size_t td_len) {
+  return;
 }
 
 int render(Config *c, Data *d) {
-  struct json_object *o = json_tokener_parse(d->data);
+  FILE *cf = NULL;
+  const char *location_name = get_location_name(c);
+  TLocation *tl = location_name ?
+    tree_new(location_name, d) : tree_new("default", d);
+
+  if(tl == NULL)
+    return -1;
 
   /* learn unit table */
   if(c->units == UNITS_AUTO) {
-    EXTRACT_PREFIXED(o, flags);
-    EXTRACT_PREFIXED(o_flags, units);
-    c->units = match_units_arg(json_object_get_string(o_flags_units));
+    c->units = match_units_arg(tl->units);
   }
   set_global_unit_table(c->units);
 
-  EXTRACT_PREFIXED(o, timezone);
-  EXTRACT_PREFIXED(o, latitude);
-  EXTRACT_PREFIXED(o, longitude);
-  EXTRACT_PREFIXED(o, currently);
-  EXTRACT_PREFIXED(o, hourly);
-  EXTRACT_PREFIXED(o, daily);
+  /* for textual output only */
+  if(c->op == OP_PRINT_CURRENTLY || c->op == OP_PRINT_HOURLY)
+    if((cf = columnate()) == NULL) {
+      LERROR(0, errno,
+          "popen() to column(1) failed: falling back to uncolumnated output");
+      cf = stdout;
+    }
 
-#define PRINT_HEADER                                  \
-  printf( "Latitude                     %.*f\n"       \
-          "Longitude                    %.*f\n"       \
-          "Timezone                     %s\n",        \
-          4,  json_object_get_double(o_latitude),     \
-          4,  json_object_get_double(o_longitude),    \
-              json_object_get_string(o_timezone));
+#define PRINT_HEADER do{ fprintf(cf, "Latitude@%.*f\nLongitude@%.*f\nTimezone@%s\n", \
+                       4, tl->latitude, 4, tl->longitude, tl->timezone); } while(0);
   switch(c->op) {
     case OP_PRINT_CURRENTLY:
       PRINT_HEADER;
-      render_datapoint(o_currently);
+      render_datapoint(cf, (const TData**)tl->w_currently, tl->w_currently_len);
       break;
     case OP_PRINT_HOURLY:
       PRINT_HEADER;
-      render_hourly_datapoints(&c->plot, o_hourly);
+      render_hourly_datapoints(&c->plot, (const TData***)tl->w_hourly,
+          tl->w_hourly_chld_len, tl->w_hourly_len);
       break;
+      /*
     case OP_PLOT_HOURLY:
       render_hourly_datapoints_plot(&c->plot, o_hourly);
       break;
@@ -286,8 +277,13 @@ int render(Config *c, Data *d) {
     case OP_PLOT_DAYLIGHT:
       render_daylight(&c->plot, o_daily);
       break;
+      */
   }
 #undef PRINT_HEADER
-  json_object_put(o); /* free(o) by decreasing the refcount */
+
+  if(cf != NULL)
+    pclose(cf);
+
+  tree_free(tl);
   return 0;
 }
