@@ -47,8 +47,14 @@ static const struct { const char* key; int unitidx; } key_unit_map[] = {
   x(pressure            )
   x(visibility          )
 #undef ENTRY
-  { NULL, 0 }
 };
+
+int unitidx(const char *key) {
+  for(size_t i = 0; i < sizeof(key_unit_map); i++)
+    if(strcmp(key_unit_map[i].key, key) == 0)
+      return i;
+  return -1;
+}
 
 FILE* columnate(void) {
   return popen("column -t -s@", "w");

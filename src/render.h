@@ -35,6 +35,7 @@
 #include "forecast.h"
 #include "tree.h"
 #include "units.h"
+#include "util.h"
 
 #define NAME(prefix, name) PASTE(prefix, name)
 
