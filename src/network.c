@@ -98,8 +98,8 @@ int request(Config *c, Data *d) {
   curl_easy_setopt(curl, CURLOPT_URL, url);
   curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, request_curl_callback);
   curl_easy_setopt(curl, CURLOPT_WRITEDATA, d);
-  r = curl_easy_perform(curl);
-  if(r != CURLE_OK)
+
+  if((r = curl_easy_perform(curl)) != CURLE_OK)
     printf("cURL error: %s\n", curl_easy_strerror(r));
 
   curl_easy_cleanup(curl);
