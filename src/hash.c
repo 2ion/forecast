@@ -25,7 +25,7 @@ int md5str(const char *str, char *buf, size_t buflen) {
   unsigned char s[strlen(str)];
   unsigned char d[16];
 
-  for(int i = 0; i < strlen(str); i++)
+  for(size_t i = 0; i < strlen(str); i++)
     s[i] = (unsigned char) str[i];
 
   MD5(s, (unsigned long)strlen(str), d);

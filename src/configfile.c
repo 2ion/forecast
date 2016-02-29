@@ -199,7 +199,7 @@ void free_config(Config *c) {
   FREE_KEY(c->plot.daylight.date_label_format);
 #undef FREE_KEY
   if(c->location_map_len > 0) {
-    for(int i = 0; i < c->location_map_len; i++)
+    for(size_t i = 0; i < c->location_map_len; i++)
       free(c->location_map[i].name);
     free(c->location_map);
   }
@@ -226,7 +226,7 @@ int match_mode_arg(const char *str) {
 }
 
 int string_isalnum(const char *s) {
-  for(int i = 0; i < strlen(s); i++)
+  for(size_t i = 0; i < strlen(s); i++)
     if(isalnum(s[i]) == 0)
       return -1;
   return 0;

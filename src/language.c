@@ -14,7 +14,7 @@ int match_lang_arg(const char *s) {
   return -1;
 }
 
-const char* lang_name(int i) {
+const char* lang_name(size_t i) {
   if(i > sizeof(language_table))
     return NULL;
   return language_table[i];

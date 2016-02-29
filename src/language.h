@@ -27,6 +27,6 @@ enum {
 };
 
 int match_lang_arg(const char*);
-const char* lang_name(int);
+const char* lang_name(size_t);
 
 #endif
