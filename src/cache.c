@@ -152,6 +152,7 @@ int load_cache(const Config *c, Data *d) {
 int save_cache(const Config *c, const Data *d) {
   int fd;
   int ret = 0;
+  ssize_t wc;
   Data _d;
 
   const char *cache_file = get_cache_file_path(c);
@@ -163,9 +164,9 @@ int save_cache(const Config *c, const Data *d) {
 
   copy_data(d, &_d);
   compress_data(&_d);
-  ret = write(fd, (const void*) _d.data, _d.datalen);
+  wc = write(fd, (const void*) _d.data, _d.datalen);
 
-  if(ret == -1 || ret < _d.datalen) {
+  if(wc == -1 || wc < (ssize_t) _d.datalen) {
     LERROR(0, errno, "write()");
     ret = -1;
   }
