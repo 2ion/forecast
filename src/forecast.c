@@ -231,7 +231,7 @@ int main(int argc, char **argv) {
     LERROR(EXIT_FAILURE, 0, "API key must not be empty.");
 
   if(string_isalnum(c.apikey) == -1)
-    LERROR(EXIT_FAILURE, 0, "API key is not a hexstring.", c.apikey);
+    LERROR(EXIT_FAILURE, 0, "API key is not a hexstring: %s", c.apikey);
 
   if(c.bypass_cache == true || load_cache(&c, &d) == -1) {
     if(request(&c, &d) != 0)
