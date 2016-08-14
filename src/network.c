@@ -27,6 +27,8 @@ static char* add_query_param(const char*, const char*, const char*);
 static char* subststr(char*, char*);
 
 char* subststr(char *o, char *n) {
+  if(!(o && n))
+    LERROR(EXIT_FAILURE, 0, "Trying to free NULL");
   free(o);
   return n;
 }
