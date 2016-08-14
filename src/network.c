@@ -55,6 +55,8 @@ char* add_query_param(const char *s, const char *k, const char *v) {
 size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data) {
   Data *d = (Data*) data;
   size_t ptrlen = size * nmemb;
+  if(size != 0 && ptrlen < size)
+    LERROR(EXIT_FAILURE, 0, "overflow as a result of (size * nmemb)");
 
   if(d->data == NULL) {
     d->data = malloc(ptrlen);
@@ -63,6 +65,7 @@ size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data) {
     memcpy(d->data, ptr, ptrlen);
   } else {
     d->data = realloc(d->data, d->datalen + ptrlen);
+    GUARD_MALLOC(d->data);
     memcpy(&d->data[d->datalen], ptr, ptrlen);
     d->datalen += ptrlen;
   }
