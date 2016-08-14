@@ -78,8 +78,12 @@ int request(Config *c, Data *d) {
   int urllen;
   char *url;
   CURLcode r;
+  CURL *curl;
 
-  curl_global_init(CURL_GLOBAL_DEFAULT);
+  if((r = curl_global_init(CURL_GLOBAL_DEFAULT)) != 0) {
+    LERROR(0, 0, "curl_global_init() failed, won't service request");
+    goto fin;
+  }
 
   urllen = snprintf(NULL, 0, url_template, c->apikey, c->location.latitude, c->location.longitude) + 1;
   url = malloc(urllen);
@@ -99,12 +103,17 @@ int request(Config *c, Data *d) {
 
   /*******************/
 
-  CURL *curl = curl_easy_init();
-  curl_easy_setopt(curl, CURLOPT_URL, url);
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, request_curl_callback);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, d);
+  if((curl = curl_easy_init()) == NULL) {
+    r = -1;
+    LERROR(0, 0, "curl_easy_init() failed; won't service request");
+    goto fin;
+  }
 
-  if((r = curl_easy_perform(curl)) != CURLE_OK)
+  r = curl_easy_setopt(curl, CURLOPT_URL, url);
+  r = curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, request_curl_callback);
+  r = curl_easy_setopt(curl, CURLOPT_WRITEDATA, d);
+
+  if(r != CURLE_OK || (r = curl_easy_perform(curl)) != CURLE_OK)
     printf("cURL error: %s\n", curl_easy_strerror(r));
 
   curl_easy_cleanup(curl);
@@ -112,5 +121,6 @@ int request(Config *c, Data *d) {
 
   free(url);
 
+fin:;
   return r == CURLE_OK ? 0 : -1;
 };
