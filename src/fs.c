@@ -42,6 +42,8 @@
 
 int main(int argc, char**argv)
 {
+  (void) argv;
+  (void) argc;
   Config c = CONFIG_NULL;
   Data d = DATA_NULL;
   TLocation *root;
@@ -49,7 +51,6 @@ int main(int argc, char**argv)
   set_config_path(&c);
   if(load_config(&c) != 0)
     exit(1);
-
 
   request(&c, &d);
   root = tree_new("default_location", &d);
