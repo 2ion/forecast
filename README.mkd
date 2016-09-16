@@ -12,17 +12,15 @@ Capabilities include:
   weather forecasts and many more things
 * Dumping of the original JSON weather data
 
-## Current project status
 
-The last stable release is `0.5.0`. Development is active. Currently, a
-partial rewrite is underway which will use a tree data structure (see
-`tree.c`) as the central data store.
+## Source code
 
-This rewrite will simplify much of the messy code in `render.c` and
-enable the implementation of several new and improved features. One of
-these will be **forecastfs**, a FUSE-based virtual file system for
-presenting weather data to any file-aware program. After finishing
-forecastfs, the ncurses UI will receive more love and features.
+The forecast git repository is browseable on [Github](https://github.com/2ion/forecast).
+Tagged releases can be downloaded [here](https://github.com/2ion/forecast/releases).
+
+```
+git clone https://github.com/2ion/forecast.git
+```
 
 ## Dependencies
 
@@ -157,6 +155,18 @@ Daily overlay forecast plot (-m plot-daily), with the label format
 Hourly forecast plot (-m plot-hourly), with the label format "%H:%M":
 
 [![ex3.md.png](https://cdn.scrot.moe/images/2015/12/30/ex3.th.png)](https://scrot.moe/image/adoy)
+
+## Roadmap
+
+The last stable release is `0.5.0`. Development is active. Currently, a
+partial rewrite is underway which will use a tree data structure (see
+`tree.c`) as the central data store.
+
+This rewrite will simplify much of the messy code in `render.c` and
+enable the implementation of several new and improved features. One of
+these will be **forecastfs**, a FUSE-based virtual file system for
+presenting weather data to any file-aware program. After finishing
+forecastfs, the ncurses UI will receive more love and features.
 
 ## License
 
