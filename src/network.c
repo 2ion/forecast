@@ -69,7 +69,7 @@ size_t request_curl_callback(void *ptr, size_t size, size_t nmemb, void *data) {
 }
 
 int request(Config *c, Data *d) {
-  const char *url_template = "https://api.forecast.io/forecast/%s/%f,%f";
+  const char *url_template = "https://api.darksky.net/forecast/%s/%f,%f";
   int urllen;
   char *url;
   CURLcode r;
