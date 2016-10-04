@@ -8,19 +8,11 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile src/Makefile])
 
 AC_DEFINE([RCNAME], [".forecastrc"], [Configuration file name])
-AC_DEFINE([FUSE_USE_VERSION], [26], [libfuse API version used by forecastfs])
 
 AC_CHECK_FUNCS([error_at_line])
 
 AC_CANONICAL_BUILD
 
-AC_MSG_CHECKING([whether the build system supports libfuse])
-if expr "$build_os" : linux >/dev/null; then
-AC_MSG_RESULT([yes, will also build forecastfs])
-PKG_CHECK_MODULES([LIBFUSE], [fuse])
-else
-AC_MSG_RESULT([no])
-fi
 PKG_CHECK_MODULES([LIBCONFIG], [libconfig])
 PKG_CHECK_MODULES([LIBCRYPTO], [libcrypto])
 PKG_CHECK_MODULES([LIBCURL], [libcurl])
@@ -44,8 +36,6 @@ fi
 AC_SUBST([BASH_COMPLETION_DIR])
 
 AM_CONDITIONAL([ENABLE_BASH_COMPLETION],[test "x$with_bash_completion_dir" != "xno"])
-
-AM_CONDITIONAL([BUILD_FORECASTFS],[expr "$build_os" : linux >/dev/null])
 
 AH_VERBATIM([_FORTIFY_SOURCE],
 [/* Fortify source in gcc */

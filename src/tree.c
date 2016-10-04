@@ -7,7 +7,6 @@ static size_t       json_object_length(struct json_object *o);
 static TData**      parse_hourly_object(struct json_object*, TALLOC_CTX*, size_t*);
 static TData**      parse_daily_object(struct json_object*, TALLOC_CTX*, size_t*);
 static void         print_tdata_array(TData**, size_t, size_t, FILE*);
-static int          compare_against_array(const char**,  const char*);
 
 static const struct { char *tee; char *branch; } graphc = { "├", "──" };
 static const char *string_keys[] = { "summary", "icon", "precipType", NULL };
@@ -40,7 +39,7 @@ TLocation* tree_new(const char *location_name, const Data *d)
   /* .currently */
 
   json_object_object_get_ex(o, "currently", &oo);
-  l->w_currently = parse_hourly_object(o, l, &l->w_currently_len);
+  l->w_currently = parse_hourly_object(oo, l, &l->w_currently_len);
 
   /* .hourly */
 
@@ -140,14 +139,6 @@ void tree_print(TLocation *root, FILE *stream)
 
 /*********************************************************************/
 /*                          static functions                         */
-
-int compare_against_array(const char **array, const char *needle)
-{
-  for(const char *e = array[0]; *e; e++)
-    if(strcmp(e, needle) == 0)
-      return 0;
-  return 1;
-}
 
 void print_tdata_array(TData **a, size_t alen, size_t indent, FILE *stream)
 {
