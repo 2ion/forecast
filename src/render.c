@@ -82,7 +82,7 @@ void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly
     plabels[i] = &labels[i][0];
   } // for
 
-  barplot2(pc, data, plabels, i, pc->bar.color);
+  barplot_simple(pc, data, plabels, i, pc->bar.color);
 }
 
 void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) {
@@ -111,7 +111,7 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
     plabels[i] = &labels[i][0];
   }
 
-  barplot2(pc, d, plabels, i, PLOT_COLOR_PRECIP);
+  barplot_simple(pc, d, plabels, i, PLOT_COLOR_PRECIP);
 
   return;
 }
@@ -141,7 +141,7 @@ void render_precipitation_plot_daily(const PlotCfg *pc, struct json_object *o) {
     plabels[i] = &labels[i][0];
   }
 
-  barplot2(pc, d, plabels, allen, PLOT_COLOR_PRECIP);
+  barplot_simple(pc, d, plabels, allen, PLOT_COLOR_PRECIP);
 
   return;
 }
