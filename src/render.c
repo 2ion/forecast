@@ -193,7 +193,7 @@ void render_daylight(const PlotCfg *pc, struct json_object *daily) {
     times[j++] = json_object_get_int(o_sunsetTime);
   }
 
-  BARPLOT(pc, barplot_daylight((const int*) &times[0], allen));
+  //BARPLOT(pc, barplot_daylight((const int*) &times[0], allen));
 }
 
 void render_datapoint(struct json_object *o) {
