@@ -32,6 +32,13 @@
 #include <time.h>
 #include <unistd.h>
 
+#define BARPLOT(pc, func)   \
+  barplot_start(pc);        \
+  (func);                   \
+  barplot_pause();          \
+  barplot_end()
+
+/* This are ncurses color pair indices */
 enum {
   PLOT_COLOR_BAR            = 1,
   PLOT_COLOR_LEGEND         = 2,
@@ -40,6 +47,8 @@ enum {
   PLOT_COLOR_PRECIP         = 5,
   PLOT_COLOR_DAYLIGHT       = 6
 };
+
+enum { TOP, MIDDLE, BOTTOM, LEFT, CENTER, RIGHT };
 
 #define PLOTCFG_DEFAULT               \
 {                                     \
@@ -108,6 +117,9 @@ typedef struct {
 
 void barplot_start(const PlotCfg*);
 void barplot_end(void);
+void barplot_msgbox(const char* msg, int valign, int halign);
+void barplot_clear(void);
+void barplot_pause(void);
 void barplot_simple(const double *d, char **labels,
     size_t dlen, int color);
 void barplot_overlaid(const double *d1,

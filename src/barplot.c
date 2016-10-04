@@ -88,13 +88,28 @@ void barplot_start(const PlotCfg *pc) {
   init_pair(PLOT_COLOR_DAYLIGHT,      PC->daylight.color,             default_color);
 }
 
-void barplot_end(void) {
-  refresh();
-  getch();
+void barplot_end(void)
+{
   endwin();
 }
 
-int terminal_dimen(int *rows, int *cols) {
+void barplot_clear(void)
+{
+  clear();
+}
+
+void barplot_pause(void)
+{
+  getch();
+}
+
+void barplot_msgbox(const char *msg, int valign, int halign)
+{
+  refresh();
+}
+
+int terminal_dimen(int *rows, int *cols)
+{
   struct winsize w;
 
   if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
@@ -108,7 +123,9 @@ int terminal_dimen(int *rows, int *cols) {
   return 0;
 }
 
-void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, double *scalefac, double *max, double *min) {
+void barplot_scale(const double *d, size_t dlen, int scaleheight,
+    int *scaled, double *scalefac, double *max, double *min)
+{
   for(int i = 0; i < dlen; i++) {
     double m = fabs(d[i]);
     if(m > *max)
@@ -134,7 +151,9 @@ void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, d
   }
 }
 
-void barplot_simple(const double *d, char **labels, size_t dlen, int bar_color) {
+void barplot_simple(const double *d, char **labels, size_t dlen,
+    int bar_color)
+{
   int ds[dlen];
   double sfac, dmax, dmin;
 
@@ -161,9 +180,13 @@ void barplot_simple(const double *d, char **labels, size_t dlen, int bar_color) 
       attroff(COLOR_PAIR(bar_color));
     }
   }
+
+  refresh();
 }
 
-void barplot_overlaid(const double *d1, const double *d2, char **labels, size_t dlen) {
+void barplot_overlaid(const double *d1, const double *d2, char **labels,
+    size_t dlen)
+{
   double  d[2*dlen];
   int     ds[2*dlen];
   double  sfac;
@@ -200,11 +223,13 @@ void barplot_overlaid(const double *d1, const double *d2, char **labels, size_t 
         attroff(COLOR_PAIR(barcoloridx));
       } // for k
     } // for j
-
   } // for i
+
+  refresh();
 }
 
-void barplot_daylight(const int *times, size_t days) {
+void barplot_daylight(const int *times, size_t days)
+{
   int barwidth;
   double scalefac, min, max;
   /* If we were to do things correctly, we would need to loop over the
@@ -283,6 +308,5 @@ void barplot_daylight(const int *times, size_t days) {
 
   //end_curses();
   
-
-  return;
+  refresh();
 }

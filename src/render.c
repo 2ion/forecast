@@ -82,9 +82,7 @@ void render_hourly_datapoints_plot(const PlotCfg *pc, struct json_object *hourly
     plabels[i] = &labels[i][0];
   } // for
 
-  barplot_start(pc);
-  barplot_simple(data, plabels, i, pc->bar.color);
-  barplot_end();
+  BARPLOT(pc, barplot_simple(data, plabels, i, PLOT_COLOR_BAR));
 }
 
 void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) {
@@ -113,9 +111,7 @@ void render_precipitation_plot_hourly(const PlotCfg *pc, struct json_object *o) 
     plabels[i] = &labels[i][0];
   }
 
-  barplot_start(pc);
-  barplot_simple(d, plabels, i, PLOT_COLOR_PRECIP);
-  barplot_end();
+  BARPLOT(pc, barplot_simple(d, plabels, i, PLOT_COLOR_PRECIP));
 
   return;
 }
@@ -145,9 +141,7 @@ void render_precipitation_plot_daily(const PlotCfg *pc, struct json_object *o) {
     plabels[i] = &labels[i][0];
   }
 
-  barplot_start(pc);
-  barplot_simple(d, plabels, allen, PLOT_COLOR_PRECIP);
-  barplot_end();
+  BARPLOT(pc, barplot_simple(d, plabels, allen, PLOT_COLOR_PRECIP));
 
   return;
 }
@@ -179,9 +173,7 @@ void render_daily_temperature_plot(const PlotCfg *pc, struct json_object *daily)
     plbl[i] = &labels[i][0];
   }
 
-  barplot_start(pc);
-  barplot_overlaid(tempMax, tempMin, plbl, 7);
-  barplot_end();
+  BARPLOT(pc, barplot_overlaid(tempMax, tempMin, plbl, 7));
 }
 
 void render_daylight(const PlotCfg *pc, struct json_object *daily) {
@@ -201,9 +193,7 @@ void render_daylight(const PlotCfg *pc, struct json_object *daily) {
     times[j++] = json_object_get_int(o_sunsetTime);
   }
 
-  barplot_start(pc);
-  barplot_daylight((const int*) &times[0], allen);
-  barplot_end();
+  BARPLOT(pc, barplot_daylight((const int*) &times[0], allen));
 }
 
 void render_datapoint(struct json_object *o) {
