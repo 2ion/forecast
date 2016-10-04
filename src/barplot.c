@@ -21,13 +21,8 @@
 
 static void barplot_scale(const double*, size_t, int, int*, double*, double*, double*);
 static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
-static double frac_of_day_mins(const struct tm *t);
 
 static const PlotCfg *PC;
-
-double frac_of_day_mins(const struct tm *t) {
-  return (t->tm_hour*60 + t->tm_min) /(24.0*1440.0);
-}
 
 void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
   const int rfac = dmin < 0.0 ? 2 : 1;
