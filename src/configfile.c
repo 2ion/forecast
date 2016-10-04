@@ -226,7 +226,7 @@ int match_mode_arg(const char *str) {
 }
 
 int string_isalnum(const char *s) {
-  for(int i = 0; i < strlen(s); i++)
+  for(size_t i = 0; i < strlen(s); i++)
     if(isalnum(s[i]) == 0)
       return -1;
   return 0;

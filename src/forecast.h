@@ -49,7 +49,7 @@ typedef struct {
   char *cache_file;
   Location location;
   Location *location_map;
-  size_t location_map_len;
+  int location_map_len;
   int location_map_idx;
   PlotCfg plot;
   int op;
