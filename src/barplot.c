@@ -22,7 +22,6 @@
 static void barplot_scale(const double*, size_t, int, int*, double*, double*, double*);
 static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
 static double frac_of_day_mins(const struct tm *t);
-static int terminal_dimen(int *rows, int *cols);
 
 static const PlotCfg *PC;
 
@@ -106,21 +105,6 @@ void barplot_pause(void)
 void barplot_msgbox(const char *msg, int valign, int halign)
 {
   refresh();
-}
-
-int terminal_dimen(int *rows, int *cols)
-{
-  struct winsize w;
-
-  if(ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {
-    LERROR(0, errno, "ioctl()");
-    return -1;
-  }
-
-  *rows = w.ws_row;
-  *cols = w.ws_col;
-
-  return 0;
 }
 
 void barplot_scale(const double *d, size_t dlen, int scaleheight,
