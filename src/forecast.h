@@ -50,7 +50,7 @@ typedef struct {
   Location location;
   Location *location_map;
   size_t location_map_len;
-  intmax_t location_map_idx;
+  size_t location_map_idx;
   PlotCfg plot;
   int op;
   int max_cache_age;

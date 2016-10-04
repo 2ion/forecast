@@ -19,7 +19,7 @@
 #include "render.h"
 
 static char*        render_time(struct json_object*);
-static const char*  get_location_name(const Config*, intmax_t);
+static const char*  get_location_name(const Config*, size_t);
 static void         render_daily_temperature_plot(const PlotCfg*, struct json_object*);
 static void         render_datapoint(struct json_object *d);
 static void         render_daylight(const PlotCfg*, struct json_object*);
@@ -28,7 +28,7 @@ static void         render_hourly_datapoints_plot(const PlotCfg*, struct json_ob
 static void         render_precipitation_plot_daily(const PlotCfg *, struct json_object*);
 static void         render_precipitation_plot_hourly(const PlotCfg *, struct json_object*);
 
-const char* get_location_name(const Config *c, intmax_t i) {
+const char* get_location_name(const Config *c, size_t i) {
   if(i < c->location_map_len)
     return NULL;
   return c->location_map[i].name;
