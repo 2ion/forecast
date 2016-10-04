@@ -80,8 +80,6 @@ void hash_location(Config *c) {
 int lookup_location(Config *c, const char *n) {
   for(size_t i = 0; i < c->location_map_len; i++) {
     if(strcasecmp((const char*)c->location_map[i].name, n) == 0) {
-      const double la = c->location_map[i].latitude;
-      const double lo = c->location_map[i].longitude;
       c->location.latitude = c->location_map[i].latitude;
       c->location.longitude = c->location_map[i].longitude;
       return i;
