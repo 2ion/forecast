@@ -19,12 +19,12 @@
 #include "forecast.h"
 #include "barplot.h"
 
-static void start_curses(const PlotCfg*);
-static void end_curses(void);
 static void barplot_scale(const double*, size_t, int, int*, double*, double*, double*);
 static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
 static double frac_of_day_mins(const struct tm *t);
 static int terminal_dimen(int *rows, int *cols);
+
+static const PlotCfg *PC;
 
 double frac_of_day_mins(const struct tm *t) {
   return (t->tm_hour*60 + t->tm_min) /(24.0*1440.0);
@@ -57,10 +57,10 @@ void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
   attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 }
 
-void start_curses(const PlotCfg *pc) {
+void barplot_start(const PlotCfg *pc) {
   int default_color;
 
-/*  setlocale(LC_ALL, ""); */
+  PC = pc;
 
   /* if this call fails, the program will terminate */
   initscr();
@@ -80,15 +80,15 @@ void start_curses(const PlotCfg *pc) {
   default_color = use_default_colors() == OK ? -1 : 0;
 
   /* colors defined in the config file */
-  init_pair(PLOT_COLOR_BAR,           default_color,                  pc->bar.color);
-  init_pair(PLOT_COLOR_LEGEND,        pc->legend.color,               default_color);
-  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, pc->legend.texthighlight_color, default_color);
-  init_pair(PLOT_COLOR_BAR_OVERLAY,   default_color,                  pc->bar.overlay_color);
-  init_pair(PLOT_COLOR_PRECIP,        default_color,                  pc->precipitation.bar_color);
-  init_pair(PLOT_COLOR_DAYLIGHT,      pc->daylight.color,             default_color);
+  init_pair(PLOT_COLOR_BAR,           default_color,                  PC->bar.color);
+  init_pair(PLOT_COLOR_LEGEND,        PC->legend.color,               default_color);
+  init_pair(PLOT_COLOR_TEXTHIGHLIGHT, PC->legend.texthighlight_color, default_color);
+  init_pair(PLOT_COLOR_BAR_OVERLAY,   default_color,                  PC->bar.overlay_color);
+  init_pair(PLOT_COLOR_PRECIP,        default_color,                  PC->precipitation.bar_color);
+  init_pair(PLOT_COLOR_DAYLIGHT,      PC->daylight.color,             default_color);
 }
 
-void end_curses(void) {
+void barplot_end(void) {
   refresh();
   getch();
   endwin();
@@ -134,18 +134,16 @@ void barplot_scale(const double *d, size_t dlen, int scaleheight, int *scaled, d
   }
 }
 
-void barplot_simple(const PlotCfg *pc, const double *d, char **labels, size_t dlen, int bar_color) {
+void barplot_simple(const double *d, char **labels, size_t dlen, int bar_color) {
   int ds[dlen];
   double sfac, dmax, dmin;
 
-  barplot_scale(d, dlen, pc->height, &ds[0], &sfac, &dmax, &dmin);
+  barplot_scale(d, dlen, PC->height, &ds[0], &sfac, &dmax, &dmin);
 
-  start_curses(pc);
+  const int dx = COLS/2 - (dlen * (PC->bar.width + 1) - 1)/2;
+  const int dy = LINES/2 - PC->height;
 
-  const int dx = COLS/2 - (dlen * (pc->bar.width + 1) - 1)/2;
-  const int dy = LINES/2 - pc->height;
-
-  barplot_legend(dx, dy, pc->height, dmax, dmin);
+  barplot_legend(dx, dy, PC->height, dmax, dmin);
 
   int offset = 0;
   for(int i = 0; i < dlen; i++) {
@@ -153,21 +151,19 @@ void barplot_simple(const PlotCfg *pc, const double *d, char **labels, size_t dl
     const int _offset = offset;
 
     attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-    mvprintw(dy + pc->height, dx + i + offset, "%s", labels[i]);
+    mvprintw(dy + PC->height, dx + i + offset, "%s", labels[i]);
     attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
-    for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
+    for(int j = dx + i + offset; j < dx + i + PC->bar.width + _offset; j++, offset++) {
       attron(COLOR_PAIR(bar_color));
-      for(int y = dy + pc->height - ds[i]; y != dy + pc->height; y += delta)
+      for(int y = dy + PC->height - ds[i]; y != dy + PC->height; y += delta)
         mvaddch(y, j, ' ');
       attroff(COLOR_PAIR(bar_color));
     }
   }
-
-  end_curses();
 }
 
-void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, char **labels, size_t dlen) {
+void barplot_overlaid(const double *d1, const double *d2, char **labels, size_t dlen) {
   double  d[2*dlen];
   int     ds[2*dlen];
   double  sfac;
@@ -177,42 +173,38 @@ void barplot_overlaid(const PlotCfg *pc, const double *d1, const double *d2, cha
   memcpy(&d, d1, dlen * sizeof(double));
   memcpy(&d[dlen], d2, dlen * sizeof(double));
 
-  barplot_scale(d, 2*dlen, pc->height, &ds[0], &sfac, &dmax, &dmin);
+  barplot_scale(d, 2*dlen, PC->height, &ds[0], &sfac, &dmax, &dmin);
 
-  start_curses(pc);
+  const int dx = COLS/2 - (dlen * (PC->bar.width + 1) - 1)/2;
+  const int dy = LINES/2 - PC->height;
 
-  const int dx = COLS/2 - (dlen * (pc->bar.width + 1) - 1)/2;
-  const int dy = LINES/2 - pc->height;
-
-  barplot_legend(dx, dy, pc->height, dmax, dmin);
+  barplot_legend(dx, dy, PC->height, dmax, dmin);
 
   int offset = 0;
   for(int i = 0; i < dlen; i++) {
     const int _offset = offset;
 
     attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-    mvprintw(dy + pc->height, dx + i + offset, "%s", labels[i]);
+    mvprintw(dy + PC->height, dx + i + offset, "%s", labels[i]);
     attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
 
-    for(int j = dx + i + offset; j < dx + i + pc->bar.width + _offset; j++, offset++) {
+    for(int j = dx + i + offset; j < dx + i + PC->bar.width + _offset; j++, offset++) {
       for(int k = 0; k < 2; k++) {
         const int idx = i + k * dlen;
         const int d = ds[idx] >= 0 ? 1 : -1;
         const int barcoloridx = (k == 0) ? PLOT_COLOR_BAR : PLOT_COLOR_BAR_OVERLAY;
 
         attron(COLOR_PAIR(barcoloridx));
-        for(int y = dy + pc->height - ds[idx]; y != dy + pc->height; y += d)
+        for(int y = dy + PC->height - ds[idx]; y != dy + PC->height; y += d)
           mvaddch(y, j, ' ');
         attroff(COLOR_PAIR(barcoloridx));
       } // for k
     } // for j
 
   } // for i
-
-  end_curses();
 }
 
-void barplot_daylight(const PlotCfg *pc, const int *times, size_t days) {
+void barplot_daylight(const int *times, size_t days) {
   int barwidth;
   double scalefac, min, max;
   /* If we were to do things correctly, we would need to loop over the
@@ -240,18 +232,18 @@ void barplot_daylight(const PlotCfg *pc, const int *times, size_t days) {
       switch(j) {
         case 0:
           lptr = &date_label[k][0];
-          fmt = pc->daylight.date_label_format;
+          fmt = PC->daylight.date_label_format;
           comp = &dlabel_max;
           break;
         case 1:
           lptr = &atime_label[k][0];
-          fmt = pc->daylight.time_label_format;
+          fmt = PC->daylight.time_label_format;
           comp = &alabel_max;
           data[di++] = frac_of_day_mins((const struct tm*)uxt);
           break;
         case 2:
           lptr = &btime_label[k][0];
-          fmt = pc->daylight.time_label_format;
+          fmt = PC->daylight.time_label_format;
           comp = &blabel_max;
           data[di++] = frac_of_day_mins((const struct tm*)uxt);
           break;
@@ -268,12 +260,10 @@ void barplot_daylight(const PlotCfg *pc, const int *times, size_t days) {
   data[di++] = 1440.0;
   barplot_scale((const double*)&data[0], 2*days+2, barwidth, &data_scaled[0], &scalefac, &max, &min);
 
-  start_curses(pc);
-
   const int dx = 0.5 * (COLS - barwidth);
   const int dy = 0.5 * (LINES - days);
-  barwidth = pc->daylight.width_frac * LINES > pc->daylight.width_max ?
-    pc->daylight.width_max : pc->daylight.width_frac * LINES;
+  barwidth = PC->daylight.width_frac * LINES > PC->daylight.width_max ?
+    PC->daylight.width_max : PC->daylight.width_frac * LINES;
 
   LERROR(0, 0, "barwidth=%d", barwidth);
 

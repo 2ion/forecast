@@ -106,8 +106,12 @@ typedef struct {
   } daylight;
 } PlotCfg;
 
-void barplot_simple(const PlotCfg *c, const double *d, char **labels, size_t dlen, int color);
-void barplot_overlaid(const PlotCfg *c, const double *d1, const double *d2, char **labels, size_t dlen);
-void barplot_daylight(const PlotCfg *c, const int *times, size_t dlen);
+void barplot_start(const PlotCfg*);
+void barplot_end(void);
+void barplot_simple(const double *d, char **labels,
+    size_t dlen, int color);
+void barplot_overlaid(const double *d1,
+    const double *d2, char **labels, size_t dlen);
+void barplot_daylight(const int *times, size_t dlen);
 
 #endif
