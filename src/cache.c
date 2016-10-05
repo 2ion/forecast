@@ -1,19 +1,14 @@
 #include "cache.h"
 
-static int check_cache_file(const Config *c, const char*);
 static char* get_cache_file_path(const Config*);
+static int cache_load(const Config*, Data*);
+static int cache_save(const Config*, const Data*);
+static int check_cache_file(const Config *c, const char*);
 static void compress_data(Data *d);
 static void decompress_data(Data *d);
-static void copy_data(const Data*, Data*);
 
-void copy_data(const Data* d1, Data *d2) {
-  d2->data = malloc(d1->datalen);
-  GUARD_MALLOC(d2->data);
-  memcpy(d2->data, (const void*) d1->data, d1->datalen);
-  d2->datalen = d1->datalen;
-}
-
-void compress_data(Data *d) {
+void compress_data(Data *d)
+{
   int slen = d->datalen;
   int olen = LZ4_COMPRESSBOUND(slen);
   char cbuf[olen];
@@ -41,7 +36,8 @@ void compress_data(Data *d) {
   memcpy(d->data, (const void*)cbuf, d->datalen);
 }
 
-void decompress_data(Data *d) {
+void decompress_data(Data *d)
+{
   int obuflen = 0;
   int ocnt = 0;
   int lz4tries = 3; /* abort */
@@ -64,7 +60,8 @@ void decompress_data(Data *d) {
   free(obuf);
 }
 
-char* get_cache_file_path(const Config *c) {
+char* get_cache_file_path(const Config *c)
+{
   char lohash[33];
   char *buf;
   int buflen;
@@ -89,7 +86,8 @@ char* get_cache_file_path(const Config *c) {
   return buf;
 }
 
-int check_cache_file(const Config *c, const char* path) {
+int check_cache_file(const Config *c, const char* path)
+{
   struct stat s;
   struct timeval tv;
 
@@ -117,7 +115,8 @@ int check_cache_file(const Config *c, const char* path) {
   return 0;
 }
 
-int cache_load(const Config *c, Data *d) {
+int cache_load(const Config *c, Data *d)
+{
   FILE *cf;
   long cflen;
 
@@ -148,17 +147,20 @@ int cache_load(const Config *c, Data *d) {
   return 0;
 }
 
-int cache_save(const Config *c, const Data *d) {
+int cache_save(const Config *c, const Data *d)
+{
+  const char *cache_file;
   int fd;
   int ret = 0;
   Data _d;
 
-  const char *cache_file = get_cache_file_path(c);
-  if(!cache_file) return -1;
-
-
-  if((fd = open(cache_file, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
+  if(!(cache_file = get_cache_file_path(c)))
     return -1;
+
+  if((fd = open(cache_file,
+          O_WRONLY|O_CREAT|O_TRUNC, S_IRUSR|S_IWUSR)) == -1) {
+    return -1;
+  }
 
   copy_data(d, &_d);
   compress_data(&_d);

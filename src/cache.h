@@ -15,10 +15,8 @@
 #include "forecast.h"
 #include "hash.h"
 #include "network.h"
+#include "util.h"
 #include "tree.h"
-
-int cache_load(const Config*, Data*);
-int cache_save(const Config*, const Data*);
 
 TLocation* cache_fill(const Config*);
 

@@ -81,6 +81,9 @@ TLocation* tree_new(const char *location_name, const Data *d)
   /* free json-c data structures by decreasing the refcount */
   json_object_put(o);
 
+  /* keep copy for potentially request dump operation */
+  xcopy_data(l, d, &(l->data));
+
   return l;
 }
 
@@ -105,7 +108,17 @@ double* tree_double(TData **t, size_t tlen, const char *key)
   return NULL;
 }
 
-void tree_print(TLocation *root, FILE *stream)
+void tree_json(const TLocation *root, FILE *stream)
+{
+  if((fwrite(root->data.data, root->data.datalen, 1, stream)
+      != root->data.datalen) ||
+      ferror(stream) != 0) {
+    LERROR(0, 0, "Warning: Short write or error when writing to stream");
+  }
+  fputc('\n', stream);
+}
+
+void tree_print(const TLocation *root, FILE *stream)
 {
   fprintf(stream,
       "units      %s\n"

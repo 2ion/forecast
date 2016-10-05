@@ -29,6 +29,7 @@
 #include "hash.h"
 #include "network.h"
 #include "render.h"
+#include "tree.h"
 #include "units.h"
 
 #define FREE_IF(flag, var) if(flag == true) free((void*)(var))
@@ -158,7 +159,7 @@ void usage(void) {
 int main(int argc, char **argv) {
   Config c = CONFIG_NULL;
   Data d = DATA_NULL;
-  bool dump_data = false;
+  TLocation *tloc;
   int opt;
 
   set_config_path(&c);
@@ -199,7 +200,7 @@ int main(int argc, char **argv) {
         }
         break;
       case 'd':
-        dump_data = true;
+        c.dump_data = true;
         break;
       case 'r':
         c.bypass_cache = true;
@@ -246,18 +247,17 @@ int main(int argc, char **argv) {
 
   barplot_start(&c.plot);
 
-  if(c.bypass_cache == true || cache_load(&c, &d) == -1) {
-    if(request(&c, &d) != 0)
-      puts("Failed to request data");
-    else
-      cache_save(&c, &d);
+  if((tloc = cache_fill(&c)) == NULL) {
+    LERROR(0, 0, "Failed to load cache or retrieve data");
+    goto shutdown;
   }
 
-  if(dump_data) {
-    write(STDOUT_FILENO, d.data, d.datalen);
-    putchar('\n');
-  } else
-    render(&c, &d);
+  if(c.dump_data) {
+    tree_json(tloc, stderr);
+    goto shutdown;
+  }
+    
+shutdown:;
 
   barplot_end();
 

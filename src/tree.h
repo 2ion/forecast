@@ -31,6 +31,7 @@ struct _TData
 
 struct _TLocation
 {
+  Data data;
   char *name;
 
   char *json_data;
@@ -60,9 +61,10 @@ struct _TLocation
 TLocation*  tree_new(const char*, const Data*);
 char*       tree_char(TData**, size_t, const char*);
 double*     tree_double(TData**, size_t, const char*);
+int         tree_typeof(const char*);
 int*        tree_int(TData**, size_t, const char*);
 void        tree_free(TLocation*);
-void        tree_print(TLocation*, FILE*);
-int         tree_typeof(const char*);
+void        tree_json(const TLocation*, FILE*);
+void        tree_print(const TLocation*, FILE*);
 
 #endif

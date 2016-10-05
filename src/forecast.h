@@ -55,6 +55,7 @@ typedef struct {
   int op;
   int max_cache_age;
   bool bypass_cache;
+  bool dump_data;
   int extend_hourly; /* 'int' because if 'bool', libconfig complains (I'm just too lazy) */
   int units;
   int language;
@@ -77,6 +78,7 @@ typedef struct {
   .plot = PLOTCFG_DEFAULT,  \
   .op = OP_PRINT_CURRENTLY, \
   .bypass_cache = false,    \
+  .dump_data = false,       \
   .extend_hourly = false,   \
   .units = UNITS_AUTO,      \
   .language = LANG_EN       \
