@@ -54,9 +54,18 @@ static const struct option options_long[] = {
 
 static int    parse_location(const char *s, double *la, double *lo);
 static int    lookup_location(Config *c, const char *n);
+static void   store_location_name(Config *c, const char *name);
 static void   list_locations(const Config *c);
 static void   usage(void);
 static int    parse_integer(const char*);
+
+void store_location_name(Config *c, const char *name)
+{
+  if(c->location.name)
+    free(c->location.name);
+  if((c->location.name = strdup(name)) == NULL)
+    LERROR(EXIT_FAILURE, errno, "strdup()");
+}
 
 int parse_integer(const char *s) {
   long int i = strtol(s, NULL, 0xA);
@@ -141,7 +150,7 @@ void usage(void) {
        "  -r|--request                   Bypass the cache if a cache file exists\n"
        "  -s|--step               N      In hourly plots, use only every Nth datapoint.\n"
        "  -u|--units              UNITS  Location-specific unit table to be used. One of si, us, uk, ca, auto.\n"
-       "                                 When specifying 'auto', the unit will be set depending on location\n."
+       "                                 When specifying 'auto', the unit will be set depending on location.\n"
        "  -v|--version                   Print program version and exit"
        );
 }
@@ -164,10 +173,14 @@ int main(int argc, char **argv) {
       case 'L':
         if((c.location_map_idx = lookup_location(&c, (const char*)optarg)) == -1)
           printf("-L: location <%s> not defined in config file, ignoring\n", optarg);
+        else
+          store_location_name(&c, optarg);
         break;
       case 'l':
         if(parse_location((const char*)optarg, &c.location.latitude, &c.location.longitude) == -1)
           puts("-l: malformed option argument");
+        else
+          store_location_name(&c, optarg);
         c.bypass_cache = true;
         break;
       case 'v':
@@ -231,11 +244,13 @@ int main(int argc, char **argv) {
   if(string_isalnum(c.apikey) == -1)
     LERROR(EXIT_FAILURE, 0, "API key is not a hexstring: %s", c.apikey);
 
-  if(c.bypass_cache == true || load_cache(&c, &d) == -1) {
+  barplot_start(&c.plot);
+
+  if(c.bypass_cache == true || cache_load(&c, &d) == -1) {
     if(request(&c, &d) != 0)
       puts("Failed to request data");
     else
-      save_cache(&c, &d);
+      cache_save(&c, &d);
   }
 
   if(dump_data) {
@@ -243,6 +258,8 @@ int main(int argc, char **argv) {
     putchar('\n');
   } else
     render(&c, &d);
+
+  barplot_end();
 
   if(d.data != NULL)
     free(d.data);

@@ -27,6 +27,6 @@
 #include "language.h"
 #include "units.h"
 
-int request(Config *c, Data *d);
+int request(const Config *c, Data *d);
 
 #endif

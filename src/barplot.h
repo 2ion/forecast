@@ -33,10 +33,8 @@
 #include <unistd.h>
 
 #define BARPLOT(pc, func)   \
-  barplot_start(pc);        \
   (func);                   \
-  barplot_pause();          \
-  barplot_end()
+  barplot_pause();
 
 /* This are ncurses color pair indices */
 enum {

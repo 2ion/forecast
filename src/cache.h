@@ -13,8 +13,13 @@
 #include <lz4.h>
 
 #include "forecast.h"
+#include "hash.h"
+#include "network.h"
+#include "tree.h"
 
-int load_cache(const Config*, Data*);
-int save_cache(const Config*, const Data*);
+int cache_load(const Config*, Data*);
+int cache_save(const Config*, const Data*);
+
+TLocation* cache_fill(const Config*);
 
 #endif
