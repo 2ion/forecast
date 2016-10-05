@@ -14,9 +14,9 @@ Capabilities include:
 
 ## Current project status
 
-The last stable release is `0.5.0`. Development is active. Currently, a
-partial rewrite is underway which will use a tree data structure (see
-`tree.c`) as the central data store.
+The last stable release is `0.5.0`. Development is active and takes
+place on the [develop](https://github.com/2ion/forecast/tree/develop)
+branch.
 
 ## Dependencies
 
