@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "tree.h"
 #include "lerror.h"
 
 extern const char **unit_table;
@@ -38,8 +39,8 @@ enum {
   visibility            = 0xB
 };
 
-int set_global_unit_table(int);
 void show_unit_table(void);
-int match_units_arg(const char *str);
+int match_units_arg(const char*);
+void learn_location_units(const TLocation*, Config*);
 
 #endif

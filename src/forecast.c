@@ -158,7 +158,6 @@ void usage(void) {
 
 int main(int argc, char **argv) {
   Config c = CONFIG_NULL;
-  Data d = DATA_NULL;
   TLocation *tloc;
   int opt;
 
@@ -247,10 +246,12 @@ int main(int argc, char **argv) {
 
   barplot_start(&c.plot);
 
+  /* Load network data and finish configuration */
   if((tloc = cache_fill(&c)) == NULL) {
     LERROR(0, 0, "Failed to load cache or retrieve data");
     goto shutdown;
   }
+  learn_location_units((const TLocation*)tloc, &c);
 
   if(c.dump_data) {
     tree_json(tloc, stderr);
@@ -261,9 +262,7 @@ shutdown:;
 
   barplot_end();
 
-  if(d.data != NULL)
-    free(d.data);
-
+  tree_free(tloc);
   free_config(&c);
 
   return EXIT_SUCCESS;

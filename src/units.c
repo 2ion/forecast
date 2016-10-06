@@ -1,5 +1,7 @@
 #include "units.h"
 
+static int set_global_unit_table(int);
+
 /* global table of unit names */
 const char **unit_table = NULL;
 /******************************/
@@ -62,4 +64,11 @@ int match_units_arg(const char *str) {
     return UNITS_SI;
   else
     return -1;
+}
+
+void learn_location_units(const TLocation *l, Config *c)
+{
+  if(c->units == UNITS_AUTO)
+    c->units = match_units_arg(l->units);
+  set_global_unit_table(c->units);
 }

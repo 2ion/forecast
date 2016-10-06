@@ -240,14 +240,6 @@ void render_datapoint(struct json_object *o) {
 int render(Config *c, Data *d) {
   struct json_object *o = json_tokener_parse(d->data);
 
-  /* learn unit table */
-  if(c->units == UNITS_AUTO) {
-    EXTRACT_PREFIXED(o, flags);
-    EXTRACT_PREFIXED(o_flags, units);
-    c->units = match_units_arg(json_object_get_string(o_flags_units));
-  }
-  set_global_unit_table(c->units);
-
   EXTRACT_PREFIXED(o, timezone);
   EXTRACT_PREFIXED(o, latitude);
   EXTRACT_PREFIXED(o, longitude);
