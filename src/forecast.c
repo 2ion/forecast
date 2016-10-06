@@ -172,7 +172,7 @@ int process_args(int argc, char**argv, Config *c)
             store_location_name(c, optarg);
           break;
         case 'l':
-          if(parse_location((const char*)optarg, &(c->location.latitude), &(c->location.longitude) == -1))
+          if(parse_location((const char*)optarg, &(c->location.latitude), &(c->location.longitude)) == -1)
             puts("-l: malformed option argument");
           else
             store_location_name(c, optarg);
