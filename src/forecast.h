@@ -36,6 +36,12 @@ enum {
   OP_PLOT_DAYLIGHT
 };
 
+enum {
+  FORECAST_PROCEED,
+  FORECAST_SUCCESS,
+  FORECAST_FAILURE
+};
+
 typedef struct {
   char *name;
   char hash[33];

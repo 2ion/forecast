@@ -53,12 +53,13 @@ static const struct option options_long[] = {
   { 0,                  0,                  0,    0   }
 };
 
-static int    parse_location(const char *s, double *la, double *lo);
-static int    lookup_location(Config *c, const char *n);
-static void   store_location_name(Config *c, const char *name);
-static void   list_locations(const Config *c);
-static void   usage(void);
-static int    parse_integer(const char*);
+static int parse_location(const char *s, double *la, double *lo);
+static int lookup_location(Config *c, const char *n);
+static void store_location_name(Config *c, const char *name);
+static void list_locations(const Config *c);
+static void usage(void);
+static int process_args(int argc, char**argv, Config*c);
+static int parse_integer(const char*);
 
 void store_location_name(Config *c, const char *name)
 {
@@ -156,86 +157,99 @@ void usage(void) {
        );
 }
 
+int process_args(int argc, char**argv, Config *c)
+{
+  int opt;
+  while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
+      switch(opt) {
+        case 'h':
+          usage();
+          return FORECAST_SUCCESS;
+        case 'L':
+          if((c->location_map_idx = lookup_location(c, (const char*)optarg)) == -1)
+            printf("-L: location <%s> not defined in config file, ignoring\n", optarg);
+          else
+            store_location_name(c, optarg);
+          break;
+        case 'l':
+          if(parse_location((const char*)optarg, &(c->location.latitude), &(c->location.longitude) == -1))
+            puts("-l: malformed option argument");
+          else
+            store_location_name(c, optarg);
+          c->bypass_cache = true;
+          break;
+        case 'v':
+          puts(PACKAGE_STRING);
+          puts("Compiled on: " __DATE__ " " __TIME__);
+          printf("Configuration file: %s\n", c->path);
+          list_locations(c);
+          return FORECAST_SUCCESS;
+        case '?':
+          usage();
+          return FORECAST_FAILURE;
+        case 'm':
+          if((c->op = match_mode_arg((const char*)optarg)) == -1) {
+            puts("-m: invalid mode, defaulting to 'print'");
+            c->op = OP_PRINT_CURRENTLY;
+          }
+          break;
+        case 'd':
+          c->dump_data = true;
+          break;
+        case 'r':
+          c->bypass_cache = true;
+          break;
+        case 'e':
+          if(!c->extend_hourly) /* when overriding the config file */
+            c->bypass_cache = true;
+          c->extend_hourly = true;
+          break;
+        case 'u':
+          if((c->units = match_units_arg((const char*)optarg)) == -1) {
+            puts("-u: invalid unit table, defaulting to 'si'");
+            c->units = UNITS_SI;
+          }
+          break;
+        case 's':
+          if((c->plot.hourly.step = parse_integer((const char*)optarg)) == -1) {
+            puts("-s: integer over- or underflow, defaulting to 1");
+              c->plot.hourly.step = 1;
+          }
+          if((c->extend_hourly && c->plot.hourly.step > 168) ||
+              (!c->extend_hourly && c->plot.hourly.step > 48))
+            puts("-s: warning: step length is greater than the available data set");
+          break;
+        case 'X':
+          {
+            int deflang = c->language;
+            if((c->language = match_lang_arg((const char*)optarg)) == -1) {
+              puts("--language: invalid identifier, defaulting to 'en'");
+              c->language = LANG_EN;
+            }
+            if(c->language != deflang) /* when the requested language is different from the default language */
+              c->bypass_cache = true;
+          }
+          break;
+      }
+    }
+  return FORECAST_PROCEED;
+}
+
 int main(int argc, char **argv) {
   Config c = CONFIG_NULL;
   TLocation *tloc;
-  int opt;
 
   set_config_path(&c);
   if(load_config(&c) != 0)
     LERROR(EXIT_FAILURE, 0, "Failed to load the configuration file");
 
-  while((opt = getopt_long(argc, argv, options, options_long, NULL)) != -1) {
-    switch(opt) {
-      case 'h':
-        usage();
-        return EXIT_SUCCESS;
-      case 'L':
-        if((c.location_map_idx = lookup_location(&c, (const char*)optarg)) == -1)
-          printf("-L: location <%s> not defined in config file, ignoring\n", optarg);
-        else
-          store_location_name(&c, optarg);
-        break;
-      case 'l':
-        if(parse_location((const char*)optarg, &c.location.latitude, &c.location.longitude) == -1)
-          puts("-l: malformed option argument");
-        else
-          store_location_name(&c, optarg);
-        c.bypass_cache = true;
-        break;
-      case 'v':
-        puts(PACKAGE_STRING);
-        puts("Compiled on: " __DATE__ " " __TIME__);
-        printf("Configuration file: %s\n", c.path);
-        list_locations(&c);
-        return EXIT_SUCCESS;
-      case '?':
-        usage();
-        return EXIT_FAILURE;
-      case 'm':
-        if((c.op = match_mode_arg((const char*)optarg)) == -1) {
-          puts("-m: invalid mode, defaulting to 'print'");
-          c.op = OP_PRINT_CURRENTLY;
-        }
-        break;
-      case 'd':
-        c.dump_data = true;
-        break;
-      case 'r':
-        c.bypass_cache = true;
-        break;
-      case 'e':
-        if(!c.extend_hourly) /* when overriding the config file */
-          c.bypass_cache = true;
-        c.extend_hourly = true;
-        break;
-      case 'u':
-        if((c.units = match_units_arg((const char*)optarg)) == -1) {
-          puts("-u: invalid unit table, defaulting to 'si'");
-          c.units = UNITS_SI;
-        }
-        break;
-      case 's':
-        if((c.plot.hourly.step = parse_integer((const char*)optarg)) == -1) {
-          puts("-s: integer over- or underflow, defaulting to 1");
-            c.plot.hourly.step = 1;
-        }
-        if((c.extend_hourly && c.plot.hourly.step > 168) ||
-            (!c.extend_hourly && c.plot.hourly.step > 48))
-          puts("-s: warning: step length is greater than the available data set");
-        break;
-      case 'X':
-        {
-          int deflang = c.language;
-          if((c.language = match_lang_arg((const char*)optarg)) == -1) {
-            puts("--language: invalid identifier, defaulting to 'en'");
-            c.language = LANG_EN;
-          }
-          if(c.language != deflang) /* when the requested language is different from the default language */
-            c.bypass_cache = true;
-        }
-        break;
-    }
+  switch(process_args(argc, argv, &c)) {
+    case FORECAST_SUCCESS:
+      return EXIT_SUCCESS;
+    case FORECAST_FAILURE:
+      return EXIT_FAILURE;
+    default:
+      break;
   }
 
   if(strlen(c.apikey) == 0)
