@@ -192,7 +192,7 @@ TLocation* cache_fill(const Config *c)
       LERROR(EXIT_FAILURE, 0, "Failed to fetch data.");
   }
 
-  if(t = tree_new(c->location.name, &d)) {
+  if(!(t = tree_new(c->location.name, &d))) {
     LERROR(0, 0, "Failed to create tree object from data");
     return NULL;
   }
