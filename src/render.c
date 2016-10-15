@@ -46,7 +46,7 @@ void render_hourly_datapoints(const PlotCfg *pc, struct json_object *hourly) {
   EXTRACT_PREFIXED(hourly, data);
   struct array_list *al = json_object_get_array(hourly_data);
 
-  printf( "Hourly                       %s\n", json_object_get_string(hourly_summary));
+  barplot_print( "Hourly                       %s\n", json_object_get_string(hourly_summary));
 
   for(int i = 0; i * pc->hourly.step < array_list_length(al); i++) {
     struct json_object *o = array_list_get_idx(al, i * pc->hourly.step);
@@ -212,7 +212,7 @@ void render_datapoint(struct json_object *o) {
   EXTRACT_PREFIXED(o, ozone);
   EXTRACT_PREFIXED(o, windBearing); // FIXME: might be undefined
 
-  printf( "   Time                      %s"
+  barplot_print( "   Time                      %s"
           "     Condition               %s\n"
           "     Temperature             %.*f %s\n"
           "     Apparent temperature    %.*f %s\n"
@@ -256,7 +256,7 @@ int render(Config *c, Data *d) {
   EXTRACT_PREFIXED(o, daily);
 
 #define PRINT_HEADER                                  \
-  printf( "Latitude                     %.*f\n"       \
+  barplot_print( "Latitude                     %.*f\n"       \
           "Longitude                    %.*f\n"       \
           "Timezone                     %s\n",        \
           4,  json_object_get_double(o_latitude),     \
@@ -266,10 +266,12 @@ int render(Config *c, Data *d) {
     case OP_PRINT_CURRENTLY:
       PRINT_HEADER;
       render_datapoint(o_currently);
+      barplot_pause();
       break;
     case OP_PRINT_HOURLY:
       PRINT_HEADER;
       render_hourly_datapoints(&c->plot, o_hourly);
+      barplot_pause();
       break;
     case OP_PLOT_HOURLY:
       render_hourly_datapoints_plot(&c->plot, o_hourly);

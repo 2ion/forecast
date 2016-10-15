@@ -31,6 +31,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdarg.h>
 
 #define BARPLOT(pc, func)   \
   (func);                   \
@@ -123,5 +124,7 @@ void barplot_simple(const double *d, char **labels,
 void barplot_overlaid(const double *d1,
     const double *d2, char **labels, size_t dlen);
 void barplot_daylight(const int *times, size_t dlen);
+
+#define barplot_print(fmt, ...) printw((fmt), __VA_ARGS__)
 
 #endif
