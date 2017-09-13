@@ -1,6 +1,6 @@
 bin_PROGRAMS = forecast
 
-forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c hash.c units.c language.c tree.c lerror.c util.c
+forecast_SOURCES = forecast.c barplot.c configfile.c network.c render.c cache.c hash.c units.c language.c tree.c lerror.c util.c data.c
 forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
 									$(LIBCONFIG_CFLAGS) \
 									$(LIBCURL_CFLAGS) \

@@ -21,6 +21,7 @@
 #include "barplot.h"
 #include "language.h"
 #include "lerror.h"
+#include "data.h"
 
 #include "config.h"
 
@@ -80,17 +81,6 @@ typedef struct {
   .extend_hourly = false,   \
   .units = UNITS_AUTO,      \
   .language = LANG_EN       \
-}
-
-typedef struct {
-  char *data;
-  size_t datalen;
-} Data;
-
-#define DATA_NULL           \
-{                           \
-  .data = NULL,             \
-  .datalen = 0              \
 }
 
 /* construct concatenated symbol names */

@@ -10,12 +10,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <lz4.h>
-
 #include "forecast.h"
 #include "hash.h"
 #include "network.h"
 #include "tree.h"
+#include "data.h"
 
 int cache_load(const Config*, Data*);
 int cache_save(const Config*, const Data*);
