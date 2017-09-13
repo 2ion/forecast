@@ -7,7 +7,8 @@ forecast_CFLAGS = $(LIBJSONC_CFLAGS) \
 									$(LIBNCURSESW_CFLAGS) \
 									$(LIBCRYPTO_CFLAGS) \
 									$(LIBLZ4_CFLAGS) \
-									$(LIBTALLOC_CFLAGS)
+									$(LIBTALLOC_CFLAGS) \
+									-D_XOPEN_SOURCE_EXTENDED
 forecast_LDFLAGS = -lm -lpthread \
 									 $(LIBJSONC_LIBS) \
 									 $(LIBCONFIG_LIBS) \

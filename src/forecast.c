@@ -244,7 +244,6 @@ int main(int argc, char **argv) {
   if(string_isalnum(c.apikey) == -1)
     LERROR(EXIT_FAILURE, 0, "API key is not a hexstring: %s", c.apikey);
 
-  barplot_start(&c.plot);
 
   if(c.bypass_cache == true || cache_load(&c, &d) == -1) {
     if(request(&c, &d) != 0)
@@ -256,10 +255,11 @@ int main(int argc, char **argv) {
   if(dump_data) {
     write(STDOUT_FILENO, d.data, d.datalen);
     putchar('\n');
-  } else
+  } else {
+    barplot_start(&c.plot);
     render(&c, &d);
-
-  barplot_end();
+    barplot_end();
+  }
 
   if(d.data != NULL)
     free(d.data);
