@@ -56,7 +56,8 @@ void barplot_start(const PlotCfg *pc) {
 
   PC = pc;
 
-  /* if this call fails, the program will terminate */
+  /* if initscr() call fails, the program will terminate */
+  setlocale(LC_ALL, "");
   initscr();
 
   /* screen and echo setup */
