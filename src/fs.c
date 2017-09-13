@@ -43,7 +43,7 @@
 int main(int argc, char**argv)
 {
   Config c = CONFIG_NULL;
-  Data d = DATA_NULL;
+  Data d = {0};
   TLocation *root;
 
   set_config_path(&c);

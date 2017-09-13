@@ -11,12 +11,6 @@ typedef struct {
   size_t datalen;
 } Data;
 
-#define DATA_NULL           \
-{                           \
-  .data = NULL,             \
-  .datalen = 0              \
-}
-
 void copy_data(const Data*, Data*);
 void compress_data(Data*);
 void decompress_data(Data*);
