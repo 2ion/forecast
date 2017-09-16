@@ -23,58 +23,60 @@ static void barplot_scale(const double*, size_t, int, int*, double*, double*, do
 static void barplot_legend(int dx, int dy, int height, double dmax, double dmin);
 
 static const PlotCfg *PC;
+static WINDOW *PAD;
 
 void barplot_legend(int dx, int dy, int height, double dmax, double dmin) {
   const int rfac = dmin < 0.0 ? 2 : 1;
 
-  attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
+  wattron(PAD, COLOR_PAIR(PLOT_COLOR_LEGEND));
   for(int y = dy; y <= dy + rfac*height; y++) {
     if(y == dy + height) { /* zero-baseline */
-      attron(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
-      mvaddch(y, dx-2, '+');
-      attroff(COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
-      attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-      mvprintw(y, dx-6, "0.0");
+      wattron(PAD, COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
+      mvwaddch(PAD, y, dx-2, '+');
+      wattroff(PAD, COLOR_PAIR(PLOT_COLOR_TEXTHIGHLIGHT));
+      wattron(PAD, COLOR_PAIR(PLOT_COLOR_LEGEND));
+      mvwprintw(PAD, y, dx-6, "0.0");
     } else if(y == dy) { /* y-axis maximum */
-      mvaddch(y, dx-2, '|');
-      mvprintw(y,
+      mvwaddch(PAD, y, dx-2, '|');
+      mvwprintw(PAD, y,
           dx-(snprintf(NULL, 0, "%.*f", 1, dmax)+3),
           "%.*f", 1, dmax);
     } else if(y == dy + 2*height) { /* y-axis minimum */
-      mvaddch(y, dx-2, '|');
-      mvprintw(y,
+      mvwaddch(PAD, y, dx-2, '|');
+      mvwprintw(PAD, y,
           dx-(snprintf(NULL, 0, "-%.*f", 1, dmax)+3),
           "-%.*f", 1, dmax);
     } else
-      mvaddch(y, dx-2, '|');
+      mvwaddch(PAD, y, dx-2, '|');
   }
-  attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+  wattroff(PAD, COLOR_PAIR(PLOT_COLOR_LEGEND));
 }
 
 void barplot_start(const PlotCfg *pc) {
   int default_color;
+  WINDOW *w;
 
   PC = pc;
 
   /* if initscr() call fails, the program will terminate */
   setlocale(LC_ALL, "");
-  initscr();
+  w = initscr();
+  PAD = newpad(LINES, COLS);
 
-  /* screen and echo setup */
   cbreak();
+  mousemask(ALL_MOUSE_EVENTS, NULL);
+  mouseinterval(0);
   noecho();
   nonl();
-  intrflush(stdscr, FALSE);
-  keypad(stdscr, TRUE);
-
-  /* hide cursor */
   curs_set(0);
+
+  scrollok(PAD, TRUE);
+  intrflush(PAD, FALSE);
+  keypad(PAD, TRUE);
 
   /* use colors and, if possible, terminal default colors */
   start_color();
   default_color = use_default_colors() == OK ? -1 : 0;
-
-  /* colors defined in the config file */
   init_pair(PLOT_COLOR_BAR,           default_color,                  PC->bar.color);
   init_pair(PLOT_COLOR_LEGEND,        PC->legend.color,               default_color);
   init_pair(PLOT_COLOR_TEXTHIGHLIGHT, PC->legend.texthighlight_color, default_color);
@@ -90,12 +92,35 @@ void barplot_end(void)
 
 void barplot_clear(void)
 {
-  clear();
+  wclear(PAD);
 }
 
 void barplot_pause(void)
 {
-  getch();
+  MEVENT ev;
+  int c;
+  bool use_mouse = has_mouse() == TRUE;
+
+  while(c = wgetch(PAD)) {
+    switch(c) {
+      case KEY_MOUSE:
+        if(use_mouse && getmouse(&ev) == OK) {
+          int s = ERR;
+          if(ev.bstate & BUTTON4_PRESSED)
+            s = scrl(1);
+          else if(ev.bstate & BUTTON5_PRESSED)
+            s = scrl(-1);
+        }
+        break;
+      case ' ':
+      case 'q':
+        goto end;
+    }
+  }
+
+end:;
+
+  return;
 }
 
 void barplot_msgbox(const char *msg, int valign, int halign)

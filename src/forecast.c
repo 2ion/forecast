@@ -30,6 +30,7 @@
 #include "network.h"
 #include "render.h"
 #include "units.h"
+#include "tree.h"
 
 #define FREE_IF(flag, var) if(flag == true) free((void*)(var))
 
@@ -249,9 +250,11 @@ int process_cmdline(int argc, char**argv, Config *c) {
 int main(int argc, char **argv) {
   Config c = CONFIG_NULL;
   Data d = {0};
+  
+  TALLOC_CTX *rootx = talloc_new(NULL);
+  GUARD_MALLOC(rootx);
 
-  set_config_path(&c);
-  if(load_config(&c) != 0)
+  if(load_config(rootx, &c) != 0)
     LERROR(EXIT_FAILURE, 0, "Failed to load the configuration file");
 
   switch(process_cmdline(argc, argv, &c)) {
@@ -289,6 +292,7 @@ int main(int argc, char **argv) {
     free(d.data);
 
   free_config(&c);
+  talloc_free(rootx);
 
   return EXIT_SUCCESS;
 }

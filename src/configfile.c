@@ -19,13 +19,17 @@
 #include "configfile.h"
 
 static void load_location_map(config_t *cfg, Config *c);
+static void set_config_path(TALLOC_CTX *rx, Config *c);
 
-int load_config(Config *c) {
+int load_config(TALLOC_CTX *rx, Config *c) {
   assert(c);
+  assert(rx);
 
   config_t cfg;
   const char *apikey;
   const char *tmp;
+
+  set_config_path(rx, c);
 
   if(access(c->path, R_OK) != 0) {
     LERROR(0, errno, "%s", c->path);
@@ -190,7 +194,6 @@ void load_location_map(config_t *cfg, Config *c) {
 void free_config(Config *c) {
 #define FREE_KEY(key) \
   if((key) != NULL) free(key)
-  FREE_KEY(c->path);
   FREE_KEY(c->plot.daily.label_format);
   FREE_KEY(c->plot.hourly.label_format);
   FREE_KEY((void*)c->apikey);
@@ -232,18 +235,18 @@ int string_isalnum(const char *s) {
   return 0;
 }
 
-void set_config_path(Config *c) {
+void set_config_path(TALLOC_CTX *rx, Config *c) {
   int plen;
 
   if(getenv("FORECAST_CONFIG_PATH") == NULL) {
     plen = snprintf(NULL, 0, "%s/%s", getenv("HOME"), RCNAME) + 1;
-    c->path = malloc(plen);
+    c->path = talloc_size(rx, (size_t)plen);
     GUARD_MALLOC(c->path);
     snprintf((char*)c->path, plen, "%s/%s", getenv("HOME"), RCNAME);
   } else {
     char *p = getenv("FORECAST_CONFIG_PATH");
     plen = strlen(p)+1;
-    c->path = malloc(plen);
+    c->path = talloc_size(rx, (size_t) plen);
     GUARD_MALLOC(c->path);
     memcpy(c->path, p, plen);
   }

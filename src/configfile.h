@@ -23,6 +23,7 @@
 #include <ctype.h>
 #include <libconfig.h>
 #include <string.h>
+#include <talloc.h>
 
 #include "forecast.h"
 #include "units.h"
@@ -38,8 +39,7 @@
     else CHECKCOLOR(var, CYAN)       \
     else CHECKCOLOR(var, WHITE)
 
-void set_config_path(Config *c);
-int load_config(Config *c);
+int load_config(TALLOC_CTX *rx, Config *c);
 void free_config(Config *c);
 int match_mode_arg(const char *str);
 int string_isalnum(const char *str);
