@@ -174,15 +174,15 @@ void barplot_simple(const double *d, char **labels, size_t dlen,
     const int delta = ds[i] >= 0 ? 1 : -1;
     const int _offset = offset;
 
-    attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-    mvprintw(dy + PC->height, dx + i + offset, "%s", labels[i]);
-    attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+    wattron(PAD, COLOR_PAIR(PLOT_COLOR_LEGEND));
+    mvwprintw(PAD, dy + PC->height, dx + i + offset, "%s", labels[i]);
+    wattroff(PAD, COLOR_PAIR(PLOT_COLOR_LEGEND));
 
     for(int j = dx + i + offset; j < dx + i + PC->bar.width + _offset; j++, offset++) {
-      attron(COLOR_PAIR(bar_color));
+      wattron(PAD, COLOR_PAIR(bar_color));
       for(int y = dy + PC->height - ds[i]; y != dy + PC->height; y += delta)
-        mvaddch(y, j, ' ');
-      attroff(COLOR_PAIR(bar_color));
+        mvwaddch(PAD, y, j, ' ');
+      wattroff(PAD, COLOR_PAIR(bar_color));
     }
   }
 
@@ -212,9 +212,9 @@ void barplot_overlaid(const double *d1, const double *d2, char **labels,
   for(int i = 0; i < dlen; i++) {
     const int _offset = offset;
 
-    attron(COLOR_PAIR(PLOT_COLOR_LEGEND));
-    mvprintw(dy + PC->height, dx + i + offset, "%s", labels[i]);
-    attroff(COLOR_PAIR(PLOT_COLOR_LEGEND));
+    wattron(PAD,COLOR_PAIR(PLOT_COLOR_LEGEND));
+    mvwprintw(PAD, dy + PC->height, dx + i + offset, "%s", labels[i]);
+    wattroff(PAD, COLOR_PAIR(PLOT_COLOR_LEGEND));
 
     for(int j = dx + i + offset; j < dx + i + PC->bar.width + _offset; j++, offset++) {
       for(int k = 0; k < 2; k++) {
@@ -222,10 +222,10 @@ void barplot_overlaid(const double *d1, const double *d2, char **labels,
         const int d = ds[idx] >= 0 ? 1 : -1;
         const int barcoloridx = (k == 0) ? PLOT_COLOR_BAR : PLOT_COLOR_BAR_OVERLAY;
 
-        attron(COLOR_PAIR(barcoloridx));
+        wattron(PAD, COLOR_PAIR(barcoloridx));
         for(int y = dy + PC->height - ds[idx]; y != dy + PC->height; y += d)
           mvaddch(y, j, ' ');
-        attroff(COLOR_PAIR(barcoloridx));
+        wattroff(PAD, COLOR_PAIR(barcoloridx));
       } // for k
     } // for j
   } // for i
